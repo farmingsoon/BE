@@ -2,6 +2,7 @@ package com.api.farmingsoon.common.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -11,15 +12,15 @@ public class Response<T> {
     private String message;
     private T result;
 
-    public static Response<Void> success(StatusCode status, ResponseMessage message) {
-        return new Response<>(status.getStatus(), message.getMessage(), null);
+    public static Response<Void> success(HttpStatus status, String message) {
+        return new Response<>(status.value(), message, null);
     }
 
-    public static <T> Response<T> success(StatusCode status, ResponseMessage message, T result) {
-        return new Response<>(status.getStatus(), message.getMessage(), result);
+    public static <T> Response<T> success(HttpStatus status, String message, T result) {
+        return new Response<>(status.value(), message, result);
     }
 
-    public static Response<Void> error(StatusCode statusCode, ResponseMessage message) {
-        return new Response<>(statusCode.getStatus(), message.getMessage(), null);
+    public static Response<Void> error(HttpStatus status, String message) {
+        return new Response<>(status.value(), message, null);
     }
 }
