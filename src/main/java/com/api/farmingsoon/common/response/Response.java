@@ -23,4 +23,8 @@ public class Response<T> {
     public static Response<Void> error(HttpStatus status, String message) {
         return new Response<>(status.value(), message, null);
     }
+
+    public static <T> Response<T> error(HttpStatus status, T result) {
+        return new Response<>(status.value(), null, result);
+    }
 }
