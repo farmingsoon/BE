@@ -20,10 +20,10 @@ public class GlobalExceptionHandler {
      * 서비스 로직 도중 발생하는 에러들을 커스텀하여 응답값을 내려줍니다.
      */
     @ExceptionHandler(CustomException.class)
-    public Response<Void> handleCustomException(CustomException e){
+    public ResponseEntity<?> handleCustomException(CustomException e){
         ErrorCode errorCode = e.getErrorCode();
         log.error(errorCode.getMessage());
-        return Response.error(errorCode.getStatus(), errorCode.getMessage());
+        return ResponseEntity.status(errorCode.getStatus()).body(Response.error(errorCode.getStatus(), errorCode.getMessage()));
     }
 
     /**
@@ -31,12 +31,12 @@ public class GlobalExceptionHandler {
      *  itemPrice : 아이템 가격을 100원 이상 1,000,000,000원 이하여야 합니다.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Response<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex){
+    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex){
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors()
                 .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
         log.error(ex.getMessage());
-        return Response.error(HttpStatus.BAD_REQUEST, errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.error(HttpStatus.BAD_REQUEST, errors));
     }
 
 }
