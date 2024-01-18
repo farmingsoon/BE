@@ -51,7 +51,7 @@ public class JwtProvider {
      * @Description
      * 토큰 발급 및 재발급 시 동작
      */
-    public JwtTokenRes createJwtToken(String username, String authorities) {
+    public JwtToken createJwtToken(String username, String authorities) {
 
         Date now = new Date();
         Claims claims = Jwts.claims().setSubject(username);
@@ -60,7 +60,7 @@ public class JwtProvider {
         String accessToken = createAccessToken(claims, new Date(now.getTime() + accessExpirationTime));
         String refreshToken = createRefreshToken(claims, new Date(now.getTime() + refreshExpirationTime));
 
-        return new JwtTokenRes("Bearer", accessToken, refreshToken);
+        return new JwtToken("Bearer", accessToken, refreshToken);
     }
 
     public String createAccessToken(Claims claims, Date expiredDate){
