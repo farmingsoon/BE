@@ -1,7 +1,7 @@
 package com.api.farmingsoon.domain.member.service;
 
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
-import com.api.farmingsoon.common.security.jwt.JwtTokenRes;
+import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class MemberService {
      *  2. 기존 토큰 만료처리 and 새로운 토큰 재등록
      *  3. return
      */
-    public JwtTokenRes rotateToken(String prevRefreshToken) {
+    public JwtToken rotateToken(String prevRefreshToken) {
         jwtProvider.validateRefreshToken(prevRefreshToken);
         Authentication authentication = jwtProvider.getAuthenticationByRefreshToken(prevRefreshToken);
 
@@ -36,7 +36,7 @@ public class MemberService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        JwtTokenRes jwtToken = jwtProvider.createJwtToken(authentication.getName(), authorities);
+        JwtToken jwtToken = jwtProvider.createJwtToken(authentication.getName(), authorities);
         jwtUtils.rotateRefreshToken(prevRefreshToken, jwtToken.getRefreshToken(), authentication.getName());
         return jwtToken;
     }
