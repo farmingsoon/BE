@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class JwtTokenRes {
+public class JwtToken {
 
     private final String tokenType;
     private final String accessToken;

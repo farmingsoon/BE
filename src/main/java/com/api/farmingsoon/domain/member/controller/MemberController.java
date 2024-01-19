@@ -3,7 +3,7 @@ package com.api.farmingsoon.domain.member.controller;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.BadRequestException;
 import com.api.farmingsoon.common.response.Response;
-import com.api.farmingsoon.common.security.jwt.JwtTokenRes;
+import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth/members")
@@ -34,15 +32,15 @@ public class MemberController {
     }
 
     @GetMapping("/rotate")
-    public Response<JwtTokenRes> rotateToken(HttpServletRequest request){
+    public Response<JwtToken> rotateToken(HttpServletRequest request){
         String refreshToken = JwtUtils.extractBearerToken(request.getHeader("refreshToken"));
         if(refreshToken.isBlank()) {
             throw new BadRequestException(ErrorCode.EMPTY_REFRESH_TOKEN);
         }
 
-        JwtTokenRes jwtTokenRes = memberService.rotateToken(refreshToken);
+        JwtToken jwtToken = memberService.rotateToken(refreshToken);
 
-        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.", jwtTokenRes);
+        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.", jwtToken);
     }
 
 }
