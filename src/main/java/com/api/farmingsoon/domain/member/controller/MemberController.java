@@ -5,23 +5,39 @@ import com.api.farmingsoon.common.exception.custom_exception.BadRequestException
 import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.JwtUtils;
+import com.api.farmingsoon.domain.member.dto.JoinRequest;
+import com.api.farmingsoon.domain.member.dto.LoginRequest;
+import com.api.farmingsoon.domain.member.dto.LoginResponse;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/auth/members")
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
+
+
+    @PostMapping(value = "/join")
+    public Response<Void> join(@ModelAttribute @Valid JoinRequest joinRequest) throws IOException {
+        memberService.join(joinRequest);
+        return Response.success(HttpStatus.OK, "회원가입이 성공적으로 처리되었습니다.");
+    }
+
+    @PostMapping("/login")
+    public Response<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
+        LoginResponse loginResponse = memberService.login(loginRequest);
+        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.", loginResponse);
+    }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")

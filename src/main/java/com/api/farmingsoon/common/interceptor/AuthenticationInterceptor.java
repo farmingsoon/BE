@@ -24,7 +24,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         log.info("Authentication Interceptor : " + request.getRequestURI());
         String accessToken = JwtUtils.extractBearerToken(request.getHeader(HttpHeaders.AUTHORIZATION));
 
-        if (!request.getRequestURI().equals("/api/auth/member/rotate")&& !request.getRequestURI().equals("/api/auth/member/logout") && accessToken != null) { // 토큰 재발급의 요청이 아니면서 accessToken이 존재할 때
+        if (accessToken != null) { // 토큰 재발급의 요청이 아니면서 accessToken이 존재할 때
 
             if (jwtProvider.validateAccessToken(accessToken)) { // 토큰이 유효한 경우 and 로그인 상태
                 Authentication authentication = jwtProvider.getAuthenticationByAccessToken(accessToken);
@@ -34,4 +34,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         return true;
     }
+
+
 }
