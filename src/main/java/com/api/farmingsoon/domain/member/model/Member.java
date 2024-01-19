@@ -2,13 +2,14 @@ package com.api.farmingsoon.domain.member.model;
 
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -21,7 +22,7 @@ public class Member {
     @Column(nullable = false)
     private String nickname;
 
-    @Column
+    @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     private String profileImg;
