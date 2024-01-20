@@ -22,17 +22,21 @@ public class Member {
     @Column(nullable = false)
     private String nickname;
 
+    @Column(nullable = true)
+    private String password;
+
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
     private String profileImg;
 
     @Builder
-    private Member(String email, MemberRole role, String profileImg, String nickname) {
+    private Member(String email, MemberRole role, String profileImg, String nickname, String password) {
         this.email = email;
         this.role = role;
         this.profileImg = profileImg;
         this.nickname = nickname;
+        this.password = password;
     }
 
     public void updateSocialMember(String email, String nickname, String picture) {
