@@ -35,7 +35,10 @@ public enum ErrorCode {
     NOT_FOUND_PROVIDER("지원하지 않는 소셜 로그인 플랫폼 입니다.", HttpStatus.NOT_FOUND),
 
     // 409
-    ALREADY_JOINED("이미 존재하는 회원입니다.", HttpStatus.CONFLICT);
+    ALREADY_JOINED("이미 존재하는 회원입니다.", HttpStatus.CONFLICT),
+
+    //500
+    FAIL_UPLOAD_S3("AWS S3 업로드 실패!", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String message;
     private final HttpStatus status;
