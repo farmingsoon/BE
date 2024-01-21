@@ -1,5 +1,6 @@
 package com.api.farmingsoon.domain.item.domain;
 
+import com.api.farmingsoon.common.auditing.BaseTimeEntity;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,9 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE member SET deleted = true WHERE id = ?")
+@SQLDelete(sql = "UPDATE item SET deleted = true WHERE id = ?")
 @SQLRestriction("deleted = false")
-public class Item {
+public class Item extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
