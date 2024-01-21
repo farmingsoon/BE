@@ -4,7 +4,6 @@ import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.ForbiddenException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
-import com.api.farmingsoon.common.s3.service.S3Service;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.image.service.ImageService;
@@ -16,13 +15,10 @@ import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -62,8 +58,8 @@ public class ItemService {
 
 
     // TODO:
-    public getItemList(Pageable pageable) {
-        // TODO
+    public void getItemList(Pageable pageable) {
+
     }
 
     public ItemResponse getItemDetail(Long itemId) {
