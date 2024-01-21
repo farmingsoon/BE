@@ -15,6 +15,6 @@ public class ImageEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void rollbackUploadImages(UploadImagesRollbackEvent event)
     {
-        event.getSavedFileUrls().stream(imageUrl -> s3Service.delete(imageUrl));
+        // event.getSavedFileUrls().stream(imageUrl -> s3Service.delete(imageUrl));
     }
 }
