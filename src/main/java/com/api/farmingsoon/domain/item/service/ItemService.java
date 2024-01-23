@@ -59,20 +59,8 @@ public class ItemService {
                 );
     }
 
-
     public ItemWithPageResponse getItemList(String category, String keyword, Pageable pageable) {
-        // 검색 조건이 없는 경우에는 생성일 기준 내림차순 조회
-        if (category == null || keyword == null) {
-            return ItemWithPageResponse.of(itemRepository.findAll(pageable));
-        }
-
-        // TODO: querydsl로 구현하는게 낫겠네요.... 구현하면서 깨달아버렸습니다..
-        return switch (category) {
-            case "title" -> ItemWithPageResponse.of(itemRepository.findByTitleContaining(keyword, pageable));
-            case "nickname" -> ItemWithPageResponse.of(itemRepository.findByMember_NicknameContaining(keyword, pageable));
-            default -> throw new NotMatchException(ErrorCode.INVALID_CATEGORY);
-        };
-
+        return ItemWithPageResponse.of(itemRepository.findItemList(category, keyword, pageable));
     }
 
     public ItemResponse getItemDetail(Long itemId) {

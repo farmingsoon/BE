@@ -4,18 +4,16 @@ import com.api.farmingsoon.common.auditing.BaseTimeEntity;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE item SET deleted = true WHERE id = ?")
-@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE item SET deleted_at = true WHERE id = ?")
+@SQLRestriction("deleted_at IS NOT NULL")
 public class Item extends BaseTimeEntity {
 
     @Id
@@ -31,30 +29,28 @@ public class Item extends BaseTimeEntity {
     @Column(length = 500)
     private String description;
 
+    private String category;
+
     @Column
     private Long hopePrice;
 
     @Column
-    private LocalDateTime expireAt;
+    private LocalDateTime expiredAt;
 
     @Column
     @Setter
     private String thumbnailImageUrl;
 
-    @ColumnDefault("false")
-    private boolean deleted;
-
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
     @Builder
-    private Item(String title, String description, Long hopePrice, LocalDateTime expireAt, String thumbnailImageUrl, boolean deleted, ItemStatus itemStatus) {
+    private Item(String title, String description, Long hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, boolean deleted, ItemStatus itemStatus) {
         this.title = title;
         this.description = description;
         this.hopePrice = hopePrice;
-        this.expireAt = expireAt;
+        this.expiredAt = expiredAt;
         this.thumbnailImageUrl = thumbnailImageUrl;
-        this.deleted = deleted;
         this.itemStatus = itemStatus;
     }
 }

@@ -21,12 +21,9 @@ public class ItemCreateRequest {
 
     private String title;
 
-
     private String description;
 
-
     private Long hopePrice;
-
 
     private Integer period;
 
@@ -39,7 +36,7 @@ public class ItemCreateRequest {
                 .title(this.title)
                 .description(this.description)
                 .hopePrice(this.hopePrice)
-                .expireAt(TimeUtils.setExpireAt(period))
+                .expiredAt(TimeUtils.setExpireAt(period))
                 .itemStatus(ItemStatus.BIDDING)
                 .deleted(false)
                 .build();

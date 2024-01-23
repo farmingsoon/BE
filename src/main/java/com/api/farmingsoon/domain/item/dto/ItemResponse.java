@@ -14,7 +14,7 @@ public class ItemResponse {
     private String title;
     private String description;
     private long hopePrice;
-    private LocalDateTime expireAt;
+    private LocalDateTime expiredAt;
     private ItemStatus itemStatus;
 
     public static ItemResponse fromEntity(Item item) {
@@ -22,7 +22,7 @@ public class ItemResponse {
                 .title(item.getTitle())
                 .description(item.getDescription())
                 .hopePrice(item.getHopePrice())
-                .expireAt(item.getExpireAt())
+                .expiredAt(item.getExpiredAt())
                 .itemStatus(item.getItemStatus())
                 .build();
     }
