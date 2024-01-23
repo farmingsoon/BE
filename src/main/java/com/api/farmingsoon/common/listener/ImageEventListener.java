@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Component
 public class ImageEventListener {
@@ -15,6 +17,6 @@ public class ImageEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
     public void rollbackUploadImages(UploadImagesRollbackEvent event)
     {
-        // event.getSavedFileUrls().stream(imageUrl -> s3Service.delete(imageUrl));
+        event.getSavedFileUrls().forEach(s3Service::delete);
     }
 }

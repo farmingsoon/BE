@@ -44,7 +44,7 @@ public class S3Service {
         // 파일 이름은 UUID.ext 형식으로 업로드
         String fileName = "%s.%s".formatted(UUID.randomUUID(), ext);
         String formatDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
-        String s3location = bucket + "/" + kind + "/" + formatDate;
+        String s3location = bucket + "/" + kind + "/" + formatDate; // 버킷 내 폴더
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(profileImg.getSize());
@@ -65,7 +65,8 @@ public class S3Service {
     }
 
     // TODO: 회원 정보 수정 구현시 필요
-    public void delete(String key) {
+    public void delete(String prevProfileImgUrl) {
+        String key = prevProfileImgUrl.split(bucket + "/")[1];
         amazonS3.deleteObject(bucket, key);
     }
 
