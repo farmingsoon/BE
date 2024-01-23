@@ -15,6 +15,7 @@ import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
+import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final ImageService imageService;
     private final ApplicationEventPublisher publisher;
 
@@ -72,7 +73,7 @@ public class ItemService {
     public void delete(Long itemId) {
         String email = AuthenticationUtils.getEmail();
 
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+        Member member = memberService.getMemberByEmail(email);
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
 
         if (item.getMember() != member) {
