@@ -1,7 +1,9 @@
 package com.api.farmingsoon.domain.member.controller;
 
+import com.api.farmingsoon.common.annotation.LoginChecking;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.BadRequestException;
+import com.api.farmingsoon.common.interceptor.AuthenticationInterceptor;
 import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.JwtUtils;
@@ -12,6 +14,8 @@ import com.api.farmingsoon.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +30,6 @@ public class MemberController {
 
     private final MemberService memberService;
 
-
     @PostMapping(value = "/join")
     public Response<Void> join(@ModelAttribute @Valid JoinRequest joinRequest) throws IOException {
         memberService.join(joinRequest);
@@ -36,24 +39,20 @@ public class MemberController {
     @PostMapping("/login")
     public Response<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
         LoginResponse loginResponse = memberService.login(loginRequest);
-        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.", loginResponse);
+        return Response.success(HttpStatus.OK, "토큰이 발급 되었습니다.", loginResponse);
     }
 
-    @PreAuthorize("isAuthenticated()")
+    @LoginChecking
     @PostMapping("/logout")
-    public Response<Void> logoutMember() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        memberService.logout(username);
+    public Response<Void> logoutMember(HttpServletRequest request) {
+        String refreshToken = JwtUtils.getRefreshToken(request);
+        memberService.logout(refreshToken);
         return Response.success(HttpStatus.OK, "로그아웃 처리 되었습니다.");
     }
 
     @GetMapping("/rotate")
     public Response<JwtToken> rotateToken(HttpServletRequest request){
-        String refreshToken = JwtUtils.extractBearerToken(request.getHeader("refreshToken"));
-        if(refreshToken.isBlank()) {
-            throw new BadRequestException(ErrorCode.EMPTY_REFRESH_TOKEN);
-        }
-
+        String refreshToken = JwtUtils.getRefreshToken(request);
         JwtToken jwtToken = memberService.rotateToken(refreshToken);
 
         return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.", jwtToken);

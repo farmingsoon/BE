@@ -17,12 +17,14 @@ import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.security.SecurityUtil;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Security;
 import java.util.List;
 
 @Service
@@ -31,7 +33,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final MemberService memberService;
+    private final AuthenticationUtils authenticationUtils;
     private final ImageService imageService;
     private final ApplicationEventPublisher publisher;
 
@@ -52,6 +54,8 @@ public class ItemService {
     @Transactional
     public void saveItemAndImage(Item item, List<String> imageUrls) {
         publisher.publishEvent(new UploadImagesRollbackEvent(imageUrls));
+
+        item.setMember(authenticationUtils.getAuthenticationMember());
         item.setThumbnailImageUrl(imageUrls.get(0));
         itemRepository.save(item);
         imageUrls.stream().skip(1).forEach
@@ -71,14 +75,9 @@ public class ItemService {
 
     @Transactional
     public void delete(Long itemId) {
-        String email = AuthenticationUtils.getEmail();
-
-        Member member = memberService.getMemberByEmail(email);
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
 
-        if (item.getMember() != member) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN_DELETE);
-        }
+        AuthenticationUtils.checkDeletePermission(item.getMember());
 
         itemRepository.deleteById(itemId);
     }

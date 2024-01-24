@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.item.controller;
 
 
+import com.api.farmingsoon.common.annotation.LoginChecking;
 import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
 import com.api.farmingsoon.domain.item.dto.ItemResponse;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +25,7 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    @LoginChecking
     @PostMapping
     public Response<Void> createItem(@ModelAttribute @Valid ItemCreateRequest itemCreateRequest) {
         itemService.createItem(itemCreateRequest);
@@ -46,8 +49,9 @@ public class ItemController {
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
 
+    @LoginChecking
     @DeleteMapping("/{itemId}")
-    public Response<Void> delete(@PathVariable Long itemId) {
+    public Response<Void> delete(@PathVariable(name = "itemId") Long itemId) {
         itemService.delete(itemId);
         return Response.success(HttpStatus.OK, "상품 삭제 완료!");
     }
