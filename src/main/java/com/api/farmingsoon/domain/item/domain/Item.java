@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item SET deleted_at = true WHERE id = ?")
-@SQLRestriction("deleted_at IS NOT NULL")
 public class Item extends BaseTimeEntity {
 
     @Id
@@ -21,6 +20,7 @@ public class Item extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
     private Member member;
 
     @Column(length = 100)

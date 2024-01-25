@@ -23,6 +23,7 @@ public enum ErrorCode {
     INVALID_NEW_PASSWORD("새 비밀번호가 일치하지 않습니다!", HttpStatus.UNAUTHORIZED),
 
     // 403
+    NOT_LOGIN("로그인 후 이용할 수 있습니다.", HttpStatus.FORBIDDEN),
     FORBIDDEN_CREATE("생성 권한이 없습니다.", HttpStatus.FORBIDDEN),
     FORBIDDEN_DELETE("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN),
     FORBIDDEN_UPDATE("수정 권한이 없습니다.", HttpStatus.FORBIDDEN),

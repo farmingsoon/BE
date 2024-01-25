@@ -3,6 +3,7 @@ package com.api.farmingsoon.common.security.service;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
+import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.api.farmingsoon.common.exception.ErrorCode.NOT_FOUND_MEMBER;
 
@@ -21,7 +23,7 @@ import static com.api.farmingsoon.common.exception.ErrorCode.NOT_FOUND_MEMBER;
 @Service("userDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     /**
      * @Description
@@ -31,8 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(NOT_FOUND_MEMBER));
-
+        Member member = memberService.getMemberByEmail(email);
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + member.getRole().name()));
         return User.builder()

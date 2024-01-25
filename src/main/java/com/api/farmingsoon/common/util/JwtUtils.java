@@ -3,6 +3,8 @@ package com.api.farmingsoon.common.util;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.BadRequestException;
 import com.api.farmingsoon.common.redis.RedisService;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,8 +45,12 @@ public class JwtUtils {
         redisService.deleteData(refreshToken);
     }
 
-    public String getRefreshToken(String refreshToken) {
-        return redisService.getData(refreshToken).toString();
+    public static String getRefreshToken(HttpServletRequest request) {
+        String refreshToken = extractBearerToken(request.getHeader("refreshToken"));
+        if(refreshToken.isBlank()) {
+            throw new BadRequestException(ErrorCode.EMPTY_REFRESH_TOKEN);
+        }
+        return refreshToken;
     }
 
 }

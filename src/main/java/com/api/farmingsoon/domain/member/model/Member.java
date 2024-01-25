@@ -14,7 +14,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE member SET deleted_at = NOW() WHERE id = ?")
-@SQLRestriction("deleted_at IS NOT NULL")
 public class Member extends BaseTimeEntity {
 
     @Id
