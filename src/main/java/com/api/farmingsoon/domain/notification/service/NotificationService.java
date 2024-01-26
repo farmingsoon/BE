@@ -30,7 +30,7 @@ public class NotificationService {
     }
 
     public List<NotificationResponse> getMyNotifications() {
-        List<Notification> notifications = notificationRepository.findByUserAndReadDateIsNull(authenticationUtils.getAuthenticationMember());
+        List<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember());
         return notifications.stream().map(NotificationResponse::of).toList();
     }
     @Transactional
@@ -41,7 +41,7 @@ public class NotificationService {
 
     @Transactional
     public void readAllNotification() {
-        List<Notification> notifications = notificationRepository.findByUserAndReadDateIsNull(authenticationUtils.getAuthenticationMember());
+        List<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember());
         notifications.forEach(Notification::read);
     }
 

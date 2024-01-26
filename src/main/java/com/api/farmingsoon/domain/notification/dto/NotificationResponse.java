@@ -4,9 +4,10 @@ package com.api.farmingsoon.domain.notification.dto;
 import com.api.farmingsoon.domain.notification.model.Notification;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor
 public class NotificationResponse {
     private Long itemId;
     private String message;
