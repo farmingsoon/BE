@@ -6,8 +6,6 @@ import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -26,14 +24,14 @@ public class NotificationController {
         return notificationService.subscribe();
     }
     @PatchMapping("/{notificationId}")
-    public ResponseEntity<Void> readNotification(@PathVariable("notificationId") Long notificationId) {
+    public Response<Void> readNotification(@PathVariable("notificationId") Long notificationId) {
         notificationService.readNotification(notificationId);
-        return ResponseEntity.ok().build();
+        return Response.success(HttpStatus.OK, "알림을 읽었습니다");
     }
     @PatchMapping
-    public ResponseEntity<Void> readAllNotification() {
+    public Response<Void> readAllNotification() {
         notificationService.readAllNotification();
-        return ResponseEntity.ok().build();
+        return Response.success(HttpStatus.OK, "모든 알림을 읽음 처리했습니다");
     }
 
     @GetMapping("/me")
