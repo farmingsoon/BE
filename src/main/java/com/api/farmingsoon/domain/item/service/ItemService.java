@@ -81,5 +81,7 @@ public class ItemService {
 
         itemRepository.deleteById(itemId);
     }
-
+    public Item getItemById(Long itemId){
+        return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
+    }
 }
