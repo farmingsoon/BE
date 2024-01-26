@@ -23,12 +23,12 @@ public class NotificationEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void itemSoldOutNotification(ItemSoldOutEvent event)
     {
-        notificationService.createAndSendNewBidNotification(event.getItem());
+        notificationService.createAndSendSoldOutNotification(event.getItem());
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void bidEndNotification(BidEndEvent event)
     {
-        notificationService.createAndSendNewBidNotification(event.getItem());
+        notificationService.createAndSendBidEndNotification(event.getItem());
     }
 }
