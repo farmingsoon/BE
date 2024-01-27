@@ -2,7 +2,9 @@ package com.api.farmingsoon.domain.chatroom.service;
 
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
+import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomCreateRequest;
+import com.api.farmingsoon.domain.chatroom.dto.ChatRoomResponse;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.chatroom.repository.ChatRoomRepository;
 import com.api.farmingsoon.domain.item.domain.Item;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +26,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final ItemService itemService;
     private final MemberService memberService;
+    private final AuthenticationUtils authenticationUtils;
 
     public ChatRoom getChatRoom(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
@@ -52,4 +56,17 @@ public class ChatRoomService {
         return chatRoomRepository.save(ChatRoom.of(seller, buyer, item));
     }
 
+    /**
+     * @Description
+     * 내가 판매자 또는 구매자로 참가하고 있는 채팅방 목록 조회
+     */
+    public List<ChatRoomResponse> getChatRooms() {
+        Member fromMember = memberService.getMemberByEmail(authenticationUtils.getAuthenticationMember().getEmail());
+        List<ChatRoom> myChatRooms = chatRoomRepository.findChatRoomByBuyerOrSeller(fromMember, fromMember);
+        return myChatRooms.stream().map
+                (
+                    chatRoom -> ChatRoomResponse.of(chatRoom, fromMember.getEmail(), chatRoom.getItem().getTitle())
+                )
+                .toList();
+    }
 }
