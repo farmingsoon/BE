@@ -45,7 +45,8 @@ public class Item extends BaseTimeEntity {
     private ItemStatus itemStatus;
 
     @Builder
-    private Item(String title, String description, Long hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, boolean deleted, ItemStatus itemStatus) {
+    private Item(Member member, String title, String description, Long hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, boolean deleted, ItemStatus itemStatus) {
+        this.member = member;
         this.title = title;
         this.description = description;
         this.hopePrice = hopePrice;
