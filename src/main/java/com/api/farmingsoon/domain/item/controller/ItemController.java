@@ -37,10 +37,8 @@ public class ItemController {
         return Response.success(HttpStatus.OK, String.format("%d번 상품 정보입니다.",itemId), itemResponse);
     }
 
-    // TODO: 동민 작업 예정..
     @GetMapping
     public Response<ItemWithPageResponse> getItemList(
-            // query parameter에 정렬 조건이 없는 경우 생성일 기준 내림차순 정렬
             @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "keyword", required = false) String keyword) {
