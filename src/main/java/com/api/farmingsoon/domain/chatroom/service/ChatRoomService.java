@@ -3,7 +3,10 @@ package com.api.farmingsoon.domain.chatroom.service;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
+import com.api.farmingsoon.domain.chat.dto.ChatResponse;
+import com.api.farmingsoon.domain.chat.service.ChatService;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomCreateRequest;
+import com.api.farmingsoon.domain.chatroom.dto.ChatRoomDetailResponse;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomResponse;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.chatroom.repository.ChatRoomRepository;
@@ -27,11 +30,44 @@ public class ChatRoomService {
     private final ItemService itemService;
     private final MemberService memberService;
     private final AuthenticationUtils authenticationUtils;
+    private final ChatService chatService;
 
+
+    public ChatRoom createChatRoom(Member seller, Member buyer, Item item) {
+        return chatRoomRepository.save(ChatRoom.of(seller, buyer, item));
+    }
     public ChatRoom getChatRoom(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM));
     }
+
+    /**
+     * @Description
+     * 내가 판매자 또는 구매자로 참가하고 있는 채팅방 목록 조회
+     */
+    public List<ChatRoomResponse> getChatRooms() {
+        Member fromMember = memberService.getMemberByEmail(authenticationUtils.getAuthenticationMember().getEmail());
+        List<ChatRoom> myChatRooms = chatRoomRepository.findChatRoomByBuyerOrSeller(fromMember, fromMember);
+        return myChatRooms.stream().map
+                (
+                    chatRoom -> ChatRoomResponse.of(chatRoom, fromMember.getEmail(), chatRoom.getItem().getTitle())
+                )
+                .toList();
+    }
+
+    /**
+     * @Description
+     * 채팅방에서 사용할 상단의 상품 정보와 상대방 정보
+     * 채팅목록을 따로 뺴야할 지 고민해 봐야 함
+     */
+    public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId, String username) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM));
+        List<ChatResponse> chats = chatService.getChats(chatRoomId);
+
+        return ChatRoomDetailResponse.of(chatRoom, username, chats);
+    }
+
 
     /**
      * @Description
@@ -51,22 +87,5 @@ public class ChatRoomService {
         return optionalChatRoom.orElseGet(()
                 -> createChatRoom(seller, buyer, item)).getId();
 
-    }
-    public ChatRoom createChatRoom(Member seller, Member buyer, Item item) {
-        return chatRoomRepository.save(ChatRoom.of(seller, buyer, item));
-    }
-
-    /**
-     * @Description
-     * 내가 판매자 또는 구매자로 참가하고 있는 채팅방 목록 조회
-     */
-    public List<ChatRoomResponse> getChatRooms() {
-        Member fromMember = memberService.getMemberByEmail(authenticationUtils.getAuthenticationMember().getEmail());
-        List<ChatRoom> myChatRooms = chatRoomRepository.findChatRoomByBuyerOrSeller(fromMember, fromMember);
-        return myChatRooms.stream().map
-                (
-                    chatRoom -> ChatRoomResponse.of(chatRoom, fromMember.getEmail(), chatRoom.getItem().getTitle())
-                )
-                .toList();
     }
 }
