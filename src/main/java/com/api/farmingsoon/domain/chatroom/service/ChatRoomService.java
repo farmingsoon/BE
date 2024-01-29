@@ -60,12 +60,13 @@ public class ChatRoomService {
      * 채팅방에서 사용할 상단의 상품 정보와 상대방 정보
      * 채팅목록을 따로 뺴야할 지 고민해 봐야 함
      */
-    public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId, String username) {
+    public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId) {
+        String fromUsername = authenticationUtils.getAuthenticationMember().getEmail();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM));
         List<ChatResponse> chats = chatService.getChats(chatRoomId);
 
-        return ChatRoomDetailResponse.of(chatRoom, username, chats);
+        return ChatRoomDetailResponse.of(chatRoom, fromUsername, chats);
     }
 
 

@@ -3,6 +3,7 @@ package com.api.farmingsoon.domain.chatroom.controller;
 import com.api.farmingsoon.common.annotation.LoginChecking;
 import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomCreateRequest;
+import com.api.farmingsoon.domain.chatroom.dto.ChatRoomDetailResponse;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomResponse;
 import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,11 @@ public class ChatRoomController {
     public Response<List<ChatRoomResponse>> getChatRoomList() {
         return Response.success(HttpStatus.OK,"나의 채팅방 목록", chatRoomService.getChatRooms());
     }
+    @GetMapping("{chatRoomId}")
+    public ChatRoomDetailResponse getChatRoomDetail(@PathVariable(name = "chatRoomId") Long chatRoomId){
+        return chatRoomService.getChatRoomDetail(chatRoomId);
+    }
+
 
     @LoginChecking
     @PostMapping
