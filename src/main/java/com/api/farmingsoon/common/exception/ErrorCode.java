@@ -35,9 +35,11 @@ public enum ErrorCode {
     NOT_FOUND_BID("입찰이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_NOTIFICATION("알림이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_PROVIDER("지원하지 않는 소셜 로그인 플랫폼 입니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_LIKED("해당 상품의 좋아요를 누르지 않았습니다", HttpStatus.NOT_FOUND),
 
     // 409
     ALREADY_JOINED("이미 존재하는 회원입니다.", HttpStatus.CONFLICT),
+    ALREADY_LIKED("이미 좋아요를 누른 상품입니다.", HttpStatus.CONFLICT),
 
     //500
     FAIL_UPLOAD_S3("AWS S3 업로드 실패!", HttpStatus.INTERNAL_SERVER_ERROR);
