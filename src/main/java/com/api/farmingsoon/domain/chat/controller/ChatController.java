@@ -19,7 +19,7 @@ public class ChatController {
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageRequest chatMessageRequest) {
         ChatResponse chatResponse = chatService.create(chatMessageRequest);
-        messagingTemplate.convertAndSend("/sub/chat-room/" + chatResponse.getRoomId(), chatResponse);
+        messagingTemplate.convertAndSend("/sub/chat-room/" + chatMessageRequest.getChatRoomId(), chatResponse);
     }
 
 

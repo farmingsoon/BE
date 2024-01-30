@@ -32,7 +32,9 @@ public class ChatRoomController {
         return chatRoomService.getChatRoomDetail(chatRoomId);
     }
 
-
+    /**
+     * 채팅방 생성 후 해당 채팅방을 선택하도록 구현
+     */
     @LoginChecking
     @PostMapping
     public Response<Long> createChatRoom(@RequestBody ChatRoomCreateRequest chatRoomCreateRequest){
