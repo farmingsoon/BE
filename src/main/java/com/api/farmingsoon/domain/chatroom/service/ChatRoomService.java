@@ -50,7 +50,7 @@ public class ChatRoomService {
         List<ChatRoom> myChatRooms = chatRoomRepository.findChatRoomByBuyerOrSeller(fromMember, fromMember);
         return myChatRooms.stream().map
                 (
-                    chatRoom -> ChatRoomResponse.of(chatRoom, fromMember.getEmail(), chatRoom.getItem().getTitle())
+                    chatRoom -> ChatRoomResponse.of(chatRoom, fromMember.getEmail())
                 )
                 .toList();
     }
