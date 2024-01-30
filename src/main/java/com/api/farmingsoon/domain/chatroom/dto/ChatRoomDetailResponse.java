@@ -1,8 +1,8 @@
 package com.api.farmingsoon.domain.chatroom.dto;
 
 import com.api.farmingsoon.domain.chat.dto.ChatResponse;
-import com.api.farmingsoon.domain.chat.model.Chat;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
+import com.api.farmingsoon.domain.member.model.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,33 +14,40 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatRoomDetailResponse {
 
-    private Long toUserId;
+    private Long itemId; // 아이템 상세
 
     private String itemTitle;
 
-    // private String itemImage or thumbnailImage;
+    private String itemThumbnailImage;
 
-    private Long price;
+    private Long hopePrice;
 
-    private Long itemId;
+    private String toUsername; // 상대방 식별
+
+    private String toUserProfileImage;
 
     private List<ChatResponse> chatList;
 
     @Builder
-    private ChatRoomDetailResponse(Long toUserId, String itemTitle, Long price, Long itemId, List<ChatResponse> chatList) {
-        this.toUserId = toUserId;
+    private ChatRoomDetailResponse(String toUsername, String itemTitle, Long hopePrice,String toUserProfileImage , String itemThumbnailImage,Long itemId, List<ChatResponse> chatList) {
+        this.toUsername = toUsername;
         this.itemTitle = itemTitle;
-        this.price = price;
+        this.hopePrice = hopePrice;
+        this.itemThumbnailImage = itemThumbnailImage;
+        this.toUserProfileImage = toUserProfileImage;
         this.itemId = itemId;
         this.chatList = chatList;
     }
 
     public static ChatRoomDetailResponse of(ChatRoom chatRoom, String fromUsername, List<ChatResponse> chatList) {
+        Member toUser = ChatRoom.resolveToMember(chatRoom, fromUsername);
         return ChatRoomDetailResponse.builder()
-                .toUserId(ChatRoom.resolveToMember(chatRoom, fromUsername).getId())
+                .toUsername(toUser.getEmail())
                 .itemTitle(chatRoom.getItem().getTitle())
-                .price(chatRoom.getItem().getHopePrice())
+                .hopePrice(chatRoom.getItem().getHopePrice())
                 .itemId(chatRoom.getItem().getId())
+                .itemThumbnailImage(chatRoom.getItem().getThumbnailImageUrl())
+                .toUserProfileImage(toUser.getProfileImg())
                 .chatList(chatList)
                 .build();
     }

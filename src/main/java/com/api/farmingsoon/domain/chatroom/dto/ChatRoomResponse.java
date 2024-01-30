@@ -17,23 +17,20 @@ public class ChatRoomResponse {
 
     private String toUserName;
 
-    private String itemTitle;
 
     @Builder
-    public ChatRoomResponse(Long chatRoomId, Long toUserId, String toUserName, String itemTitle){
+    public ChatRoomResponse(Long chatRoomId, Long toUserId, String toUserName){
         this.chatRoomId = chatRoomId;
         this.toUserId = toUserId;
         this.toUserName = toUserName;
-        this.itemTitle = itemTitle;
     }
 
-    public static ChatRoomResponse of(ChatRoom chatRoom, String fromName, String itemTitle) {
+    public static ChatRoomResponse of(ChatRoom chatRoom, String fromName) {
         Member toMember =  ChatRoom.resolveToMember(chatRoom, fromName);
         return ChatRoomResponse.builder()
                 .chatRoomId(chatRoom.getId())
                 .toUserId(toMember.getId())
                 .toUserName(toMember.getEmail())
-                .itemTitle(itemTitle)
                 .build();
     }
 }

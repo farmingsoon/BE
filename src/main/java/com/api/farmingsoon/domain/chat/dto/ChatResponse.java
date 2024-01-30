@@ -11,15 +11,13 @@ import java.time.LocalDateTime;
 @Getter
 public class ChatResponse {
 
-    private Long roomId;
     private String message;
     private String sender;
     private LocalDateTime createAt;
 
     @Builder
-    private ChatResponse(String sender, Long roomId, String message, LocalDateTime createAt) {
+    private ChatResponse(String sender, String message, LocalDateTime createAt) {
         this.sender = sender;
-        this.roomId = roomId;
         this.message = message;
         this.createAt = createAt;
     }
@@ -27,7 +25,6 @@ public class ChatResponse {
         return ChatResponse
                 .builder()
                 .sender(chat.getSender().getEmail())
-                .roomId(chat.getChatRoom().getId())
                 .message(chat.getMessage())
                 .createAt(chat.getCreatedAt())
                 .build();
