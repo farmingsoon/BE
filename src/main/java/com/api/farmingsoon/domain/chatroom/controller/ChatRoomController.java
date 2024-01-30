@@ -35,8 +35,8 @@ public class ChatRoomController {
 
     @LoginChecking
     @PostMapping
-    public Response<Void> createChatRoom(@RequestBody ChatRoomCreateRequest chatRoomCreateRequest){
-        chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        return Response.success(HttpStatus.OK, "채팅방이 성공적으로 생성되었습니다.");
+    public Response<Long> createChatRoom(@RequestBody ChatRoomCreateRequest chatRoomCreateRequest){
+        Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
+        return Response.success(HttpStatus.OK, "채팅방이 성공적으로 생성되었습니다.", chatRoomId);
     }
 }
