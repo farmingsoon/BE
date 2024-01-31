@@ -2,9 +2,7 @@ package com.api.farmingsoon.domain.item.service;
 
 import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
-import com.api.farmingsoon.common.exception.custom_exception.ForbiddenException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
-import com.api.farmingsoon.common.exception.custom_exception.NotMatchException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.bid.service.BidService;
@@ -15,18 +13,13 @@ import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
 import com.api.farmingsoon.domain.item.dto.ItemResponse;
 import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
-import com.api.farmingsoon.domain.member.model.Member;
-import com.api.farmingsoon.domain.member.repository.MemberRepository;
-import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.security.SecurityUtil;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Security;
 import java.util.List;
 
 @Service
@@ -37,7 +30,7 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final AuthenticationUtils authenticationUtils;
     private final ImageService imageService;
-    private final ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher eventPublisher;
     private final BidService bidService;
 
     /**
@@ -56,7 +49,7 @@ public class ItemService {
 
     @Transactional
     public void saveItemAndImage(Item item, List<String> imageUrls) {
-        publisher.publishEvent(new UploadImagesRollbackEvent(imageUrls));
+        eventPublisher.publishEvent(new UploadImagesRollbackEvent(imageUrls));
 
         item.setMember(authenticationUtils.getAuthenticationMember());
         item.setThumbnailImageUrl(imageUrls.get(0));

@@ -4,7 +4,9 @@ import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.sse.SseService;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
+import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.item.domain.Item;
+import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.model.Notification;
 import com.api.farmingsoon.domain.notification.repository.NotificationRepository;
@@ -45,14 +47,23 @@ public class NotificationService {
         notifications.forEach(Notification::read);
     }
 
+    /**
+     @Description
+     알림저장
+     알림전송(비동기 처리 예정)
+     **/
 
+    // 구매자와 판매자에게 입찰이 등록되었다고 알리기
     @Transactional
     public void createAndSendNewBidNotification(Item item) {
-        /**
-        @Todo 구매자와 판매자에게 입찰이 등록되었다고 알리기
-         알림저장
-         알림전송(비동기 처리 예정)
-         **/
+
+        Member seller = item.getMember();
+        List<Member> list = item.getBidList().stream().map(Bid::getMember).toList();
+        list.add(seller);
+
+        // @Todo 이 부분 비동기 처리하면서 리팩토링 하겠습니다.
+        list.stream().map(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
+        list.stream().forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
     @Transactional
