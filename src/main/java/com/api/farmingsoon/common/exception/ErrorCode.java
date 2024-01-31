@@ -33,6 +33,8 @@ public enum ErrorCode {
     NOT_FOUND_MEMBER("회원이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_ITEM("상품이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_BID("입찰이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_CHATROOM("채팅방이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    NOT_FOUND_CHAT("채팅이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_NOTIFICATION("알림이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_PROVIDER("지원하지 않는 소셜 로그인 플랫폼 입니다.", HttpStatus.NOT_FOUND),
     NOT_FOUND_LIKED("해당 상품의 좋아요를 누르지 않았습니다", HttpStatus.NOT_FOUND),
