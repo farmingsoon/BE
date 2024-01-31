@@ -7,6 +7,7 @@ import com.api.farmingsoon.domain.bid.dto.BidRequest;
 import com.api.farmingsoon.domain.bid.dto.BidWithPageResponse;
 import com.api.farmingsoon.domain.bid.dto.BidsResponse;
 import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.bid.model.BidResult;
 import com.api.farmingsoon.domain.bid.repository.BidRepository;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
@@ -30,7 +31,7 @@ public class BidService {
         Member member = authenticationUtils.getAuthenticationMember();
         Item item = itemRepository.findById(bidRequest.getItemId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
 
-        bidRepository.save(Bid.of(item, member, bidRequest.getPrice()));
+        bidRepository.save(Bid.of(item, member, bidRequest.getPrice(), BidResult.BIDDING));
     }
 
     @Transactional(readOnly = true)
