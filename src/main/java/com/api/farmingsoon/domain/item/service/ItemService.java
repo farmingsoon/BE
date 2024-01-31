@@ -1,14 +1,17 @@
 package com.api.farmingsoon.domain.item.service;
 
+import com.api.farmingsoon.common.event.ItemSoldOutEvent;
 import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.bid.model.BidResult;
 import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.image.service.ImageService;
 import com.api.farmingsoon.domain.item.domain.Item;
+import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
 import com.api.farmingsoon.domain.item.dto.ItemResponse;
 import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
@@ -86,5 +89,28 @@ public class ItemService {
         Page<Bid> myBidList = bidService.getMyBidList(authenticationUtils.getAuthenticationMember(), pageable);
 
         return ItemWithPageResponse.of(myBidList.map(Bid::getItem));
+    }
+
+    @Transactional
+    public void soldOut(Long itemId, Long buyerId) {
+        /**
+         *  @Todo 이 부분 고민좀 해봐야 할 것 같아서 일단 여기까지만 작업하겠습니다.
+         *  낙찰자와 입찰 실패한 사람에게 따로 알림을 보내야함 분기처리 애매
+         */
+
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
+        AuthenticationUtils.checkUpdatePermission(item.getMember());
+
+        List<Bid> bidList = item.getBidList();
+        for(Bid bid : bidList)
+        {
+            if(bid.getMember().getId() == buyerId)
+                bid.updateBidResult(BidResult.BID_SUCCESS);
+            else
+                bid.updateBidResult(BidResult.BID_FAIL);
+        }
+
+        item.updateItemStatus(ItemStatus.SOLDOUT);
+        eventPublisher.publishEvent(new ItemSoldOutEvent(item));
     }
 }

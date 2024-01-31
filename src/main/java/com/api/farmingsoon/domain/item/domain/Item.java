@@ -49,6 +49,10 @@ public class Item extends BaseTimeEntity {
     @OneToMany(mappedBy = "item")
     private List<Bid> bidList;
 
+    public void updateItemStatus(ItemStatus itemStatus) {
+        this.itemStatus = itemStatus;
+    }
+
     @Builder
     private Item(Member member, String title, String description, Long hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, boolean deleted, ItemStatus itemStatus) {
         this.member = member;
@@ -59,4 +63,6 @@ public class Item extends BaseTimeEntity {
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.itemStatus = itemStatus;
     }
+
+
 }

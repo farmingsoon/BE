@@ -59,4 +59,12 @@ public class ItemController {
         itemService.delete(itemId);
         return Response.success(HttpStatus.OK, "상품 삭제 완료!");
     }
+
+    @LoginChecking
+    @PatchMapping("/{itemId}/sold-out")
+    public Response<Void> soldOut(@PathVariable(name = "itemId") Long itemId, @RequestParam(value = "buyerId") Long buyerId){
+        itemService.soldOut(itemId, buyerId);
+        return Response.success(HttpStatus.OK, "상품 판매 완료!");
+    }
+
 }

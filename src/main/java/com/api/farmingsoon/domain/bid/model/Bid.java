@@ -28,6 +28,10 @@ public class Bid extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private BidResult bidResult; // 입찰 결과?
 
+    public void updateBidResult(BidResult bidResult){
+        this.bidResult = bidResult;
+    }
+
     public static Bid of(Item item, Member member, int price, BidResult bidResult) {
         return Bid.builder()
                 .item(item)
@@ -36,4 +40,5 @@ public class Bid extends BaseTimeEntity {
                 .bidResult(bidResult)
                 .build();
     }
+
 }

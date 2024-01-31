@@ -7,8 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum BidResult {
     BIDDING("경매중"),
-    BID_SUCCESS("판매완료"),
-    BID_FAIL("경매종료");
+    BID_SUCCESS("입찰 성공"),
+    BID_FAIL("입찰 실패");
 
     private final String status;
 }
