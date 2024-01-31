@@ -27,10 +27,6 @@ public class BidController {
         return Response.success(HttpStatus.OK, "입찰 등록 성공!");
     }
 
-    @GetMapping
-    public Response<BidWithPageResponse> myBidList(@PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return Response.success(HttpStatus.OK, "내 전체 입찰 내역 조회 성공!", bidService.myBidList(pageable));
-    }
 
 
     @DeleteMapping("{bidId}")

@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -34,13 +36,6 @@ public class BidService {
         bidRepository.save(Bid.of(item, member, bidRequest.getPrice(), BidResult.BIDDING));
     }
 
-    @Transactional(readOnly = true)
-    public BidWithPageResponse myBidList(Pageable pageable) {
-        Member member = authenticationUtils.getAuthenticationMember();
-
-        return BidWithPageResponse.of(bidRepository.findAllByMember(member, pageable));
-    }
-
     public void delete(Long bidId) {
         Member member = authenticationUtils.getAuthenticationMember();
         Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_BID));
@@ -51,5 +46,9 @@ public class BidService {
     public void deleteAll() {
         Member member = authenticationUtils.getAuthenticationMember();
         bidRepository.deleteAllByMember(member);
+    }
+
+    public Page<Bid> getMyBidList(Member member, Pageable pageable){
+        return bidRepository.findAllByMember(member, pageable);
     }
 }

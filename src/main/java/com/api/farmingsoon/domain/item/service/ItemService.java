@@ -6,6 +6,8 @@ import com.api.farmingsoon.common.exception.custom_exception.ForbiddenException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.exception.custom_exception.NotMatchException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
+import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.image.service.ImageService;
 import com.api.farmingsoon.domain.item.domain.Item;
@@ -36,6 +38,7 @@ public class ItemService {
     private final AuthenticationUtils authenticationUtils;
     private final ImageService imageService;
     private final ApplicationEventPublisher publisher;
+    private final BidService bidService;
 
     /**
      * @Description
@@ -83,5 +86,12 @@ public class ItemService {
     }
     public Item getItemById(Long itemId){
         return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
+    }
+
+
+    public ItemWithPageResponse getMyBidItemList(Pageable pageable) {
+        Page<Bid> myBidList = bidService.getMyBidList(authenticationUtils.getAuthenticationMember(), pageable);
+
+        return ItemWithPageResponse.of(myBidList.map(Bid::getItem));
     }
 }
