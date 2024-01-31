@@ -5,13 +5,15 @@ import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
+@Table(name = "likes")
 @Entity
-@Table(name = "\"like\"")
 @Getter
-@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@SQLDelete(sql = "UPDATE likes SET deleted_at = true WHERE id = ?")
+@SQLRestriction("deleted_at IS NULL")
 public class Like extends BaseTimeEntity {
 
     @Id
@@ -23,6 +25,12 @@ public class Like extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Item item;
+
+    @Builder
+    public Like(Member member, Item item) {
+        this.member = member;
+        this.item = item;
+    }
 
     public static Like of(Member member, Item item) {
         return Like.builder()
