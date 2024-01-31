@@ -23,10 +23,10 @@ public class Item extends BaseTimeEntity {
     @Setter
     private Member member;
 
-    @Column(length = 100)
+    @Column(length = 500)
     private String title;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     private String category;
