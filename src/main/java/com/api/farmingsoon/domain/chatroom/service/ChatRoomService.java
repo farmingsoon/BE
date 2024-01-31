@@ -30,7 +30,6 @@ public class ChatRoomService {
     private final ItemService itemService;
     private final MemberService memberService;
     private final AuthenticationUtils authenticationUtils;
-    private final ChatService chatService;
 
 
     public ChatRoom createChatRoom(Member seller, Member buyer, Item item) {
@@ -64,9 +63,8 @@ public class ChatRoomService {
         String fromUsername = authenticationUtils.getAuthenticationMember().getEmail();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM));
-        List<ChatResponse> chats = chatService.getChats(chatRoomId);
 
-        return ChatRoomDetailResponse.of(chatRoom, fromUsername, chats);
+        return ChatRoomDetailResponse.of(chatRoom, fromUsername);
     }
 
 

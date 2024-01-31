@@ -8,9 +8,8 @@ import com.api.farmingsoon.domain.chat.repository.ChatRepository;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
 import com.api.farmingsoon.domain.member.model.Member;
-import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +34,9 @@ public class ChatService {
 
     }
 
-    public List<ChatResponse> getChats(Long chatRoomId) {
+    public List<ChatResponse> getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-        return chatRepository.findByChatRoomOrderByIdDesc(chatRoom)
+        return chatRepository.findByChatRoom(chatRoom, pageable)
                 .stream()
                 .map(ChatResponse::of)
                 .collect(Collectors.toList());

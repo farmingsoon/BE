@@ -101,8 +101,7 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         AuthenticationUtils.checkUpdatePermission(item.getMember());
 
-        List<Bid> bidList = item.getBidList();
-        for(Bid bid : bidList)
+        for(Bid bid : item.getBidList())
         {
             if(bid.getMember().getId() == buyerId)
                 bid.updateBidResult(BidResult.BID_SUCCESS);
