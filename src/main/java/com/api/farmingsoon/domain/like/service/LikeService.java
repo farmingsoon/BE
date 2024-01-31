@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class LikeService {
 
@@ -29,6 +29,7 @@ public class LikeService {
     private final ItemRepository itemRepository;
     private final AuthenticationUtils authenticationUtils;
 
+    @Transactional
     public void like(Long itemId) {
         Member member = authenticationUtils.getAuthenticationMember();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
@@ -41,6 +42,7 @@ public class LikeService {
         likeRepository.save(Like.of(member, item));
     }
 
+    @Transactional
     public void delete(Long itemId) {
         Member member = authenticationUtils.getAuthenticationMember();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
@@ -49,7 +51,6 @@ public class LikeService {
         likeRepository.delete(like);
     }
 
-    @Transactional(readOnly = true)
     public ItemWithPageResponse likedItemList(Pageable pageable) {
         Member member = authenticationUtils.getAuthenticationMember();
 
@@ -61,7 +62,6 @@ public class LikeService {
         return ItemWithPageResponse.of(itemRepository.findAllByIdIn(likedItemIds, pageable));
     }
 
-    @Transactional(readOnly = true)
     public long likeCount(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         return likeRepository.countByItem(item);
