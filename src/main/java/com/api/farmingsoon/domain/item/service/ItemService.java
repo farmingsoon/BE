@@ -1,5 +1,6 @@
 package com.api.farmingsoon.domain.item.service;
 
+import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.notification.event.ItemSoldOutEvent;
 import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
@@ -16,6 +17,7 @@ import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
 import com.api.farmingsoon.domain.item.dto.ItemResponse;
 import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
+import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,6 +38,7 @@ public class ItemService {
     private final ImageService imageService;
     private final ApplicationEventPublisher eventPublisher;
     private final BidService bidService;
+    private final NotificationService notificationService;
 
     /**
      * @Description
@@ -103,15 +107,22 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         AuthenticationUtils.checkUpdatePermission(item.getMember());
 
+        item.updateItemStatus(ItemStatus.SOLDOUT);
+
+        List<Member> bidderList = new ArrayList<>();
+
         for(Bid bid : item.getBidList())
         {
-            if(bid.getMember().getId() == buyerId)
+            if(bid.getMember().getId().equals(buyerId)) {
                 bid.updateBidResult(BidResult.BID_SUCCESS);
-            else
+                bidderList.add(0,bid.getMember());
+            }
+            else {
                 bid.updateBidResult(BidResult.BID_FAIL);
+                bidderList.add(bid.getMember());
+            }
         }
 
-        item.updateItemStatus(ItemStatus.SOLDOUT);
-        eventPublisher.publishEvent(new ItemSoldOutEvent(itemId, buyerId));
+        notificationService.createAndSendSoldOutNotification(bidderList, item);
     }
 }

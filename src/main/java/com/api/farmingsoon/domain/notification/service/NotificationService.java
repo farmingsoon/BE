@@ -54,10 +54,10 @@ public class NotificationService {
      알림저장
      알림전송
      @Todo (비동기 처리 예정)
+     sse로 보내는 알림은 메시지 대신 알림 타입만 보내주면될듯(Chat or Notification)
      **/
 
     // 구매자와 판매자에게 입찰이 등록되었다고 알리기
-    @Transactional
     public void createAndSendNewBidNotification(Long itemId) {
         Item item = itemService.getItemById(itemId);
 
@@ -66,19 +66,19 @@ public class NotificationService {
 
         list.add(seller);
 
-        //
+
         list.stream().map(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
         list.stream().forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
-    @Transactional
-    public void createAndSendSoldOutNotification(Long itemId, Long buyerId) {
-        Item item = itemService.getItemById(itemId);
-        item.getBidList();
+    public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {
 
+        notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다", item.getId()));
+        bidderList.stream().skip(1).map(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));
 
+        bidderList.stream().forEach(receiver -> sseService.sendToClient(receiver.getId(), "알림"));
     }
-    @Transactional
+
     public void createAndSendBidEndNotification(Item item) {
         /**
          @Todo 구매자와 판매자에게 입찰이 등록되었다고 알리기
@@ -87,6 +87,8 @@ public class NotificationService {
          **/
 
     }
+
+
 
 
 }

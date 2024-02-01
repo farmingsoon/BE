@@ -14,7 +14,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class NotificationEventListener {
     private final NotificationService notificationService;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+/*    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void bidRegisterNotification(BidRegisterEvent event)
     {
         notificationService.createAndSendNewBidNotification(event.getItemId());
@@ -30,5 +30,5 @@ public class NotificationEventListener {
     public void bidEndNotification(BidEndEvent event)
     {
         notificationService.createAndSendBidEndNotification(event.getItem());
-    }
+    }*/
 }
