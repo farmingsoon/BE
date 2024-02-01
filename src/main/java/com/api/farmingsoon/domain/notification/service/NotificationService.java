@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +27,6 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SseService sseService;
     private final AuthenticationUtils authenticationUtils;
-    private final ItemService itemService;
 
     public SseEmitter subscribe() {
         //return sseService.subscribe(authenticationUtils.getAuthenticationMember().getId());
@@ -58,17 +58,12 @@ public class NotificationService {
      **/
 
     // 구매자와 판매자에게 입찰이 등록되었다고 알리기
-    public void createAndSendNewBidNotification(Long itemId) {
-        Item item = itemService.getItemById(itemId);
+    public void createAndSendNewBidNotification(Item item) {
+        List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
+        receiverList.add(item.getMember()); // 판매자 추가
 
-        List<Member> list = item.getBidList().stream().map(Bid::getMember).toList();
-        Member seller = item.getMember();
-
-        list.add(seller);
-
-
-        list.stream().map(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
-        list.stream().forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
+        receiverList.forEach(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
+        receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
     public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {

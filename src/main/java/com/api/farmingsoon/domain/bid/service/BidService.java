@@ -11,6 +11,7 @@ import com.api.farmingsoon.domain.bid.repository.BidRepository;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.member.model.Member;
+import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class BidService {
     private final BidRepository bidRepository;
     private final ItemRepository itemRepository;
     private final AuthenticationUtils authenticationUtils;
-    private final ApplicationEventPublisher eventPublisher;
+    private final NotificationService notificationService;
 
     @Transactional
     public void bid(BidRequest bidRequest) {
@@ -34,7 +35,7 @@ public class BidService {
         Item item = itemRepository.findById(bidRequest.getItemId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
 
         bidRepository.save(Bid.of(item, member, bidRequest.getPrice(), BidResult.BIDDING));
-        eventPublisher.publishEvent(new BidRegisterEvent(item)); // 아이템 판매자에게 알림전송
+        notificationService.createAndSendNewBidNotification(item);
     }
 
     @Transactional
