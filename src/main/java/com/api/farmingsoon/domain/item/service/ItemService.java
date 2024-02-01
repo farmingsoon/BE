@@ -125,4 +125,12 @@ public class ItemService {
 
         notificationService.createAndSendSoldOutNotification(bidderList, item);
     }
+
+    @Transactional
+    public void bidEnd(Long itemId)
+    {
+        Item item = getItemById(itemId);
+        item.updateItemStatus(ItemStatus.BID_END);
+        notificationService.createAndSendBidEndNotification(item);
+    }
 }

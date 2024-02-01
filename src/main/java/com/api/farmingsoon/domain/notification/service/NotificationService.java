@@ -66,22 +66,24 @@ public class NotificationService {
         receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
-    public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {
-
-        notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다", item.getId()));
-        bidderList.stream().skip(1).map(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));
-
-        bidderList.stream().forEach(receiver -> sseService.sendToClient(receiver.getId(), "알림"));
-    }
 
     public void createAndSendBidEndNotification(Item item) {
-        /**
-         @Todo 구매자와 판매자에게 입찰이 등록되었다고 알리기
-         알림저장
-         알림전송(비동기 처리 예정)
-         **/
+        List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
+        receiverList.add(item.getMember()); // 판매자 추가
+
+        receiverList.forEach(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
+        receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
+
+    public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {
+        notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다", item.getId()));
+        bidderList.stream().skip(1).forEach(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));
+
+        bidderList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "알림"));
+    }
+
+
 
 
 
