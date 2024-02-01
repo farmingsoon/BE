@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.item.service;
 
-import com.api.farmingsoon.common.event.ItemSoldOutEvent;
+import com.api.farmingsoon.domain.member.model.Member;
+import com.api.farmingsoon.domain.notification.event.ItemSoldOutEvent;
 import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
@@ -16,6 +17,7 @@ import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
 import com.api.farmingsoon.domain.item.dto.ItemResponse;
 import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
+import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,6 +38,7 @@ public class ItemService {
     private final ImageService imageService;
     private final ApplicationEventPublisher eventPublisher;
     private final BidService bidService;
+    private final NotificationService notificationService;
 
     /**
      * @Description
@@ -91,25 +95,42 @@ public class ItemService {
         return ItemWithPageResponse.of(myBidList.map(Bid::getItem));
     }
 
+    /**
+     * @Description
+     * - 아이템 판매 완료 처리
+     * - 각 입찰에 대해 결과 반영
+     * - 알림 저장 및 전송 로직은 별도의 트랜잭션에서 진행
+     */
     @Transactional
     public void soldOut(Long itemId, Long buyerId) {
-        /**
-         *  @Todo 이 부분 고민좀 해봐야 할 것 같아서 일단 여기까지만 작업하겠습니다.
-         *  낙찰자와 입찰 실패한 사람에게 따로 알림을 보내야함 분기처리 애매
-         */
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         AuthenticationUtils.checkUpdatePermission(item.getMember());
 
+        item.updateItemStatus(ItemStatus.SOLDOUT);
+
+        List<Member> bidderList = new ArrayList<>();
+
         for(Bid bid : item.getBidList())
         {
-            if(bid.getMember().getId() == buyerId)
+            if(bid.getMember().getId().equals(buyerId)) {
                 bid.updateBidResult(BidResult.BID_SUCCESS);
-            else
+                bidderList.add(0,bid.getMember());
+            }
+            else {
                 bid.updateBidResult(BidResult.BID_FAIL);
+                bidderList.add(bid.getMember());
+            }
         }
 
-        item.updateItemStatus(ItemStatus.SOLDOUT);
-        eventPublisher.publishEvent(new ItemSoldOutEvent(item));
+        notificationService.createAndSendSoldOutNotification(bidderList, item);
+    }
+
+    @Transactional
+    public void bidEnd(Long itemId)
+    {
+        Item item = getItemById(itemId);
+        item.updateItemStatus(ItemStatus.BID_END);
+        notificationService.createAndSendBidEndNotification(item);
     }
 }

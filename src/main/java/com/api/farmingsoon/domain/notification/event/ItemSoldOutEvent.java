@@ -1,4 +1,4 @@
-package com.api.farmingsoon.common.event;
+package com.api.farmingsoon.domain.notification.event;
 
 import com.api.farmingsoon.domain.item.domain.Item;
 import lombok.AllArgsConstructor;
@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @AllArgsConstructor
-public class BidRegisterEvent {
-    private Item item;
+public class ItemSoldOutEvent {
+    private Long itemId;
+    private Long buyerId;
 }

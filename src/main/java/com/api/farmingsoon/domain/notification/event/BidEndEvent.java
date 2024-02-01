@@ -1,4 +1,4 @@
-package com.api.farmingsoon.common.event;
+package com.api.farmingsoon.domain.notification.event;
 
 import com.api.farmingsoon.domain.item.domain.Item;
 import lombok.Getter;
