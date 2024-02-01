@@ -6,6 +6,7 @@ import com.api.farmingsoon.common.sse.SseService;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.item.domain.Item;
+import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.model.Notification;
@@ -25,6 +26,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SseService sseService;
     private final AuthenticationUtils authenticationUtils;
+    private final ItemService itemService;
 
     public SseEmitter subscribe() {
         //return sseService.subscribe(authenticationUtils.getAuthenticationMember().getId());
@@ -50,29 +52,30 @@ public class NotificationService {
     /**
      @Description
      알림저장
-     알림전송(비동기 처리 예정)
+     알림전송
+     @Todo (비동기 처리 예정)
      **/
 
     // 구매자와 판매자에게 입찰이 등록되었다고 알리기
     @Transactional
-    public void createAndSendNewBidNotification(Item item) {
+    public void createAndSendNewBidNotification(Long itemId) {
+        Item item = itemService.getItemById(itemId);
 
-        Member seller = item.getMember();
         List<Member> list = item.getBidList().stream().map(Bid::getMember).toList();
+        Member seller = item.getMember();
+
         list.add(seller);
 
-        // @Todo 이 부분 비동기 처리하면서 리팩토링 하겠습니다.
+        //
         list.stream().map(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
         list.stream().forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
     @Transactional
-    public void createAndSendSoldOutNotification(Item item) {
-        /**
-         @Todo 구매자에게 입찰이 등록되었다고 알리기
-         알림저장
-         알림전송(비동기 처리 예정)
-         **/
+    public void createAndSendSoldOutNotification(Long itemId, Long buyerId) {
+        Item item = itemService.getItemById(itemId);
+        item.getBidList();
+
 
     }
     @Transactional

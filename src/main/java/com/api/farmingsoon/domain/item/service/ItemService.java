@@ -1,6 +1,6 @@
 package com.api.farmingsoon.domain.item.service;
 
-import com.api.farmingsoon.common.event.ItemSoldOutEvent;
+import com.api.farmingsoon.domain.notification.event.ItemSoldOutEvent;
 import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
@@ -91,12 +91,14 @@ public class ItemService {
         return ItemWithPageResponse.of(myBidList.map(Bid::getItem));
     }
 
+    /**
+     * @Description
+     * - 아이템 판매 완료 처리
+     * - 각 입찰에 대해 결과 반영
+     * - 알림 저장 및 전송 로직은 별도의 트랜잭션에서 진행
+     */
     @Transactional
     public void soldOut(Long itemId, Long buyerId) {
-        /**
-         *  @Todo 이 부분 고민좀 해봐야 할 것 같아서 일단 여기까지만 작업하겠습니다.
-         *  낙찰자와 입찰 실패한 사람에게 따로 알림을 보내야함 분기처리 애매
-         */
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         AuthenticationUtils.checkUpdatePermission(item.getMember());
@@ -110,6 +112,6 @@ public class ItemService {
         }
 
         item.updateItemStatus(ItemStatus.SOLDOUT);
-        eventPublisher.publishEvent(new ItemSoldOutEvent(item));
+        eventPublisher.publishEvent(new ItemSoldOutEvent(itemId, buyerId));
     }
 }

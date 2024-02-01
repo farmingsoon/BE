@@ -1,12 +1,10 @@
 package com.api.farmingsoon.domain.bid.service;
 
-import com.api.farmingsoon.common.event.BidRegisterEvent;
+import com.api.farmingsoon.domain.notification.event.BidRegisterEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
-import com.api.farmingsoon.domain.bid.dto.BidWithPageResponse;
-import com.api.farmingsoon.domain.bid.dto.BidsResponse;
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.bid.model.BidResult;
 import com.api.farmingsoon.domain.bid.repository.BidRepository;
@@ -19,8 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
