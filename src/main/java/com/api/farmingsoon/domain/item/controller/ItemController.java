@@ -46,11 +46,25 @@ public class ItemController {
         ItemWithPageResponse items = itemService.getItemList(category, keyword, pageable);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
+    @GetMapping("/bid/me")
+    public Response<ItemWithPageResponse> getMyBidItemList(
+            @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
+        ItemWithPageResponse items = itemService.getMyBidItemList(pageable);
+        return Response.success(HttpStatus.OK, "내가 입찰에 참가한 아이템 조회 성공!", items);
+    }
     @LoginChecking
     @DeleteMapping("/{itemId}")
     public Response<Void> delete(@PathVariable(name = "itemId") Long itemId) {
         itemService.delete(itemId);
         return Response.success(HttpStatus.OK, "상품 삭제 완료!");
     }
+
+    @LoginChecking
+    @PatchMapping("/{itemId}/sold-out")
+    public Response<Void> soldOut(@PathVariable(name = "itemId") Long itemId, @RequestParam(value = "buyerId") Long buyerId){
+        itemService.soldOut(itemId, buyerId);
+        return Response.success(HttpStatus.OK, "상품 판매 완료!");
+    }
+
 }

@@ -26,20 +26,18 @@ public class ChatRoomDetailResponse {
 
     private String toUserProfileImage;
 
-    private List<ChatResponse> chatList;
 
     @Builder
-    private ChatRoomDetailResponse(String toUsername, String itemTitle, Long hopePrice,String toUserProfileImage , String itemThumbnailImage,Long itemId, List<ChatResponse> chatList) {
+    private ChatRoomDetailResponse(String toUsername, String itemTitle, Long hopePrice,String toUserProfileImage , String itemThumbnailImage,Long itemId) {
         this.toUsername = toUsername;
         this.itemTitle = itemTitle;
         this.hopePrice = hopePrice;
         this.itemThumbnailImage = itemThumbnailImage;
         this.toUserProfileImage = toUserProfileImage;
         this.itemId = itemId;
-        this.chatList = chatList;
     }
 
-    public static ChatRoomDetailResponse of(ChatRoom chatRoom, String fromUsername, List<ChatResponse> chatList) {
+    public static ChatRoomDetailResponse of(ChatRoom chatRoom, String fromUsername) {
         Member toUser = ChatRoom.resolveToMember(chatRoom, fromUsername);
         return ChatRoomDetailResponse.builder()
                 .toUsername(toUser.getEmail())
@@ -48,7 +46,6 @@ public class ChatRoomDetailResponse {
                 .itemId(chatRoom.getItem().getId())
                 .itemThumbnailImage(chatRoom.getItem().getThumbnailImageUrl())
                 .toUserProfileImage(toUser.getProfileImg())
-                .chatList(chatList)
                 .build();
     }
 }

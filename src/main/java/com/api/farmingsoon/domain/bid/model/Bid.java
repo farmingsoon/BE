@@ -25,14 +25,20 @@ public class Bid extends BaseTimeEntity {
 
     private int price; // 입찰 가격
 
-    private boolean result; // 입찰 결과?
+    @Enumerated(EnumType.STRING)
+    private BidResult bidResult; // 입찰 결과?
 
-    public static Bid of(Item item, Member member, int price) {
+    public void updateBidResult(BidResult bidResult){
+        this.bidResult = bidResult;
+    }
+
+    public static Bid of(Item item, Member member, int price, BidResult bidResult) {
         return Bid.builder()
                 .item(item)
                 .member(member)
                 .price(price)
-                .result(false)
+                .bidResult(bidResult)
                 .build();
     }
+
 }

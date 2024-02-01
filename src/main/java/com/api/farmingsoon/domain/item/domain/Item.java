@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.item.domain;
 
 import com.api.farmingsoon.common.auditing.BaseTimeEntity;
+import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -44,6 +46,13 @@ public class Item extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
+    @OneToMany(mappedBy = "item")
+    private List<Bid> bidList;
+
+    public void updateItemStatus(ItemStatus itemStatus) {
+        this.itemStatus = itemStatus;
+    }
+
     @Builder
     private Item(Member member, String title, String description, Long hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, boolean deleted, ItemStatus itemStatus) {
         this.member = member;
@@ -54,4 +63,6 @@ public class Item extends BaseTimeEntity {
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.itemStatus = itemStatus;
     }
+
+
 }

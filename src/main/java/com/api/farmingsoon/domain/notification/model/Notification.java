@@ -34,6 +34,15 @@ public class Notification {
         this.message = message;
     }
 
+    public static Notification of(Member receiver, String message, Long itemId)
+    {
+        return Notification.builder()
+                .receiver(receiver)
+                .message(message)
+                .itemId(itemId)
+                .build();
+    }
+
     public void read() {
         this.readDate = LocalDateTime.now();
     }
