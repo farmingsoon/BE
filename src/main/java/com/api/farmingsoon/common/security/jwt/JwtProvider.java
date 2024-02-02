@@ -55,6 +55,7 @@ public class JwtProvider {
 
         Date now = new Date();
         Claims claims = Jwts.claims().setSubject(username);
+        claims.put("currentTimeMillis", System.currentTimeMillis());
         claims.put("roles", authorities);
 
         String accessToken = createAccessToken(claims, new Date(now.getTime() + accessExpirationTime));
