@@ -1,7 +1,10 @@
 spring:
   datasource:
     url: jdbc:h2:mem:test
-
+  data:
+    redis:
+      host: 172.17.0.1
+      port: 6379
 logging:
   level:
     org:
