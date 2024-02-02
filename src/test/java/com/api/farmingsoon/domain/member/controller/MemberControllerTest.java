@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.member.controller;
 
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
+import com.api.farmingsoon.domain.member.dto.LoginRequest;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
@@ -8,6 +9,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +42,26 @@ class MemberControllerTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private MockMvc mockMvc;
+    private static MockMultipartFile profileImage;
+    @BeforeAll
+    static void beforeAll() throws IOException {
+        profileImage = TestImageUtils.generateMockImageFile("profileImg");
+    }
+    @BeforeEach
+    void beforeEach(){
+        JoinRequest joinRequest = JoinRequest.builder()
+                .email("user1@naver.com")
+                .nickname("user1")
+                .password("12345678")
+                .profileImg(profileImage).build();
+
+        memberService.join(joinRequest);
+    }
 
     @DisplayName("회원가입 성공")
     @Test
-    void createMember() throws Exception {
-        MockMultipartFile profileImage = TestImageUtils.generateMockImageFile("profileImg");
+    void joinSuccess() throws Exception {
+
         //when
         MvcResult mvcResult = mockMvc.perform(multipart("/api/members/join")
                         .file(profileImage)
@@ -62,6 +80,29 @@ class MemberControllerTest {
         Assertions.assertThat(member.getEmail()).isEqualTo("test@naver.com");
         Assertions.assertThat(member.getNickname()).isEqualTo("testNickname");
         Assertions.assertThat(passwordEncoder.matches("TestPassword1234@@", member.getPassword())).isTrue();
+    }
+
+    @DisplayName("로그인 성공")
+    @Test
+    void loginSuccess() throws Exception {
+        // given
+        LoginRequest request = LoginRequest.builder()
+                .email("user1@naver.com")
+                .password("12345678").build();
+
+        //when
+        MvcResult mvcResult = mockMvc.perform(post("/api/members/login")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String accessToken = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get("accessToken").asText();
+        String refreshToken = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
+
+        Assertions.assertThat(accessToken).isNotBlank();
+        Assertions.assertThat(refreshToken).isNotBlank();
     }
 
 }
