@@ -37,4 +37,8 @@ public class ImageService {
 
         return imageUrls;
     }
+
+    public String uploadProfileImage(MultipartFile profileImage) {
+        return s3Service.upload(profileImage, "Member");
+    }
 }

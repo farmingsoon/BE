@@ -1,17 +1,15 @@
 package com.api.farmingsoon.domain.member.service;
 
 import com.api.farmingsoon.common.exception.ErrorCode;
-import com.api.farmingsoon.common.exception.custom_exception.DuplicateException;
-import com.api.farmingsoon.common.exception.custom_exception.InvalidException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.JwtUtils;
+import com.api.farmingsoon.domain.image.service.ImageService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.dto.LoginRequest;
 import com.api.farmingsoon.domain.member.dto.LoginResponse;
 import com.api.farmingsoon.domain.member.model.Member;
-import com.api.farmingsoon.domain.member.model.MemberRole;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,7 +19,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.stream.Collectors;
 
@@ -35,30 +32,22 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final ImageService imageService;
 
-    public void join(JoinRequest joinRequest) {
-        // 중복된 회원이 있는지 확인
-        memberRepository.findByEmail(joinRequest.getEmail()).ifPresent(it -> {
-            throw new DuplicateException(ErrorCode.ALREADY_JOINED);
-        });
-
-        String profileImgUrl = "";
-        /**
-         * @Todo
-         * 이미지 업로드 로직
-         */
-
-        Member member = Member.builder()
-                .nickname(joinRequest.getNickname())
-                .email(joinRequest.getEmail())
-                .profileImg(profileImgUrl)
-                .role(MemberRole.MEMBER)
-                .password(passwordEncoder.encode(joinRequest.getPassword()))
-                .build();
-
-
-        memberRepository.save(member);
+    public Long join(JoinRequest joinRequest) {
+        String profileImageUrl = imageService.uploadProfileImage(joinRequest.getProfileImg());
+        return saveMemberAndProfileImage(joinRequest, profileImageUrl);
     }
+
+    @Transactional
+    private Long saveMemberAndProfileImage(JoinRequest joinRequest, String profileImageUrl) {
+        Member member = joinRequest.toEntity();
+        member.setEncryptedPassword(passwordEncoder.encode(joinRequest.getPassword()));
+        member.setProfileImg(profileImageUrl);
+
+        return memberRepository.save(member).getId(); // @todo 중복된 회원이 있으면 예외처리
+    }
+
     public LoginResponse login(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
@@ -76,11 +65,14 @@ public class MemberService {
     /**
      *  @Description
      *  토큰 재발급
-     *  1. 토큰 검증 및 인증객체 불러오기
-     *  2. 기존 토큰 만료처리 and 새로운 토큰 재등록
-     *  3. return
+     *  1. 로그아웃 여부 체킹
+     *  2. 토큰 검증
+     *  3. 인증객체 불러오기
+     *  4. 기존 토큰 만료처리 and 새로운 토큰 재등록
+     *  5. return
      */
     public JwtToken rotateToken(String prevRefreshToken) {
+        jwtUtils.checkLogout(prevRefreshToken);
         jwtProvider.validateRefreshToken(prevRefreshToken);
         Authentication authentication = jwtProvider.getAuthenticationByRefreshToken(prevRefreshToken);
 
@@ -100,6 +92,10 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member getMemberByEmail(String email) {
         return memberRepository.findByEmail(email).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+    }
+    @Transactional(readOnly = true)
+    public Member getMemberById(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
 }
