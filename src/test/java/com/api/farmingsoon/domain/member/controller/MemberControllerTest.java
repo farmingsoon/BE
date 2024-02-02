@@ -1,5 +1,6 @@
 package com.api.farmingsoon.domain.member.controller;
 
+import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.dto.LoginRequest;
 import com.api.farmingsoon.domain.member.model.Member;
@@ -39,6 +40,9 @@ class MemberControllerTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
     private static MockMultipartFile profileImage;
     @BeforeAll
     static void beforeAll() throws IOException {
@@ -46,6 +50,7 @@ class MemberControllerTest {
     }
     @BeforeEach
     void beforeEach(){
+        databaseCleanup.execute();
         JoinRequest joinRequest = JoinRequest.builder()
                 .email("user1@naver.com")
                 .nickname("user1")
