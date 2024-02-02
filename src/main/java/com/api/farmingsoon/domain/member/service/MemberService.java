@@ -41,7 +41,6 @@ public class MemberService {
 
     @Transactional
     private Long saveMemberAndProfileImage(JoinRequest joinRequest, String profileImageUrl) {
-        String encode = passwordEncoder.encode(joinRequest.getPassword());
         Member member = joinRequest.toEntity();
         member.setEncryptedPassword(passwordEncoder.encode(joinRequest.getPassword()));
         member.setProfileImg(profileImageUrl);
@@ -66,11 +65,14 @@ public class MemberService {
     /**
      *  @Description
      *  토큰 재발급
-     *  1. 토큰 검증 및 인증객체 불러오기
-     *  2. 기존 토큰 만료처리 and 새로운 토큰 재등록
-     *  3. return
+     *  1. 로그아웃 여부 체킹
+     *  2. 토큰 검증
+     *  3. 인증객체 불러오기
+     *  4. 기존 토큰 만료처리 and 새로운 토큰 재등록
+     *  5. return
      */
     public JwtToken rotateToken(String prevRefreshToken) {
+        jwtUtils.checkLogout(prevRefreshToken);
         jwtProvider.validateRefreshToken(prevRefreshToken);
         Authentication authentication = jwtProvider.getAuthenticationByRefreshToken(prevRefreshToken);
 

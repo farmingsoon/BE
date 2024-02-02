@@ -9,10 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -105,7 +102,10 @@ class MemberControllerTest {
         Assertions.assertThat(refreshToken).isNotBlank();
     }
 
-
+    /**
+     * @Description
+     * 토큰 재발급 시 이전 토큰과 다른 토큰임을 확인
+     */
     @DisplayName("토큰 재발급 성공")
     @Test
     void rotateTokenSuccess() throws Exception {
@@ -136,5 +136,42 @@ class MemberControllerTest {
 
         Assertions.assertThat(refreshToken).isNotEqualTo(rotateRefreshToken);
         Assertions.assertThat(accessToken).isNotEqualTo(rotateAccessToken);
+    }
+
+    /**
+     * @Description
+     * 로그아웃 후 재발급 요청 시 이미 로그아웃된 토큰으로 401 예외처리
+     */
+    @DisplayName("로그아웃")
+    @Test
+    void logout() throws Exception {
+        // given
+        LoginRequest request = LoginRequest.builder()
+                .email("user1@naver.com")
+                .password("12345678").build();
+
+        //when
+        MvcResult mvcResult1 = mockMvc.perform(post("/api/members/login")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String refreshToken = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
+
+        MvcResult mvcResult2 = mockMvc.perform(post("/api/members/logout")
+                        .header("refreshToken", "Bearer " + refreshToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+        MvcResult mvcResult3 = mockMvc.perform(get("/api/members/rotate")
+                        .header("refreshToken", "Bearer " + refreshToken))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+
     }
 }

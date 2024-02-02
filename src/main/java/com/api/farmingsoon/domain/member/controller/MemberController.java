@@ -35,7 +35,7 @@ public class MemberController {
         return Response.success(HttpStatus.OK, "토큰이 발급 되었습니다.", loginResponse);
     }
 
-    @LoginChecking
+
     @PostMapping("/logout")
     public Response<Void> logoutMember(HttpServletRequest request) {
         String refreshToken = JwtUtils.getRefreshToken(request);

@@ -2,6 +2,8 @@ package com.api.farmingsoon.common.util;
 
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.BadRequestException;
+import com.api.farmingsoon.common.exception.custom_exception.ForbiddenException;
+import com.api.farmingsoon.common.exception.custom_exception.UnauthorizedException;
 import com.api.farmingsoon.common.redis.RedisService;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,6 +53,11 @@ public class JwtUtils {
             throw new BadRequestException(ErrorCode.EMPTY_REFRESH_TOKEN);
         }
         return refreshToken;
+    }
+
+    public void checkLogout(String refreshToken){
+        if (redisService.getData(refreshToken) == null)
+            throw new UnauthorizedException(ErrorCode.LOGOUTED_TOKEN);
     }
 
 }
