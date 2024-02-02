@@ -55,7 +55,7 @@ jobs:
       - name: gradle 빌드
         run: ./gradlew build --no-daemon -i
         env:
-          REDIS_HOST: localhost
+          REDIS_HOST: redis
           REDIS_PORT: 6379
       - name: build 폴더를 캐시에 저장
         uses: actions/upload-artifact@v3
