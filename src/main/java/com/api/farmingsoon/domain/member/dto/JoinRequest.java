@@ -1,5 +1,7 @@
 package com.api.farmingsoon.domain.member.dto;
 
+import com.api.farmingsoon.domain.member.model.Member;
+import com.api.farmingsoon.domain.member.model.MemberRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -36,5 +38,13 @@ public class JoinRequest {
         this.password = password;
         this.nickname = nickname;
         this.profileImg = profileImg;
+    }
+
+    public Member toEntity(){
+        return Member.builder()
+                .nickname(this.nickname)
+                .email(this.getEmail())
+                .role(MemberRole.MEMBER)
+                .build();
     }
 }

@@ -3,10 +3,7 @@ package com.api.farmingsoon.domain.member.model;
 
 import com.api.farmingsoon.common.auditing.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -32,6 +29,7 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
+    @Setter
     private String profileImg;
 
     @Builder
@@ -48,4 +46,9 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
         this.profileImg = picture;
     }
+
+    public void setEncryptedPassword(String password){
+        this.password = password;
+    }
+
 }

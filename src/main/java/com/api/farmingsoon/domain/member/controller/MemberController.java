@@ -1,9 +1,6 @@
 package com.api.farmingsoon.domain.member.controller;
 
 import com.api.farmingsoon.common.annotation.LoginChecking;
-import com.api.farmingsoon.common.exception.ErrorCode;
-import com.api.farmingsoon.common.exception.custom_exception.BadRequestException;
-import com.api.farmingsoon.common.interceptor.AuthenticationInterceptor;
 import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.JwtUtils;
@@ -14,11 +11,7 @@ import com.api.farmingsoon.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.core.ApplicationContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -31,9 +24,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping(value = "/join")
-    public Response<Void> join(@ModelAttribute @Valid JoinRequest joinRequest) throws IOException {
-        memberService.join(joinRequest);
-        return Response.success(HttpStatus.OK, "회원가입이 성공적으로 처리되었습니다.");
+    public Response<Long> join(@ModelAttribute @Valid JoinRequest joinRequest) throws IOException {
+        Long memberId = memberService.join(joinRequest);
+        return Response.success(HttpStatus.OK, "회원가입이 성공적으로 처리되었습니다.", memberId);
     }
 
     @PostMapping("/login")
