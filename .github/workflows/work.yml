@@ -35,6 +35,13 @@ jobs:
           ACTIONS_STEP_DEBUG: true
           APPLICATION_PROD: ${{ secrets.APPLICATION_PROD_YML }}
         run: echo "$APPLICATION_PROD" > src/main/resources/application-prod.yml
+
+      - name: application-secret.yml 생성
+        env:
+          ACTIONS_STEP_DEBUG: true
+          APPLICATION_PROD: ${{ secrets.APPLICATION_SECRET_YML }}
+        run: echo "$APPLICATION_SECRET" > src/main/resources/application-secret.yml
+
       - name: gradlew 실행 권한 부여
         run: chmod +x gradlew
       - name: gradle 빌드
