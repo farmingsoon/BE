@@ -105,4 +105,36 @@ class MemberControllerTest {
         Assertions.assertThat(refreshToken).isNotBlank();
     }
 
+
+    @DisplayName("토큰 재발급 성공")
+    @Test
+    void rotateTokenSuccess() throws Exception {
+        // given
+        LoginRequest request = LoginRequest.builder()
+                .email("user1@naver.com")
+                .password("12345678").build();
+
+        //when
+        MvcResult mvcResult1 = mockMvc.perform(post("/api/members/login")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String refreshToken = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
+        String accessToken = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").get("accessToken").asText();
+
+        MvcResult mvcResult2 = mockMvc.perform(get("/api/members/rotate")
+                        .header("refreshToken", "Bearer " + refreshToken))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String rotateRefreshToken = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
+        String rotateAccessToken = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result").get("accessToken").asText();
+
+        Assertions.assertThat(refreshToken).isNotEqualTo(rotateRefreshToken);
+        Assertions.assertThat(accessToken).isNotEqualTo(rotateAccessToken);
+    }
 }
