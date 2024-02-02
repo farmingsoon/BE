@@ -77,7 +77,7 @@ public class JwtProvider {
                 .setExpiration(expiredDate) // 만료기간
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-        jwtUtils.setRefreshToken(claims.getSubject(), refreshToken);
+        jwtUtils.setRefreshToken(refreshToken, claims.getSubject());
         return  refreshToken;
     }
 
