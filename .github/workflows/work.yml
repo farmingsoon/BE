@@ -51,6 +51,9 @@ jobs:
 
       - name: gradlew 실행 권한 부여
         run: chmod +x gradlew
+      - name: gradle 테스트
+        run: ./gradlew test --no-daemon --profile -Ptest
+        
       - name: gradle 빌드
         run: ./gradlew build --no-daemon -i
       - name: build 폴더를 캐시에 저장
