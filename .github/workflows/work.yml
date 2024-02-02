@@ -20,8 +20,8 @@ jobs:
           distribution: 'adopt'
 
       - name: 테스트용 redis docker로 띄우기
-        run: |
-            docker run --name redis -d -p 6379:6379 redis:latest
+          docker network create mynetwork
+          docker run --name redis -d -p 6379:6379 --network mynetwork redis:latest
   build:
     name: 이미지 빌드 및 도커허브 푸시
     runs-on: ubuntu-latest
