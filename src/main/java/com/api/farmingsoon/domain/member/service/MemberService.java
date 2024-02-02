@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class MemberService {
 
     private final JwtUtils jwtUtils;
@@ -47,7 +46,7 @@ public class MemberService {
 
         return memberRepository.save(member).getId(); // @todo 중복된 회원이 있으면 예외처리
     }
-
+    @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest loginRequest) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
