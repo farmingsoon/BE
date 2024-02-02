@@ -6,14 +6,13 @@ import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+
 
 @Table(name = "likes")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE likes SET deleted_at = true WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 public class Like extends BaseTimeEntity {
 
     @Id
