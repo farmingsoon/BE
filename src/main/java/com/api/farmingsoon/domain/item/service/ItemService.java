@@ -14,7 +14,7 @@ import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
 import com.api.farmingsoon.domain.item.dto.ItemDetailResponse;
-import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
+import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -68,8 +68,8 @@ public class ItemService {
         return itemId;
     }
 
-    public ItemWithPageResponse getItemList(String category, String keyword, Pageable pageable) {
-        return ItemWithPageResponse.of(itemRepository.findItemList(category, keyword, pageable));
+    public ItemListResponse getItemList(String category, String keyword, Pageable pageable) {
+        return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable));
     }
 
     public ItemDetailResponse getItemDetail(Long itemId) {
@@ -90,10 +90,10 @@ public class ItemService {
     }
 
 
-    public ItemWithPageResponse getMyBidItemList(Pageable pageable) {
+    public ItemListResponse getMyBidItemList(Pageable pageable) {
         Page<Bid> myBidList = bidService.getMyBidList(authenticationUtils.getAuthenticationMember(), pageable);
 
-        return ItemWithPageResponse.of(myBidList.map(Bid::getItem));
+        return ItemListResponse.of(myBidList.map(Bid::getItem));
     }
 
     /**

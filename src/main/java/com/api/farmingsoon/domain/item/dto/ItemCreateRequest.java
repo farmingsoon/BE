@@ -21,7 +21,7 @@ public class ItemCreateRequest {
 
     private String description;
 
-    private Long hopePrice;
+    private Integer hopePrice;
 
     private Integer period;
 
@@ -30,7 +30,7 @@ public class ItemCreateRequest {
     private List<MultipartFile> images;
 
     @Builder
-    private ItemCreateRequest(String title, String description, Long hopePrice, Integer period, MultipartFile thumbnailImage, List<MultipartFile> images) {
+    private ItemCreateRequest(String title, String description, Integer hopePrice, Integer period, MultipartFile thumbnailImage, List<MultipartFile> images) {
         this.title = title;
         this.description = description;
         this.hopePrice = hopePrice;
@@ -46,7 +46,6 @@ public class ItemCreateRequest {
                 .hopePrice(this.hopePrice)
                 .expiredAt(TimeUtils.setExpireAt(period))
                 .itemStatus(ItemStatus.BIDDING)
-                .deleted(false)
                 .build();
     }
 }

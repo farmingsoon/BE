@@ -1,5 +1,6 @@
 package com.api.farmingsoon.domain.chatroom.dto;
 
+import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.chat.dto.ChatResponse;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.member.model.Member;
@@ -20,7 +21,7 @@ public class ChatRoomDetailResponse {
 
     private String itemThumbnailImage;
 
-    private Long hopePrice;
+    private Integer highestPrice;
 
     private String toUsername; // 상대방 식별
 
@@ -28,10 +29,10 @@ public class ChatRoomDetailResponse {
 
 
     @Builder
-    private ChatRoomDetailResponse(String toUsername, String itemTitle, Long hopePrice,String toUserProfileImage , String itemThumbnailImage,Long itemId) {
+    private ChatRoomDetailResponse(String toUsername, String itemTitle, Integer highestPrice,String toUserProfileImage , String itemThumbnailImage,Long itemId) {
         this.toUsername = toUsername;
         this.itemTitle = itemTitle;
-        this.hopePrice = hopePrice;
+        this.highestPrice = highestPrice;
         this.itemThumbnailImage = itemThumbnailImage;
         this.toUserProfileImage = toUserProfileImage;
         this.itemId = itemId;
@@ -42,7 +43,7 @@ public class ChatRoomDetailResponse {
         return ChatRoomDetailResponse.builder()
                 .toUsername(toUser.getEmail())
                 .itemTitle(chatRoom.getItem().getTitle())
-                .hopePrice(chatRoom.getItem().getHopePrice())
+                .highestPrice(chatRoom.getItem().getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))
                 .itemId(chatRoom.getItem().getId())
                 .itemThumbnailImage(chatRoom.getItem().getThumbnailImageUrl())
                 .toUserProfileImage(toUser.getProfileImg())

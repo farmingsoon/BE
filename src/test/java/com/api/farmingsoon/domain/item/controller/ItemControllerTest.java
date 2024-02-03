@@ -12,6 +12,7 @@ import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
@@ -34,7 +41,11 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -83,15 +94,20 @@ class ItemControllerTest {
 
         memberService.join(joinRequest);
 
+        Collection<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_MEMBER"));
+
+        UserDetails principal = new User("user1@naver.com", "", authorities);
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", authorities));
+
         for(int i = 1; i < 10; i++){
             Item item = Item.builder()
                     .title("title" + i)
                     .description("description" + i)
-                    .hopePrice(10000L * i)
+                    .hopePrice(10000 * i)
                     .itemStatus(ItemStatus.BIDDING)
                     .expiredAt(TimeUtils.setExpireAt(i)).build();
 
-            List<String> imageUrl = List.of("/subFile1/" + i, "/subFile2/" + i, "/subFile3/" + i);
+            List<String> imageUrl = new ArrayList<>(Arrays.asList("/subFile1/" + i, "/subFile2/" + i, "/subFile3/" + i));
             imageUrl.add(0, "/thumnailImage/" + i);
 
             itemService.saveItemAndImage(item, imageUrl);
@@ -170,7 +186,8 @@ class ItemControllerTest {
         Assertions.assertThat(result.get("title").asText()).isEqualTo("아이폰 팔아요~");
         Assertions.assertThat(result.get("description").asText()).isEqualTo("합정 근처에서 거래 가능합니다.");
         Assertions.assertThat(result.get("hopePrice").asLong()).isEqualTo(10000L);
-        Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("BIDDING");
+        Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("경매중");
+
 
 
     }
