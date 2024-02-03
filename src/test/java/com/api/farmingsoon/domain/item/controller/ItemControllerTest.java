@@ -2,11 +2,13 @@ package com.api.farmingsoon.domain.item.controller;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.domain.item.domain.Item;
+import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -101,7 +104,7 @@ class ItemControllerTest {
         Assertions.assertThat(item.getTitle()).isEqualTo("아이폰 팔아요~");
         Assertions.assertThat(item.getDescription()).isEqualTo("합정 근처에서 거래 가능합니다.");
         Assertions.assertThat(item.getHopePrice()).isEqualTo(10000);
-
+        Assertions.assertThat(item.getItemStatus()).isEqualTo(ItemStatus.BIDDING);
 
         /**
          *  Todo
@@ -111,5 +114,37 @@ class ItemControllerTest {
 
     }
 
+    @DisplayName("상품 등록 후 상세 조회 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemDetailSuccess() throws Exception {
+        MvcResult mvcResult1 = mockMvc.perform(multipart("/api/items")
+                        .file(thumbnailImage)
+                        .file(images.get(0))
+                        .file(images.get(1))
+                        .file(images.get(2))
+                        .param("title", "아이폰 팔아요~")
+                        .param("description", "합정 근처에서 거래 가능합니다.")
+                        .param("hopePrice", "10000")
+                        .param("period", "3")
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        //then
+        Long itemId = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").asLong();
 
+        MvcResult mvcResult2 = mockMvc.perform(get("/api/items/" + itemId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode result = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result");
+        Assertions.assertThat(result.get("title")).isEqualTo("아이폰 팔아요~");
+        Assertions.assertThat(result.get("description")).isEqualTo("합정 근처에서 거래 가능합니다.");
+        Assertions.assertThat(result.get("hopePrice")).isEqualTo(10000);
+        Assertions.assertThat(result.get("itemStatus")).isEqualTo(ItemStatus.BIDDING);
+
+
+    }
 }
