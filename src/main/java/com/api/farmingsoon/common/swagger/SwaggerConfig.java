@@ -19,11 +19,11 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .components(new Components()
-                        .addSecuritySchemes("accessToken", new SecurityScheme()
-                                .name("accessToken")
-                                .description("accessToken")
+                        .addSecuritySchemes("Authorization", new SecurityScheme()
+                                .name("Authorization")
+                                .description("Authorization")
                                 .in(SecurityScheme.In.HEADER)
                                 .type(SecurityScheme.Type.APIKEY)))
-                .security(Collections.singletonList(new SecurityRequirement().addList("accessToken")));
+                .security(Collections.singletonList(new SecurityRequirement().addList("Authorization")));
     }
 }
