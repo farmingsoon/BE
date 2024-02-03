@@ -152,7 +152,7 @@ class ItemControllerTest {
         Assertions.assertThat(result.get("title").asText()).isEqualTo("아이폰 팔아요~");
         Assertions.assertThat(result.get("description").asText()).isEqualTo("합정 근처에서 거래 가능합니다.");
         Assertions.assertThat(result.get("hopePrice").asLong()).isEqualTo(10000L);
-        Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("경매중");
+        Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("BIDDING");
 
 
     }
