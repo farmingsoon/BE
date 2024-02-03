@@ -26,6 +26,9 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -43,7 +46,8 @@ class ItemControllerTest {
 
     @Autowired
     private MemberService memberService;
-
+    @Autowired
+    private WebApplicationContext ctx;
     @Autowired
     private ItemService itemService;
 
@@ -76,6 +80,11 @@ class ItemControllerTest {
                 .profileImg(thumbnailImage).build();
 
         memberService.join(joinRequest);
+
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
+                .alwaysDo(print())
+                .build();
     }
 
 
@@ -140,10 +149,10 @@ class ItemControllerTest {
                 .andReturn();
 
         JsonNode result = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result");
-        Assertions.assertThat(result.get("title")).isEqualTo("아이폰 팔아요~");
-        Assertions.assertThat(result.get("description")).isEqualTo("합정 근처에서 거래 가능합니다.");
-        Assertions.assertThat(result.get("hopePrice")).isEqualTo(10000);
-        Assertions.assertThat(result.get("itemStatus")).isEqualTo(ItemStatus.BIDDING);
+        Assertions.assertThat(result.get("title").asText()).isEqualTo("아이폰 팔아요~");
+        Assertions.assertThat(result.get("description").asText()).isEqualTo("합정 근처에서 거래 가능합니다.");
+        Assertions.assertThat(result.get("hopePrice").asLong()).isEqualTo(10000L);
+        Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("경매중");
 
 
     }
