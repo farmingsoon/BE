@@ -14,7 +14,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE item SET deleted_at = true WHERE id = ?")
 public class Item extends BaseTimeEntity {
 
     @Id
@@ -34,7 +33,7 @@ public class Item extends BaseTimeEntity {
     private String category;
 
     @Column
-    private Long hopePrice;
+    private Integer hopePrice;
 
     @Column
     private LocalDateTime expiredAt;
@@ -46,19 +45,24 @@ public class Item extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
+
+    // *Todo 양방향 안쓰는 쪽으로 고려해보기
     @OneToMany(mappedBy = "item")
     private List<Bid> bidList;
+
+
 
     public void updateItemStatus(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;
     }
 
     @Builder
-    private Item(Member member, String title, String description, Long hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, boolean deleted, ItemStatus itemStatus) {
+    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus) {
         this.member = member;
         this.title = title;
         this.description = description;
         this.hopePrice = hopePrice;
+        this.category = category;
         this.expiredAt = expiredAt;
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.itemStatus = itemStatus;

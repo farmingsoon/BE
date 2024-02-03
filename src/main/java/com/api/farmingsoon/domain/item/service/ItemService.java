@@ -1,7 +1,6 @@
 package com.api.farmingsoon.domain.item.service;
 
 import com.api.farmingsoon.domain.member.model.Member;
-import com.api.farmingsoon.domain.notification.event.ItemSoldOutEvent;
 import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
@@ -14,8 +13,8 @@ import com.api.farmingsoon.domain.image.service.ImageService;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
-import com.api.farmingsoon.domain.item.dto.ItemResponse;
-import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
+import com.api.farmingsoon.domain.item.dto.ItemDetailResponse;
+import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -49,31 +48,33 @@ public class ItemService {
      *
      * S3서비스를 ImageService에서만 사용하도록 넘김
      */
-    public void createItem(ItemCreateRequest itemCreateRequest) {
+    public Long createItem(ItemCreateRequest itemCreateRequest) {
         List<String> imageUrls = imageService.uploadItemImages(itemCreateRequest.getThumbnailImage(), itemCreateRequest.getImages());
-        saveItemAndImage(itemCreateRequest.toEntity(), imageUrls);
+        return saveItemAndImage(itemCreateRequest.toEntity(), imageUrls);
     }
 
     @Transactional
-    public void saveItemAndImage(Item item, List<String> imageUrls) {
+    public Long saveItemAndImage(Item item, List<String> imageUrls) {
         eventPublisher.publishEvent(new UploadImagesRollbackEvent(imageUrls));
 
         item.setMember(authenticationUtils.getAuthenticationMember());
         item.setThumbnailImageUrl(imageUrls.get(0));
-        itemRepository.save(item);
+        Long itemId = itemRepository.save(item).getId();
+
         imageUrls.stream().skip(1).forEach
                 (
                     imageUrl -> imageService.createImage(Image.of(imageUrl, item))
                 );
+        return itemId;
     }
 
-    public ItemWithPageResponse getItemList(String category, String keyword, Pageable pageable) {
-        return ItemWithPageResponse.of(itemRepository.findItemList(category, keyword, pageable));
+    public ItemListResponse getItemList(String category, String keyword, Pageable pageable) {
+        return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable));
     }
 
-    public ItemResponse getItemDetail(Long itemId) {
+    public ItemDetailResponse getItemDetail(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
-        return ItemResponse.fromEntity(item);
+        return ItemDetailResponse.fromEntity(item);
     }
 
     @Transactional
@@ -89,10 +90,10 @@ public class ItemService {
     }
 
 
-    public ItemWithPageResponse getMyBidItemList(Pageable pageable) {
+    public ItemListResponse getMyBidItemList(Pageable pageable) {
         Page<Bid> myBidList = bidService.getMyBidList(authenticationUtils.getAuthenticationMember(), pageable);
 
-        return ItemWithPageResponse.of(myBidList.map(Bid::getItem));
+        return ItemListResponse.of(myBidList.map(Bid::getItem));
     }
 
     /**
