@@ -156,4 +156,38 @@ class ItemControllerTest {
 
 
     }
+
+    @DisplayName("상품 등록 후 목록 조회 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemsSuccess() throws Exception {
+        MvcResult mvcResult1 = mockMvc.perform(multipart("/api/items")
+                        .file(thumbnailImage)
+                        .file(images.get(0))
+                        .file(images.get(1))
+                        .file(images.get(2))
+                        .param("title", "아이폰 팔아요~")
+                        .param("description", "합정 근처에서 거래 가능합니다.")
+                        .param("hopePrice", "10000")
+                        .param("period", "3")
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        //then
+        Long itemId = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").asLong();
+
+        MvcResult mvcResult2 = mockMvc.perform(get("/api/items/" + itemId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode result = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result");
+        Assertions.assertThat(result.get("title").asText()).isEqualTo("아이폰 팔아요~");
+        Assertions.assertThat(result.get("description").asText()).isEqualTo("합정 근처에서 거래 가능합니다.");
+        Assertions.assertThat(result.get("hopePrice").asLong()).isEqualTo(10000L);
+        Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("BIDDING");
+
+
+    }
 }
