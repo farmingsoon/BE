@@ -27,9 +27,9 @@ public class ItemController {
 
     @LoginChecking
     @PostMapping
-    public Response<Void> createItem(@ModelAttribute @Valid ItemCreateRequest itemCreateRequest) {
-        itemService.createItem(itemCreateRequest);
-        return Response.success(HttpStatus.OK, "상품 등록이 완료되었습니다.");
+    public Response<Long> createItem(@ModelAttribute @Valid ItemCreateRequest itemCreateRequest) {
+        Long itemId = itemService.createItem(itemCreateRequest);
+        return Response.success(HttpStatus.OK, "상품 등록이 완료되었습니다.", itemId);
     }
     @GetMapping("/{itemId}")
     public Response<ItemResponse> getItemDetail(@Valid @PathVariable(value = "itemId") Long itemId) {
