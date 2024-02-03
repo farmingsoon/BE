@@ -5,14 +5,13 @@ import com.api.farmingsoon.common.exception.custom_exception.DuplicateException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.item.domain.Item;
-import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
+import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.like.model.Like;
 import com.api.farmingsoon.domain.like.repository.LikeRepository;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +50,7 @@ public class LikeService {
         likeRepository.delete(like);
     }
 
-    public ItemWithPageResponse likedItemList(Pageable pageable) {
+    public ItemListResponse likedItemList(Pageable pageable) {
         Member member = authenticationUtils.getAuthenticationMember();
 
         List<Long> likedItemIds = likeRepository.findAllByMember(member)
@@ -59,7 +58,7 @@ public class LikeService {
                 .map(like -> like.getItem().getId())
                 .toList();
 
-        return ItemWithPageResponse.of(itemRepository.findAllByIdIn(likedItemIds, pageable));
+        return ItemListResponse.of(itemRepository.findAllByIdIn(likedItemIds, pageable));
     }
 
     public long likeCount(Long itemId) {

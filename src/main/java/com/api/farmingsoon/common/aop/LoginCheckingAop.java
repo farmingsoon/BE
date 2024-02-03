@@ -7,7 +7,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +19,11 @@ public class LoginCheckingAop {
     private void enableLoginChecking(){}
 
     @Around("enableLoginChecking()")
-    public void around(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
          if(SecurityContextHolder.getContext().getAuthentication().getPrincipal().equals("anonymousUser")) {
             throw new ForbiddenException(ErrorCode.NOT_LOGIN);
         }
-        joinPoint.proceed();
+        return joinPoint.proceed();
+
     }
 }

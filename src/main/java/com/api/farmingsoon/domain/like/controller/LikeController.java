@@ -1,8 +1,7 @@
 package com.api.farmingsoon.domain.like.controller;
 
 import com.api.farmingsoon.common.response.Response;
-import com.api.farmingsoon.domain.item.domain.Item;
-import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
+import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.like.service.LikeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -35,7 +32,7 @@ public class LikeController {
     }
 
     @GetMapping("/me")
-    public Response<ItemWithPageResponse> likedItemList(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public Response<ItemListResponse> likedItemList(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return Response.success(HttpStatus.OK, "좋아요를 누른 상품의 목록 조회 성공", likeService.likedItemList(pageable));
     }
 
