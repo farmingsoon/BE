@@ -13,7 +13,7 @@ import com.api.farmingsoon.domain.image.service.ImageService;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
-import com.api.farmingsoon.domain.item.dto.ItemResponse;
+import com.api.farmingsoon.domain.item.dto.ItemDetailResponse;
 import com.api.farmingsoon.domain.item.dto.ItemWithPageResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
@@ -72,9 +72,9 @@ public class ItemService {
         return ItemWithPageResponse.of(itemRepository.findItemList(category, keyword, pageable));
     }
 
-    public ItemResponse getItemDetail(Long itemId) {
+    public ItemDetailResponse getItemDetail(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
-        return ItemResponse.fromEntity(item);
+        return ItemDetailResponse.fromEntity(item);
     }
 
     @Transactional

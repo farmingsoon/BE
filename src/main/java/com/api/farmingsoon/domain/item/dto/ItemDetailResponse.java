@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class ItemResponse {
+public class ItemDetailResponse {
 
     private String title;
     private String description;
@@ -17,8 +17,8 @@ public class ItemResponse {
     private LocalDateTime expiredAt;
     private ItemStatus itemStatus;
 
-    public static ItemResponse fromEntity(Item item) {
-        return ItemResponse.builder()
+    public static ItemDetailResponse fromEntity(Item item) {
+        return ItemDetailResponse.builder()
                 .title(item.getTitle())
                 .description(item.getDescription())
                 .hopePrice(item.getHopePrice())

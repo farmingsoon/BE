@@ -1,8 +1,10 @@
 package com.api.farmingsoon.domain.item.controller;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
+import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
+import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.model.Member;
@@ -81,6 +83,20 @@ class ItemControllerTest {
 
         memberService.join(joinRequest);
 
+        for(int i = 1; i < 10; i++){
+            Item item = Item.builder()
+                    .title("title" + i)
+                    .description("description" + i)
+                    .hopePrice(10000L * i)
+                    .itemStatus(ItemStatus.BIDDING)
+                    .expiredAt(TimeUtils.setExpireAt(i)).build();
+
+            List<String> imageUrl = List.of("/subFile1/" + i, "/subFile2/" + i, "/subFile3/" + i);
+            imageUrl.add(0, "/thumnailImage/" + i);
+
+            itemService.saveItemAndImage(item, imageUrl);
+        }
+
         this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
                 .alwaysDo(print())
@@ -93,6 +109,7 @@ class ItemControllerTest {
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void itemCreateSuccess() throws Exception {
+        // when
         MvcResult mvcResult = mockMvc.perform(multipart("/api/items")
                         .file(thumbnailImage)
                         .file(images.get(0))
@@ -127,6 +144,7 @@ class ItemControllerTest {
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void getItemDetailSuccess() throws Exception {
+        // when
         MvcResult mvcResult1 = mockMvc.perform(multipart("/api/items")
                         .file(thumbnailImage)
                         .file(images.get(0))
@@ -140,7 +158,7 @@ class ItemControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
-        //then
+        // then
         Long itemId = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").asLong();
 
         MvcResult mvcResult2 = mockMvc.perform(get("/api/items/" + itemId))
@@ -157,37 +175,19 @@ class ItemControllerTest {
 
     }
 
-    @DisplayName("상품 등록 후 목록 조회 성공")
+    @DisplayName("상품 목록 조회(Default) 성공")
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void getItemsSuccess() throws Exception {
-        MvcResult mvcResult1 = mockMvc.perform(multipart("/api/items")
-                        .file(thumbnailImage)
-                        .file(images.get(0))
-                        .file(images.get(1))
-                        .file(images.get(2))
-                        .param("title", "아이폰 팔아요~")
-                        .param("description", "합정 근처에서 거래 가능합니다.")
-                        .param("hopePrice", "10000")
-                        .param("period", "3")
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
-        //then
-        Long itemId = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").asLong();
-
-        MvcResult mvcResult2 = mockMvc.perform(get("/api/items/" + itemId))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-
-        JsonNode result = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result");
-        Assertions.assertThat(result.get("title").asText()).isEqualTo("아이폰 팔아요~");
-        Assertions.assertThat(result.get("description").asText()).isEqualTo("합정 근처에서 거래 가능합니다.");
-        Assertions.assertThat(result.get("hopePrice").asLong()).isEqualTo(10000L);
-        Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("BIDDING");
 
 
     }
+
+
 }
