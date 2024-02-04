@@ -227,7 +227,7 @@ class ItemControllerTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sort", "highest,desc"))
+                        .param("sort", "highest"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -250,7 +250,7 @@ class ItemControllerTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sort", "highest,asc"))
+                        .param("sortcode", "lowest"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -273,7 +273,7 @@ class ItemControllerTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sort", "hot,desc"))
+                        .param("sortcode", "hot"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
