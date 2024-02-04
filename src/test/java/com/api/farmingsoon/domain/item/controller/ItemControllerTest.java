@@ -4,15 +4,13 @@ import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
-import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
+import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
-import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +28,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.TestExecutionEvent;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,14 +35,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -99,7 +94,7 @@ class ItemControllerTest {
         UserDetails principal = new User("user1@naver.com", "", authorities);
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", authorities));
 
-        for(int i = 1; i < 10; i++){
+        for(int i = 1; i <= 20; i++){
             Item item = Item.builder()
                     .title("title" + i)
                     .description("description" + i)
@@ -203,7 +198,15 @@ class ItemControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
 
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title1");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title12");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,12);
     }
 
 
