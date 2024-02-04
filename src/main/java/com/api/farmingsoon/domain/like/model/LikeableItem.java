@@ -8,7 +8,6 @@ import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 
 
-@Table(name = "likes")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
