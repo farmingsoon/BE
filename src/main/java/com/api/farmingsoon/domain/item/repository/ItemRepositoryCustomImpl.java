@@ -63,11 +63,13 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         for (Sort.Order order : pageable.getSort()) {
             Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
             log.debug("정렬기준: {}", direction);
-
             log.debug("정렬조건: {}", order.getProperty());
+
             switch (order.getProperty()) {
-                case "createdAt" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.createdAt));
-                case "expiredAt" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.expiredAt));
+                case "recent" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.createdAt));
+                case "hot" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.viewCount));
+                case "highest", "lowest" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.bidList.any().price.max()));
+                //case "expiredAt" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.expiredAt));
             }
         }
 
