@@ -212,8 +212,8 @@ class ItemControllerTest {
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
         ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
 
-        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title1");
-        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title12");
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
 
         Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
@@ -304,8 +304,8 @@ class ItemControllerTest {
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
         ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
 
-        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title5");
-        Assertions.assertThat(itemListResponse.getItems().get(1).getTitle()).isEqualTo("title15");
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title15");
+        Assertions.assertThat(itemListResponse.getItems().get(1).getTitle()).isEqualTo("title5");
 
         Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
