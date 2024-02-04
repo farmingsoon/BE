@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.api.farmingsoon.domain.bid.model.QBid.bid;
 import static com.api.farmingsoon.domain.item.domain.QItem.item;
 import static com.api.farmingsoon.domain.member.model.QMember.member;
 
@@ -28,9 +29,10 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     public Page<Item> findItemList(String category, String keyword, Pageable pageable) {
         List<Item> content = queryFactory
                 .selectFrom(item)
-                .innerJoin(item.member, member)
-                .fetchJoin()
+                .innerJoin(item.member, member).fetchJoin()
+                .innerJoin(item.bidList, bid).fetchJoin()
                 .where(eqCategory(category), containsKeyword(keyword))
+                .groupBy(item.id)
                 .orderBy(getAllOrderSpecifiers(pageable))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

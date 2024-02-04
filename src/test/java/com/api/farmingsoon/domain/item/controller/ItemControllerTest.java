@@ -2,6 +2,10 @@ package com.api.farmingsoon.domain.item.controller;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
+import com.api.farmingsoon.domain.bid.dto.BidRequest;
+import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.bid.model.BidResult;
+import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.ItemListResponse;
@@ -60,6 +64,9 @@ class ItemControllerTest {
     private ItemService itemService;
 
     @Autowired
+    private BidService bidService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -69,6 +76,7 @@ class ItemControllerTest {
     private DatabaseCleanup databaseCleanup;
     private static MockMultipartFile thumbnailImage;
     private static List<MockMultipartFile> images;
+
     @BeforeAll
     static void beforeAll() throws IOException {
         thumbnailImage = TestImageUtils.generateMockImageFile("thumbnailImage");
@@ -100,12 +108,15 @@ class ItemControllerTest {
                     .description("description" + i)
                     .hopePrice(10000 * i)
                     .itemStatus(ItemStatus.BIDDING)
+                    .viewCount((long) i)
                     .expiredAt(TimeUtils.setExpireAt(i)).build();
 
             List<String> imageUrl = new ArrayList<>(Arrays.asList("/subFile1/" + i, "/subFile2/" + i, "/subFile3/" + i));
             imageUrl.add(0, "/thumnailImage/" + i);
 
             itemService.saveItemAndImage(item, imageUrl);
+
+            bidService.bid(BidRequest.builder().itemId(item.getId()).price(10000 * i).build());
         }
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
@@ -209,5 +220,95 @@ class ItemControllerTest {
                 .contains(20L,12);
     }
 
+    @DisplayName("상품 목록 조회 최고가 순 정렬 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemsOrderByHighestPrice() throws Exception {
 
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items")
+                        .param("sort", "highest,desc"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,12);
+    }
+
+    @DisplayName("상품 목록 조회 최저가 순 정렬 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemsOrderByLowestPrice() throws Exception {
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items")
+                        .param("sort", "highest,asc"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title1");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title12");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,12);
+    }
+
+    @DisplayName("상품 목록 조회 인기순 정렬 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemsOrderByViewCount() throws Exception {
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items")
+                        .param("sort", "hot,desc"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,12);
+    }
+
+    @DisplayName("검색어로 상품 목록 조회")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemsByKeyword() throws Exception {
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items")
+                        .param("keyword","5"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title5");
+        Assertions.assertThat(itemListResponse.getItems().get(1).getTitle()).isEqualTo("title15");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,2);
+    }
 }
