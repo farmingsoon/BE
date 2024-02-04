@@ -12,8 +12,7 @@ import org.hibernate.annotations.SQLDelete;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE likes SET deleted_at = true WHERE id = ?")
-public class Like extends BaseTimeEntity {
+public class LikeableItem extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,13 +25,13 @@ public class Like extends BaseTimeEntity {
     private Item item;
 
     @Builder
-    public Like(Member member, Item item) {
+    public LikeableItem(Member member, Item item) {
         this.member = member;
         this.item = item;
     }
 
-    public static Like of(Member member, Item item) {
-        return Like.builder()
+    public static LikeableItem of(Member member, Item item) {
+        return LikeableItem.builder()
                 .member(member)
                 .item(item)
                 .build();
