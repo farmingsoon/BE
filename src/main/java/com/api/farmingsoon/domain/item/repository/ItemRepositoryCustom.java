@@ -6,6 +6,6 @@ import org.springframework.data.domain.Pageable;
 
 public interface ItemRepositoryCustom {
 
-    Page<Item> findItemList(String category, String title, Pageable pageable);
+    Page<Item> findItemList(String category, String title, Pageable pageable, String sortcode);
 
 }

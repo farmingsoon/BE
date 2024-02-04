@@ -26,7 +26,7 @@ public class ItemListResponse {
 
     @Getter
     @Builder
-    private static class ItemResponse {
+    public static class ItemResponse {
 
         private Long itemId; // 상품 접근
         private String title;
@@ -36,8 +36,8 @@ public class ItemListResponse {
         private Integer hopePrice;
         private Integer lowestPrice;
         private String itemStatus;
-        private Integer bidSize;
-        // @Todo 좋아요 수 추가
+        private Integer bidCount;
+        private Integer likeCount;
 
         private static ItemResponse of(Item item) {
             return ItemResponse.builder()
@@ -49,17 +49,18 @@ public class ItemListResponse {
                     .lowestPrice(item.getBidList().stream().map(Bid::getPrice).min(Integer::compareTo).orElse(null))
                     .expiredAt(item.getExpiredAt())
                     .itemStatus(item.getItemStatus().getStatus())
-                    .bidSize(item.getBidList().size())
+                    .bidCount(item.getBidList().size())
+                    .likeCount(item.getLikeableItemList().size())
                     .build();
         }
     }
 
     @Getter
     @Builder
-    private static class Pagination {
+    public static class Pagination {
 
-        private int totalPages; // 전체 페이지수
-        private long totalElements; // 전체 개수
+        private int totalPageSize; // 전체 페이지수
+        private long totalElementSize; // 전체 개수
         private int page; // 현재 페이지(1부터 시작)
         private boolean hasNext; // 다음 페이지 존재 여부
         private boolean hasPrevious; // 이전 페이지 존재 여부
@@ -68,8 +69,8 @@ public class ItemListResponse {
 
         private static Pagination of(Page<ItemResponse> itemDtoPage) {
             return builder()
-                    .totalPages(itemDtoPage.getTotalPages())
-                    .totalElements(itemDtoPage.getTotalElements())
+                    .totalPageSize(itemDtoPage.getTotalPages())
+                    .totalElementSize(itemDtoPage.getTotalElements())
                     .page(itemDtoPage.getNumber() + 1)
                     .hasNext(itemDtoPage.hasNext())
                     .hasPrevious(itemDtoPage.hasPrevious())
