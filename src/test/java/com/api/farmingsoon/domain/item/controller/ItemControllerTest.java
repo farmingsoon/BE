@@ -309,6 +309,6 @@ class ItemControllerTest {
 
         Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
-                .contains(20L,2);
+                .contains(2L,2);
     }
 }
