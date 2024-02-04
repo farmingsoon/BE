@@ -36,8 +36,8 @@ public class ItemListResponse {
         private Integer hopePrice;
         private Integer lowestPrice;
         private String itemStatus;
-        private Integer bidSize;
-        // @Todo 좋아요 수 추가
+        private Integer bidCount;
+        private Integer likeCount;
 
         private static ItemResponse of(Item item) {
             return ItemResponse.builder()
@@ -49,7 +49,8 @@ public class ItemListResponse {
                     .lowestPrice(item.getBidList().stream().map(Bid::getPrice).min(Integer::compareTo).orElse(null))
                     .expiredAt(item.getExpiredAt())
                     .itemStatus(item.getItemStatus().getStatus())
-                    .bidSize(item.getBidList().size())
+                    .bidCount(item.getBidList().size())
+                    .likeCount(item.getLikeableItemList().size())
                     .build();
         }
     }

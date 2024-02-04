@@ -23,8 +23,9 @@ public class ItemDetailResponse {
     private Integer lowestPrice;
     private LocalDateTime expiredAt;
     private String itemStatus;
-    private Integer bidSize;
-    // 좋아요 수
+    private Integer bidCount;
+    private Integer likeCount;
+
 
     public static ItemDetailResponse fromEntity(Item item) {
         return ItemDetailResponse.builder()
@@ -37,7 +38,8 @@ public class ItemDetailResponse {
                 .lowestPrice(item.getBidList().stream().map(Bid::getPrice).min(Integer::compareTo).orElse(null))
                 .expiredAt(item.getExpiredAt())
                 .itemStatus(item.getItemStatus().getStatus())
-                .bidSize(item.getBidList().size())
+                .bidCount(item.getBidList().size())
+                .likeCount(item.getLikeableItemList().size())
                 .build();
     }
 
