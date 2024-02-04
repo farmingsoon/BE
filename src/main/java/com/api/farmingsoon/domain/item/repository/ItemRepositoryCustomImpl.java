@@ -26,14 +26,14 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Item> findItemList(String category, String keyword, Pageable pageable) {
+    public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortcode) {
         List<Item> content = queryFactory
                 .selectFrom(item)
                 .innerJoin(item.member, member).fetchJoin()
                 .innerJoin(item.bidList, bid).fetchJoin()
                 .where(eqCategory(category), containsKeyword(keyword))
                 .groupBy(item.id)
-                .orderBy(getAllOrderSpecifiers(pageable))
+                .orderBy(getAllOrderSpecifiers(sortcode))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -59,21 +59,17 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return keyword != null ? item.title.contains(keyword) : null;
     }
 
-    private OrderSpecifier<?>[] getAllOrderSpecifiers(Pageable pageable) {
+    private OrderSpecifier<?>[] getAllOrderSpecifiers(String sortcode) {
         List<OrderSpecifier<?>> orderSpecifierList = new ArrayList<>();
 
-        for (Sort.Order order : pageable.getSort()) {
-            Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
-            log.debug("정렬기준: {}", direction);
-            log.debug("정렬조건: {}", order.getProperty());
-
-            switch (order.getProperty()) {
-                case "recent" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.createdAt));
-                case "hot" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.viewCount));
-                case "highest", "lowest" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.bidList.any().price.max()));
+        switch (sortcode) {
+                case "recent"-> orderSpecifierList.add(new OrderSpecifier<>(Order.DESC, item.createdAt));
+                case "hot" -> orderSpecifierList.add(new OrderSpecifier<>(Order.DESC, item.viewCount));
+                case "highest" -> orderSpecifierList.add(new OrderSpecifier<>(Order.DESC, item.bidList.any().price.max()));
+                case "lowest" -> orderSpecifierList.add(new OrderSpecifier<>(Order.ASC, item.bidList.any().price.max()));
                 //case "expiredAt" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.expiredAt));
-            }
         }
+
 
         return orderSpecifierList.toArray(OrderSpecifier[]::new);
     }

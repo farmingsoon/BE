@@ -68,8 +68,8 @@ public class ItemService {
         return itemId;
     }
 
-    public ItemListResponse getItemList(String category, String keyword, Pageable pageable) {
-        return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable));
+    public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortcode) {
+        return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable, sortcode));
     }
 
     public ItemDetailResponse getItemDetail(Long itemId) {

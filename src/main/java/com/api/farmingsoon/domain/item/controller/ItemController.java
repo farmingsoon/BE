@@ -38,11 +38,12 @@ public class ItemController {
 
     @GetMapping
     public Response<ItemListResponse> getItemList(
-            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(size = 12) Pageable pageable,
+            @RequestParam(value = "sortcode", defaultValue = "recent") String sortcode,
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "keyword", required = false) String keyword) {
 
-        ItemListResponse items = itemService.getItemList(category, keyword, pageable);
+        ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortcode);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
     @GetMapping("/bid/me")
