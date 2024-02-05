@@ -29,7 +29,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ItemService {
 
     private final ItemRepository itemRepository;
@@ -67,11 +66,11 @@ public class ItemService {
                 );
         return itemId;
     }
-
+    @Transactional(readOnly = true)
     public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortcode) {
         return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable, sortcode));
     }
-
+    @Transactional(readOnly = true)
     public ItemDetailResponse getItemDetail(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         return ItemDetailResponse.fromEntity(item);
@@ -85,11 +84,13 @@ public class ItemService {
 
         itemRepository.deleteById(itemId);
     }
+    @Transactional(readOnly = true)
     public Item getItemById(Long itemId){
         return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
     }
 
 
+    @Transactional(readOnly = true)
     public ItemListResponse getMyBidItemList(Pageable pageable) {
         Page<Bid> myBidList = bidService.getMyBidList(authenticationUtils.getAuthenticationMember(), pageable);
 
