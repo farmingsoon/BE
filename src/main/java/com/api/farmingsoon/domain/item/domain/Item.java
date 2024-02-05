@@ -16,6 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE item SET deleted_at = true WHERE id = ?")
 public class Item extends BaseTimeEntity {
 
     @Id
