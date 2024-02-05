@@ -38,6 +38,8 @@ public class ItemListResponse {
         private String itemStatus;
         private Integer bidCount;
         private Integer likeCount;
+        private Integer viewCount;
+        private String thumbnailImgUrl;
 
         private static ItemResponse of(Item item) {
             return ItemResponse.builder()
@@ -50,7 +52,9 @@ public class ItemListResponse {
                     .expiredAt(item.getExpiredAt())
                     .itemStatus(item.getItemStatus().getStatus())
                     .bidCount(item.getBidList().size())
+                    .viewCount(item.getViewCount())
                     .likeCount(item.getLikeableItemList().size())
+                    .thumbnailImgUrl(item.getThumbnailImageUrl())
                     .build();
         }
     }

@@ -2,6 +2,7 @@ package com.api.farmingsoon.domain.item.domain;
 
 import com.api.farmingsoon.common.auditing.BaseTimeEntity;
 import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.like.model.LikeableItem;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
@@ -46,7 +47,7 @@ public class Item extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
-    private Long viewCount;
+    private Integer viewCount;
 
     // *Todo 양방향 안쓰는 쪽으로 고려해보기
     @OneToMany(mappedBy = "item")
@@ -55,12 +56,15 @@ public class Item extends BaseTimeEntity {
     @OneToMany(mappedBy = "item")
     private List<LikeableItem> likeableItemList;
 
+    @OneToMany(mappedBy = "item")
+    private List<Image> imageList;
+
     public void updateItemStatus(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;
     }
 
     @Builder
-    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Long viewCount) {
+    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus) {
         this.member = member;
         this.title = title;
         this.description = description;
@@ -69,7 +73,7 @@ public class Item extends BaseTimeEntity {
         this.expiredAt = expiredAt;
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.itemStatus = itemStatus;
-        this.viewCount = viewCount;
+        this.viewCount = 0;
     }
 
 

@@ -46,6 +46,13 @@ public class ItemController {
         ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortcode);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
+    @GetMapping("/me")
+    public Response<ItemListResponse> getMyItemList(
+            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        ItemListResponse items = itemService.getMyItemList(pageable);
+        return Response.success(HttpStatus.OK, "내가 등록한 아이템 조회 성공!", items);
+    }
+
     @GetMapping("/bid/me")
     public Response<ItemListResponse> getMyBidItemList(
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
