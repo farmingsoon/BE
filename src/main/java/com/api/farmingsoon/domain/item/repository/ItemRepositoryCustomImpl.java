@@ -30,7 +30,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         List<Item> content = queryFactory
                 .selectFrom(item)
                 .innerJoin(item.member, member).fetchJoin()
-                .innerJoin(item.bidList, bid).fetchJoin()
+                .leftJoin(item.bidList, bid)
                 .where(eqCategory(category), containsKeyword(keyword))
                 .groupBy(item.id)
                 .orderBy(getAllOrderSpecifiers(sortcode))
