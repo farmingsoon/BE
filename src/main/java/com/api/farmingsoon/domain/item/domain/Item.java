@@ -2,6 +2,7 @@ package com.api.farmingsoon.domain.item.domain;
 
 import com.api.farmingsoon.common.auditing.BaseTimeEntity;
 import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.like.model.LikeableItem;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
@@ -54,6 +55,9 @@ public class Item extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "item")
     private List<LikeableItem> likeableItemList;
+
+    @OneToMany(mappedBy = "item")
+    private List<Image> imageList;
 
     public void updateItemStatus(ItemStatus itemStatus) {
         this.itemStatus = itemStatus;

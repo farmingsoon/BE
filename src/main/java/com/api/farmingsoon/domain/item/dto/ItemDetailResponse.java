@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.item.dto;
 
 import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import lombok.Builder;
@@ -14,7 +15,10 @@ import java.util.Optional;
 @Builder
 public class ItemDetailResponse {
 
+    private String sellerId;
     private String sellerProfileImgUrl;
+    private String thumbnailImgUrl;
+    private List<String> itemImgUrl;
     private String sellerNickname;
     private String title;
     private String description;
@@ -42,6 +46,8 @@ public class ItemDetailResponse {
                 .bidCount(item.getBidList().size())
                 .viewCount(item.getViewCount())
                 .likeCount(item.getLikeableItemList().size())
+                .thumbnailImgUrl(item.getThumbnailImageUrl())
+                .itemImgUrl(item.getImageList().stream().map(Image::getImageUrl).toList())
                 .build();
     }
 
