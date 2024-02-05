@@ -12,5 +12,5 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositor
 
     Page<Item> findAllByIdIn(List<Long> itemIds, Pageable pageable);
 
-    Page<Item> findAllByMember(Member member);
+    Page<Item> findAllByMember(Member member, Pageable pageable);
 }

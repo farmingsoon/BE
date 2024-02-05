@@ -90,7 +90,7 @@ public class ItemService {
     }
     @Transactional(readOnly = true)
     public ItemListResponse getMyItemList(Pageable pageable) {
-        return ItemListResponse.of(itemRepository.findAllByMember(authenticationUtils.getAuthenticationMember()));
+        return ItemListResponse.of(itemRepository.findAllByMember(authenticationUtils.getAuthenticationMember(), pageable));
     }
 
     @Transactional(readOnly = true)

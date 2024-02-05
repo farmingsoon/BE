@@ -355,4 +355,26 @@ class ItemControllerTest {
          */
 
     }
+
+    @DisplayName("내가 등록한 상품 조회")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getMyItems() throws Exception {
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items/me"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,12);
+    }
 }
