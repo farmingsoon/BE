@@ -46,8 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,7 +107,7 @@ class ItemControllerTest {
                     .description("description" + i)
                     .hopePrice(10000 * i)
                     .itemStatus(ItemStatus.BIDDING)
-                    .viewCount((long) i)
+                    .viewCount(i)
                     .expiredAt(TimeUtils.setExpireAt(i)).build();
 
             List<String> imageUrl = new ArrayList<>(Arrays.asList("/subFile1/" + i, "/subFile2/" + i, "/subFile3/" + i));
@@ -156,10 +155,9 @@ class ItemControllerTest {
 
         /**
          *  Todo
+         *  등록만 컨트롤러 통하고 나머지 로직은 서비스 이용하는 방향으로 리팩토링하기
          *  이미지 저장도 같이 확인해야할 듯 ExpiredAt 체킹도!
          */
-
-
     }
 
     @DisplayName("상품 등록 후 상세 조회 성공")
@@ -192,9 +190,19 @@ class ItemControllerTest {
         Assertions.assertThat(result.get("title").asText()).isEqualTo("아이폰 팔아요~");
         Assertions.assertThat(result.get("description").asText()).isEqualTo("합정 근처에서 거래 가능합니다.");
         Assertions.assertThat(result.get("hopePrice").asLong()).isEqualTo(10000L);
+        Assertions.assertThat(result.get("highestPrice").asLong()).isEqualTo(0);
+        Assertions.assertThat(result.get("lowestPrice").asLong()).isEqualTo(0);
+        Assertions.assertThat(result.get("bidCount").asLong()).isEqualTo(0);
+        Assertions.assertThat(result.get("likeCount").asLong()).isEqualTo(0);
+        Assertions.assertThat(result.get("viewCount").asLong()).isEqualTo(0);
         Assertions.assertThat(result.get("itemStatus").asText()).isEqualTo("경매중");
 
 
+        /**
+         *  Todo
+         *  등록만 서비스로하고 조회하는걸 컨트롤러 이용하도록 리팩토링하기
+         *  이미지 저장도 같이 확인해야할 듯 ExpiredAt 체킹도!
+         */
 
     }
 
@@ -310,5 +318,41 @@ class ItemControllerTest {
         Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
                 .contains(2L,2);
+    }
+
+    @DisplayName("상품 등록 후 삭제")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void deleteItem() throws Exception {
+        // when
+        MvcResult mvcResult1 = mockMvc.perform(multipart("/api/items")
+                        .file(thumbnailImage)
+                        .file(images.get(0))
+                        .file(images.get(1))
+                        .file(images.get(2))
+                        .param("title", "아이폰 팔아요~")
+                        .param("description", "합정 근처에서 거래 가능합니다.")
+                        .param("hopePrice", "10000")
+                        .param("period", "3")
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        // then
+        Long itemId = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").asLong();
+
+        MvcResult mvcResult2 = mockMvc.perform(delete("/api/items/" + itemId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+
+        /**
+         *  Todo
+         *  등록만 서비스로하고 조회하는걸 컨트롤러 이용하도록 리팩토링하기
+         *  이미지 저장도 같이 확인해야할 듯 ExpiredAt 체킹도!
+         */
+
     }
 }

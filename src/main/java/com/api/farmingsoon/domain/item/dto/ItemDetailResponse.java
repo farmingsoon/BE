@@ -25,6 +25,7 @@ public class ItemDetailResponse {
     private String itemStatus;
     private Integer bidCount;
     private Integer likeCount;
+    private Integer viewCount;
 
 
     public static ItemDetailResponse fromEntity(Item item) {
@@ -39,6 +40,7 @@ public class ItemDetailResponse {
                 .expiredAt(item.getExpiredAt())
                 .itemStatus(item.getItemStatus().getStatus())
                 .bidCount(item.getBidList().size())
+                .viewCount(item.getViewCount())
                 .likeCount(item.getLikeableItemList().size())
                 .build();
     }

@@ -46,7 +46,7 @@ public class Item extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
-    private Long viewCount;
+    private Integer viewCount;
 
     // *Todo 양방향 안쓰는 쪽으로 고려해보기
     @OneToMany(mappedBy = "item")
@@ -60,7 +60,7 @@ public class Item extends BaseTimeEntity {
     }
 
     @Builder
-    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Long viewCount) {
+    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
         this.member = member;
         this.title = title;
         this.description = description;
