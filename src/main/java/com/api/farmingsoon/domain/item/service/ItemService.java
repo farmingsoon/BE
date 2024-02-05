@@ -79,8 +79,8 @@ public class ItemService {
     @Transactional
     public void delete(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
-
-        AuthenticationUtils.checkDeletePermission(item.getMember());
+        Member member = item.getMember();
+        AuthenticationUtils.checkDeletePermission(member.getEmail(), member.getRole());
 
         itemRepository.deleteById(itemId);
     }
@@ -110,7 +110,8 @@ public class ItemService {
     public void soldOut(Long itemId, Long buyerId) {
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
-        AuthenticationUtils.checkUpdatePermission(item.getMember());
+        Member member = item.getMember();
+        AuthenticationUtils.checkUpdatePermission(member.getEmail(), member.getRole());
 
         item.updateItemStatus(ItemStatus.SOLDOUT);
 
