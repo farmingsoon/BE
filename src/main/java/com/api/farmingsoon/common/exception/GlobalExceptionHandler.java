@@ -1,6 +1,9 @@
 package com.api.farmingsoon.common.exception;
 
+import com.api.farmingsoon.common.alert.discord.DiscordService;
 import com.api.farmingsoon.common.response.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +17,17 @@ import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+    private final DiscordService discordService;
 
     /**
      * 서비스 로직 도중 발생하는 에러들을 커스텀하여 응답값을 내려줍니다.
      */
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<?> handleCustomException(CustomException e){
+    public ResponseEntity<?> handleCustomException(HttpServletRequest request, CustomException e){
         ErrorCode errorCode = e.getErrorCode();
+        discordService.sendDiscordAlertLog(errorCode.toString(), errorCode.getMessage(), request);
         log.error(errorCode.getMessage());
         return ResponseEntity.status(errorCode.getStatus()).body(Response.error(errorCode.getStatus(), errorCode.getMessage()));
     }
@@ -31,10 +37,11 @@ public class GlobalExceptionHandler {
      *  itemPrice : 아이템 가격을 100원 이상 1,000,000,000원 이하여야 합니다.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex){
+    public ResponseEntity<?> handleValidationExceptions(HttpServletRequest request,MethodArgumentNotValidException ex){
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors()
                 .forEach(c -> errors.put(((FieldError) c).getField(), c.getDefaultMessage()));
+        discordService.sendDiscordAlertLog(HttpStatus.BAD_REQUEST.toString(), errors.toString(), request);
         log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.error(HttpStatus.BAD_REQUEST, errors));
     }
