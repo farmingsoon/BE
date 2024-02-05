@@ -15,7 +15,7 @@ import java.util.Optional;
 @Builder
 public class ItemDetailResponse {
 
-    private String sellerId;
+    private Long sellerId;
     private String sellerProfileImgUrl;
     private String thumbnailImgUrl;
     private List<String> itemImgUrl;
@@ -34,6 +34,7 @@ public class ItemDetailResponse {
 
     public static ItemDetailResponse fromEntity(Item item) {
         return ItemDetailResponse.builder()
+                .sellerId(item.getMember().getId())
                 .sellerProfileImgUrl(item.getMember().getProfileImg())
                 .sellerNickname(item.getMember().getNickname())
                 .title(item.getTitle())
