@@ -64,7 +64,7 @@ public class Item extends BaseTimeEntity {
     }
 
     @Builder
-    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
+    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus) {
         this.member = member;
         this.title = title;
         this.description = description;
@@ -73,7 +73,7 @@ public class Item extends BaseTimeEntity {
         this.expiredAt = expiredAt;
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.itemStatus = itemStatus;
-        this.viewCount = viewCount;
+        this.viewCount = 0;
     }
 
 
