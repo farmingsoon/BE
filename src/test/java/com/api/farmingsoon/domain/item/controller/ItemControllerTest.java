@@ -377,4 +377,6 @@ class ItemControllerTest {
                 .extracting("totalElementSize", "elementSize")
                 .contains(20L,12);
     }
+
+    // @Todo 내가 입찰에 참여한 상품 조회
 }
