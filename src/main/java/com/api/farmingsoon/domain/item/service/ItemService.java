@@ -88,7 +88,10 @@ public class ItemService {
     public Item getItemById(Long itemId){
         return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
     }
-
+    @Transactional(readOnly = true)
+    public ItemListResponse getMyItemList(Pageable pageable) {
+        return ItemListResponse.of(itemRepository.findAllByMember(authenticationUtils.getAuthenticationMember()));
+    }
 
     @Transactional(readOnly = true)
     public ItemListResponse getMyBidItemList(Pageable pageable) {
@@ -135,4 +138,6 @@ public class ItemService {
         item.updateItemStatus(ItemStatus.BID_END);
         notificationService.createAndSendBidEndNotification(item);
     }
+
+
 }
