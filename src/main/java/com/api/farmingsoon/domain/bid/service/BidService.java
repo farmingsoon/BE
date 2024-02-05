@@ -41,7 +41,8 @@ public class BidService {
     @Transactional
     public void delete(Long bidId) {
         Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_BID));
-        AuthenticationUtils.checkDeletePermission(bid.getMember());
+        Member member = bid.getMember();
+        AuthenticationUtils.checkDeletePermission(member.getEmail(), member.getRole());
 
         bidRepository.delete(bid);
     }

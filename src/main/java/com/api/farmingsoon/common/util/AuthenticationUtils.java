@@ -16,18 +16,29 @@ public class AuthenticationUtils {
 
     private final MemberService memberService;
 
-    public static void checkUpdatePermission(Member member) {
+    /**
+     * @Description
+     * 자기 게시물이 아닌데 ADMIN도 아니라면 에러
+     * OSIV 때문에 서비스단에서 꺼내서 사용해야함
+     */
+
+    public static void checkUpdatePermission(String email, MemberRole memberRole) {
         String authenticationMemberName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!authenticationMemberName.equals(member.getEmail()) || !member.getRole().getValue().equals(MemberRole.ADMIN))
+        if(!authenticationMemberName.equals(email))
         {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN_UPDATE);
+            if (!memberRole.equals(MemberRole.ADMIN)) {
+                throw new ForbiddenException(ErrorCode.FORBIDDEN_UPDATE);
+            }
         }
     }
 
-    public static void checkDeletePermission(Member member) {
+    public static void checkDeletePermission(String email, MemberRole memberRole) {
         String authenticationMemberName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (!authenticationMemberName.equals(member.getEmail()) || !member.getRole().getValue().equals(MemberRole.ADMIN)) {
-            throw new ForbiddenException(ErrorCode.FORBIDDEN_DELETE);
+        if(!authenticationMemberName.equals(email))
+        {
+            if (!memberRole.equals(MemberRole.ADMIN)) {
+                throw new ForbiddenException(ErrorCode.FORBIDDEN_DELETE);
+            }
         }
     }
     public Member getAuthenticationMember()
