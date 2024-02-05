@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.item.dto;
 
 import com.api.farmingsoon.domain.bid.model.Bid;
+import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import lombok.Builder;
@@ -14,7 +15,10 @@ import java.util.Optional;
 @Builder
 public class ItemDetailResponse {
 
+    private Long sellerId;
     private String sellerProfileImgUrl;
+    private String thumbnailImgUrl;
+    private List<String> itemImgUrl;
     private String sellerNickname;
     private String title;
     private String description;
@@ -25,10 +29,12 @@ public class ItemDetailResponse {
     private String itemStatus;
     private Integer bidCount;
     private Integer likeCount;
+    private Integer viewCount;
 
 
     public static ItemDetailResponse fromEntity(Item item) {
         return ItemDetailResponse.builder()
+                .sellerId(item.getMember().getId())
                 .sellerProfileImgUrl(item.getMember().getProfileImg())
                 .sellerNickname(item.getMember().getNickname())
                 .title(item.getTitle())
@@ -39,7 +45,10 @@ public class ItemDetailResponse {
                 .expiredAt(item.getExpiredAt())
                 .itemStatus(item.getItemStatus().getStatus())
                 .bidCount(item.getBidList().size())
+                .viewCount(item.getViewCount())
                 .likeCount(item.getLikeableItemList().size())
+                .thumbnailImgUrl(item.getThumbnailImageUrl())
+                .itemImgUrl(item.getImageList().stream().map(Image::getImageUrl).toList())
                 .build();
     }
 
