@@ -4,6 +4,8 @@ import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
+import com.api.farmingsoon.domain.like.model.LikeableItem;
+import com.api.farmingsoon.domain.member.model.Member;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -30,9 +32,10 @@ public class ItemDetailResponse {
     private Integer bidCount;
     private Integer likeCount;
     private Integer viewCount;
+    private Boolean likeStatus;
 
 
-    public static ItemDetailResponse fromEntity(Item item) {
+    public static ItemDetailResponse fromEntity(Item item, Member viewer) {
         return ItemDetailResponse.builder()
                 .sellerId(item.getMember().getId())
                 .sellerProfileImgUrl(item.getMember().getProfileImg())
@@ -49,6 +52,7 @@ public class ItemDetailResponse {
                 .likeCount(item.getLikeableItemList().size())
                 .thumbnailImgUrl(item.getThumbnailImageUrl())
                 .itemImgUrl(item.getImageList().stream().map(Image::getImageUrl).toList())
+                .likeStatus(item.getLikeableItemList().stream().map(LikeableItem::getMember).toList().contains(viewer))
                 .build();
     }
 

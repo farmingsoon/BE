@@ -12,6 +12,7 @@ import com.api.farmingsoon.domain.like.repository.LikeableItemRepository;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,6 @@ import java.util.List;
 public class LikeableItemService {
 
     private final LikeableItemRepository likeableItemRepository;
-    private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
     private final AuthenticationUtils authenticationUtils;
 
@@ -49,14 +49,9 @@ public class LikeableItemService {
         likeableItemRepository.delete(likeableItem);
     }
     @Transactional(readOnly = true)
-    public ItemListResponse likedItemList(Pageable pageable) {
+    public ItemListResponse likableItemList(Pageable pageable) {
         Member member = authenticationUtils.getAuthenticationMember();
-
-        List<Long> likedItemIds = likeableItemRepository.findAllByMember(member)
-                .stream()
-                .map(likeableItem -> likeableItem.getItem().getId())
-                .toList();
-
-        return ItemListResponse.of(itemRepository.findAllByIdIn(likedItemIds, pageable));
+        Page<LikeableItem> likeableItems = likeableItemRepository.findAllByMember(member, pageable);
+        return ItemListResponse.of(likeableItems.map(LikeableItem::getItem), member);
     }
 }
