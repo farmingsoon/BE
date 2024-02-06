@@ -4,12 +4,15 @@ import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
+import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.like.model.LikeableItem;
 import com.api.farmingsoon.domain.like.service.LikeableItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
+import com.api.farmingsoon.util.Transaction;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,8 +45,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,6 +53,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 class LikeableItemIntegrationTest {
+
+    @Autowired
+    private Transaction transaction;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -137,17 +142,45 @@ class LikeableItemIntegrationTest {
                 .andReturn();
         //then
 
-        Assertions.assertThat(getLikeableItemSize(1L)).isEqualTo(11);
 
-        /**
-         *  Todo
-         *  등록만 컨트롤러 통하고 나머지 로직은 서비스 이용하는 방향으로 리팩토링하기
-         *  이미지 저장도 같이 확인해야할 듯 ExpiredAt 체킹도!
-         */
+        transaction.invoke(() -> {
+                Item item = itemService.getItemById(1L);
+                Assertions.assertThat(item.getLikeableItemList().size()).isEqualTo(1);
+            }
+        );
     }
+    @DisplayName("관심 상품 삭제 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void likeableItemDeleteSuccess() throws Exception {
+        // when
+        MvcResult mvcResult = mockMvc.perform(delete("/api/likeable-items/" + 2))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        //then
 
-    @Transactional(readOnly = true)
-    public int getLikeableItemSize(long l) {
-        return itemService.getItemById(1L).getLikeableItemList().size();
+
+        transaction.invoke(() -> {
+                    Item item = itemService.getItemById(2L);
+                    Assertions.assertThat(item.getLikeableItemList().size()).isEqualTo(0);
+                }
+        );
+    }
+    @DisplayName("관심 상품 조회 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getLikeableItemSuccess() throws Exception {
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/likeable-items/me"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        //then
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().size()).isEqualTo(10);
+        Assertions.assertThat(itemListResponse.getItems().get(0).getLikeStatus()).isTrue();
     }
 }
