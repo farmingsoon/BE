@@ -6,12 +6,13 @@ import com.api.farmingsoon.common.sse.SseService;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.item.domain.Item;
-import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.model.Notification;
 import com.api.farmingsoon.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -33,8 +34,9 @@ public class NotificationService {
         return sseService.subscribe(1L); // 테스트 전용
     }
 
-    public List<NotificationResponse> getMyNotifications() {
-        List<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember());
+    public List<NotificationResponse> getMyNotifications(Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember(), pageable);
+
         return notifications.stream().map(NotificationResponse::of).toList();
     }
     @Transactional
