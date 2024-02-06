@@ -68,12 +68,14 @@ public class ItemService {
     }
     @Transactional(readOnly = true)
     public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortcode) {
-        return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable, sortcode));
+        Member viewer = authenticationUtils.getAuthenticationMember();
+        return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable, sortcode), viewer);
     }
     @Transactional(readOnly = true)
     public ItemDetailResponse getItemDetail(Long itemId) {
+        Member viewer = authenticationUtils.getAuthenticationMember();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
-        return ItemDetailResponse.fromEntity(item);
+        return ItemDetailResponse.fromEntity(item, viewer);
     }
 
     @Transactional
@@ -90,14 +92,16 @@ public class ItemService {
     }
     @Transactional(readOnly = true)
     public ItemListResponse getMyItemList(Pageable pageable) {
-        return ItemListResponse.of(itemRepository.findAllByMember(authenticationUtils.getAuthenticationMember(), pageable));
+        Member viewer = authenticationUtils.getAuthenticationMember();
+        return ItemListResponse.of(itemRepository.findAllByMember(authenticationUtils.getAuthenticationMember(), pageable), viewer);
     }
 
     @Transactional(readOnly = true)
     public ItemListResponse getMyBidItemList(Pageable pageable) {
-        Page<Bid> myBidList = bidService.getMyBidList(authenticationUtils.getAuthenticationMember(), pageable);
+        Member viewer = authenticationUtils.getAuthenticationMember();
+        Page<Bid> myBidList = bidService.getMyBidList(viewer, pageable);
 
-        return ItemListResponse.of(myBidList.map(Bid::getItem));
+        return ItemListResponse.of(myBidList.map(Bid::getItem), viewer);
     }
 
     /**

@@ -2,15 +2,8 @@ package com.api.farmingsoon.domain.bid.controller;
 
 import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
-import com.api.farmingsoon.domain.bid.dto.BidWithPageResponse;
-import com.api.farmingsoon.domain.bid.dto.BidsResponse;
-import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.bid.service.BidService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

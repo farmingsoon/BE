@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+
 public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -31,10 +31,11 @@ public class ChatRoomService {
     private final MemberService memberService;
     private final AuthenticationUtils authenticationUtils;
 
-
+    @Transactional
     public ChatRoom createChatRoom(Member seller, Member buyer, Item item) {
         return chatRoomRepository.save(ChatRoom.of(seller, buyer, item));
     }
+    @Transactional(readOnly = true)
     public ChatRoom getChatRoom(Long chatRoomId) {
         return chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM));
@@ -44,6 +45,7 @@ public class ChatRoomService {
      * @Description
      * 내가 판매자 또는 구매자로 참가하고 있는 채팅방 목록 조회
      */
+    @Transactional(readOnly = true)
     public List<ChatRoomResponse> getChatRooms() {
         Member fromMember = memberService.getMemberByEmail(authenticationUtils.getAuthenticationMember().getEmail());
         List<ChatRoom> myChatRooms = chatRoomRepository.findChatRoomByBuyerOrSeller(fromMember, fromMember);
@@ -59,6 +61,7 @@ public class ChatRoomService {
      * 채팅방에서 사용할 상단의 상품 정보와 상대방 정보
      * 채팅목록을 따로 뺴야할 지 고민해 봐야 함
      */
+    @Transactional(readOnly = true)
     public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId) {
         String fromUsername = authenticationUtils.getAuthenticationMember().getEmail();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)

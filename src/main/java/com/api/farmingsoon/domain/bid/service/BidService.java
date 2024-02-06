@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BidService {
 
@@ -53,7 +52,7 @@ public class BidService {
         bidRepository.deleteAllByMember(member);
     }
 
-
+    @Transactional(readOnly = true)
     public Page<Bid> getMyBidList(Member member, Pageable pageable){
         return bidRepository.findAllByMember(member, pageable);
     }
