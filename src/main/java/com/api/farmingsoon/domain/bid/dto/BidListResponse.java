@@ -32,7 +32,7 @@ public class BidListResponse {
     }
 
     @Getter
-    @Builder
+    @NoArgsConstructor
     private static class BidResponse {
 
         private Long bidderId;
@@ -40,7 +40,15 @@ public class BidListResponse {
         private String itemName;
         private int price;
 
-        private static BidResponse of(Bid bid) {
+        @Builder
+        private BidResponse(Long bidderId, Long itemId, String itemName, int price) {
+            this.bidderId = bidderId;
+            this.itemId = itemId;
+            this.itemName = itemName;
+            this.price = price;
+        }
+
+        public static BidResponse of(Bid bid) {
             return BidResponse.builder()
                     .bidderId(bid.getMember().getId())
                     .itemId(bid.getItem().getId())
