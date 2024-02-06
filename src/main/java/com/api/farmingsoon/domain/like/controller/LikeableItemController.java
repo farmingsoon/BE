@@ -32,7 +32,7 @@ public class LikeableItemController {
     }
 
     @GetMapping("/me")
-    public Response<ItemListResponse> likedItemList(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return Response.success(HttpStatus.OK, "좋아요를 누른 상품의 목록 조회 성공", likeableItemService.likedItemList(pageable));
+    public Response<ItemListResponse> getLikeableItemList(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return Response.success(HttpStatus.OK, "좋아요를 누른 상품 목록 조회 성공", likeableItemService.likableItemList(pageable));
     }
 }

@@ -2,6 +2,8 @@ package com.api.farmingsoon.domain.item.dto;
 
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.item.domain.Item;
+import com.api.farmingsoon.domain.like.model.LikeableItem;
+import com.api.farmingsoon.domain.member.model.Member;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -16,8 +18,8 @@ public class ItemListResponse {
     private List<ItemResponse> items; // 상품 데이터
     private Pagination pagination; // 페이지 관련 데이터
 
-    public static ItemListResponse of(Page<Item> itemPage) {
-        Page<ItemResponse> itemDtoPage = itemPage.map(ItemResponse::of); // Page<Item> -> Page<ItemDto>
+    public static ItemListResponse of(Page<Item> itemPage, Member viewer) {
+        Page<ItemResponse> itemDtoPage = itemPage.map(item -> ItemResponse.of(item, viewer)); // Page<Item> -> Page<ItemDto>
         return ItemListResponse.builder()
                 .items(itemDtoPage.getContent())
                 .pagination(Pagination.of(itemDtoPage))
@@ -40,8 +42,10 @@ public class ItemListResponse {
         private Integer likeCount;
         private Integer viewCount;
         private String thumbnailImgUrl;
+        private Boolean likeStatus;
 
-        private static ItemResponse of(Item item) {
+        private static ItemResponse of(Item item, Member viewer) {
+
             return ItemResponse.builder()
                     .itemId(item.getId())
                     .title(item.getTitle())
@@ -55,6 +59,7 @@ public class ItemListResponse {
                     .viewCount(item.getViewCount())
                     .likeCount(item.getLikeableItemList().size())
                     .thumbnailImgUrl(item.getThumbnailImageUrl())
+                    .likeStatus(item.getLikeableItemList().stream().map(LikeableItem::getMember).toList().contains(viewer))
                     .build();
         }
     }
