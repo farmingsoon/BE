@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.chat.service;
 
 import com.api.farmingsoon.common.util.AuthenticationUtils;
+import com.api.farmingsoon.domain.chat.dto.ChatListResponse;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.dto.ChatResponse;
 import com.api.farmingsoon.domain.chat.model.Chat;
@@ -34,11 +35,8 @@ public class ChatService {
 
     }
 
-    public List<ChatResponse> getChats(Long chatRoomId, Pageable pageable) {
+    public ChatListResponse getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-        return chatRepository.findByChatRoom(chatRoom, pageable)
-                .stream()
-                .map(ChatResponse::of)
-                .collect(Collectors.toList());
+        return ChatListResponse.of(chatRepository.findByChatRoom(chatRoom, pageable));
     }
 }
