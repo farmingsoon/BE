@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.chat.service;
 
 import com.api.farmingsoon.common.util.AuthenticationUtils;
+import com.api.farmingsoon.domain.chat.dto.ChatListResponse;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.dto.ChatResponse;
 import com.api.farmingsoon.domain.chat.model.Chat;
@@ -18,13 +19,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatRoomService chatRoomService;
     private final AuthenticationUtils authenticationUtils;
 
+    @Transactional
     public ChatResponse create(ChatMessageRequest chatMessageRequest) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
         Member sender = authenticationUtils.getAuthenticationMember();
@@ -33,12 +34,9 @@ public class ChatService {
         return ChatResponse.of(chat);
 
     }
-
-    public List<ChatResponse> getChats(Long chatRoomId, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public ChatListResponse getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-        return chatRepository.findByChatRoom(chatRoom, pageable)
-                .stream()
-                .map(ChatResponse::of)
-                .collect(Collectors.toList());
+        return ChatListResponse.of(chatRepository.findByChatRoom(chatRoom, pageable));
     }
 }

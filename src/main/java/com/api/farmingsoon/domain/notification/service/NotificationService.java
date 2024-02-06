@@ -6,12 +6,13 @@ import com.api.farmingsoon.common.sse.SseService;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.item.domain.Item;
-import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.model.Notification;
 import com.api.farmingsoon.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -21,7 +22,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -33,8 +33,10 @@ public class NotificationService {
         return sseService.subscribe(1L); // 테스트 전용
     }
 
-    public List<NotificationResponse> getMyNotifications() {
-        List<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember());
+    @Transactional(readOnly = true)
+    public List<NotificationResponse> getMyNotifications(Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember(), pageable);
+
         return notifications.stream().map(NotificationResponse::of).toList();
     }
     @Transactional
@@ -57,6 +59,7 @@ public class NotificationService {
      sse로 보내는 알림은 메시지 대신 알림 타입만 보내주면될듯(Chat or Notification)
      **/
 
+    @Transactional
     // 구매자와 판매자에게 입찰이 등록되었다고 알리기
     public void createAndSendNewBidNotification(Item item) {
         List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
@@ -66,7 +69,7 @@ public class NotificationService {
         receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
-
+    @Transactional
     public void createAndSendBidEndNotification(Item item) {
         List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
         receiverList.add(item.getMember()); // 판매자 추가
@@ -75,7 +78,7 @@ public class NotificationService {
         receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
-
+    @Transactional
     public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {
         notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다", item.getId()));
         bidderList.stream().skip(1).forEach(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));

@@ -18,13 +18,10 @@ public class BidListResponse {
     private Pagination<BidResponse> pagination;
 
     @Builder
-    public BidListResponse(List<BidResponse> bids, Pagination<BidResponse> pagination) {
+    private BidListResponse(List<BidResponse> bids, Pagination<BidResponse> pagination) {
         this.bids = bids;
         this.pagination = pagination;
     }
-
-
-
 
     public static BidListResponse of(Page<Bid> bidPage) {
         Page<BidResponse> bidDtoPage = bidPage.map(BidResponse::of);
@@ -35,15 +32,25 @@ public class BidListResponse {
     }
 
     @Getter
-    @Builder
+    @NoArgsConstructor
     private static class BidResponse {
 
+        private Long bidderId;
         private Long itemId;
         private String itemName;
         private int price;
 
-        private static BidResponse of(Bid bid) {
+        @Builder
+        private BidResponse(Long bidderId, Long itemId, String itemName, int price) {
+            this.bidderId = bidderId;
+            this.itemId = itemId;
+            this.itemName = itemName;
+            this.price = price;
+        }
+
+        public static BidResponse of(Bid bid) {
             return BidResponse.builder()
+                    .bidderId(bid.getMember().getId())
                     .itemId(bid.getItem().getId())
                     .itemName(bid.getItem().getTitle())
                     .price(bid.getPrice())

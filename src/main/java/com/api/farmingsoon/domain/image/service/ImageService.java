@@ -9,6 +9,7 @@ import com.api.farmingsoon.domain.item.domain.Item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final S3Service s3Service;
 
+    @Transactional
     public void createImage(Image image){
         imageRepository.save(image);
     }

@@ -4,6 +4,9 @@ import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +38,10 @@ public class NotificationController {
     }
 
     @GetMapping("/me")
-    public Response<List<NotificationResponse>> getMyNotifications() {
-        List<NotificationResponse> myNotifications = notificationService.getMyNotifications();
+    public Response<List<NotificationResponse>> getMyNotifications(
+            @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        List<NotificationResponse> myNotifications = notificationService.getMyNotifications(pageable);
         return Response.success(HttpStatus.OK, "알림 조회 성공", myNotifications);
     }
     /**
