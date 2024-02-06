@@ -22,7 +22,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -34,6 +33,7 @@ public class NotificationService {
         return sseService.subscribe(1L); // 테스트 전용
     }
 
+    @Transactional(readOnly = true)
     public List<NotificationResponse> getMyNotifications(Pageable pageable) {
         Page<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember(), pageable);
 
@@ -59,6 +59,7 @@ public class NotificationService {
      sse로 보내는 알림은 메시지 대신 알림 타입만 보내주면될듯(Chat or Notification)
      **/
 
+    @Transactional
     // 구매자와 판매자에게 입찰이 등록되었다고 알리기
     public void createAndSendNewBidNotification(Item item) {
         List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
@@ -68,7 +69,7 @@ public class NotificationService {
         receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
-
+    @Transactional
     public void createAndSendBidEndNotification(Item item) {
         List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
         receiverList.add(item.getMember()); // 판매자 추가
@@ -77,7 +78,7 @@ public class NotificationService {
         receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
-
+    @Transactional
     public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {
         notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다", item.getId()));
         bidderList.stream().skip(1).forEach(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));

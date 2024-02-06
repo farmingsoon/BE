@@ -19,13 +19,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatRoomService chatRoomService;
     private final AuthenticationUtils authenticationUtils;
 
+    @Transactional
     public ChatResponse create(ChatMessageRequest chatMessageRequest) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
         Member sender = authenticationUtils.getAuthenticationMember();
@@ -34,7 +34,7 @@ public class ChatService {
         return ChatResponse.of(chat);
 
     }
-
+    @Transactional(readOnly = true)
     public ChatListResponse getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
         return ChatListResponse.of(chatRepository.findByChatRoom(chatRoom, pageable));
