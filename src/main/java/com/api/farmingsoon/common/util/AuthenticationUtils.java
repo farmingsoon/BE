@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @Component
 public class AuthenticationUtils {
@@ -45,5 +47,8 @@ public class AuthenticationUtils {
     {
         return memberService.getMemberByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
     }
-
+    public Optional<Member> getOptionalMember()
+    {
+        return memberService.getOptionalMemberByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
 }

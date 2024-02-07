@@ -2,6 +2,7 @@ package com.api.farmingsoon.domain.like.controller;
 
 import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.domain.item.dto.ItemListResponse;
+import com.api.farmingsoon.domain.item.dto.LikeableItemListResponse;
 import com.api.farmingsoon.domain.like.service.LikeableItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class LikeableItemController {
     }
 
     @GetMapping("/me")
-    public Response<ItemListResponse> getLikeableItemList(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public Response<LikeableItemListResponse> getLikeableItemList(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         return Response.success(HttpStatus.OK, "좋아요를 누른 상품 목록 조회 성공", likeableItemService.likableItemList(pageable));
     }
 }

@@ -6,6 +6,7 @@ import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.dto.ItemListResponse;
+import com.api.farmingsoon.domain.item.dto.LikeableItemListResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.like.model.LikeableItem;
 import com.api.farmingsoon.domain.like.repository.LikeableItemRepository;
@@ -49,9 +50,9 @@ public class LikeableItemService {
         likeableItemRepository.delete(likeableItem);
     }
     @Transactional(readOnly = true)
-    public ItemListResponse likableItemList(Pageable pageable) {
+    public LikeableItemListResponse likableItemList(Pageable pageable) {
         Member member = authenticationUtils.getAuthenticationMember();
         Page<LikeableItem> likeableItems = likeableItemRepository.findAllByMember(member, pageable);
-        return ItemListResponse.of(likeableItems.map(LikeableItem::getItem), member);
+        return LikeableItemListResponse.of(likeableItems.map(LikeableItem::getItem));
     }
 }
