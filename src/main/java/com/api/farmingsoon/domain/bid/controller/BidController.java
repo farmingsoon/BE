@@ -1,9 +1,13 @@
 package com.api.farmingsoon.domain.bid.controller;
 
 import com.api.farmingsoon.common.response.Response;
+import com.api.farmingsoon.domain.bid.dto.BidListResponse;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
 import com.api.farmingsoon.domain.bid.service.BidService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class BidController {
 
     private final BidService bidService;
-
+    @GetMapping
+    public Response<BidListResponse> getAllBid(
+            @RequestParam(name = "itemId") Long itemId,
+            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+        )
+    {
+        BidListResponse itemBidList = bidService.getItemBidList(itemId, pageable);
+        return Response.success(HttpStatus.OK, "상품의 입찰 목록 조회 성공!", itemBidList);
+    }
     @PostMapping
     public Response<Void> bid(@RequestBody BidRequest bidRequest) {
         bidService.bid(bidRequest);

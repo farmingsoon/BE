@@ -3,9 +3,7 @@ package com.api.farmingsoon.domain.item.controller;
 
 import com.api.farmingsoon.common.annotation.LoginChecking;
 import com.api.farmingsoon.common.response.Response;
-import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
-import com.api.farmingsoon.domain.item.dto.ItemDetailResponse;
-import com.api.farmingsoon.domain.item.dto.ItemListResponse;
+import com.api.farmingsoon.domain.item.dto.*;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,17 +45,17 @@ public class ItemController {
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
     @GetMapping("/me")
-    public Response<ItemListResponse> getMyItemList(
+    public Response<MyItemListResponse> getMyItemList(
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        ItemListResponse items = itemService.getMyItemList(pageable);
+        MyItemListResponse items = itemService.getMyItemList(pageable);
         return Response.success(HttpStatus.OK, "내가 등록한 아이템 조회 성공!", items);
     }
 
     @GetMapping("/bid/me")
-    public Response<ItemListResponse> getMyBidItemList(
+    public Response<MyBidItemListResponse> getMyBidItemList(
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        ItemListResponse items = itemService.getMyBidItemList(pageable);
+        MyBidItemListResponse items = itemService.getMyBidItemList(pageable);
         return Response.success(HttpStatus.OK, "내가 입찰에 참가한 아이템 조회 성공!", items);
     }
     @LoginChecking

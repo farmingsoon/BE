@@ -9,6 +9,7 @@ import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.ItemListResponse;
+import com.api.farmingsoon.domain.item.dto.MyItemListResponse;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.service.MemberService;
@@ -368,12 +369,12 @@ class ItemControllerTest {
                 .andReturn();
 
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
-        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+        MyItemListResponse myItemListResponse = objectMapper.readValue(result, MyItemListResponse.class);
 
-        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
-        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
+        Assertions.assertThat(myItemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
+        Assertions.assertThat(myItemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
 
-        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+        Assertions.assertThat(myItemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
                 .contains(20L,12);
     }
