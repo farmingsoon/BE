@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.bid.controller;
 
 import com.api.farmingsoon.common.response.Response;
+import com.api.farmingsoon.domain.bid.dto.BidListResponse;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
 import com.api.farmingsoon.domain.bid.service.BidService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class BidController {
 
     private final BidService bidService;
-
+    @GetMapping
+    public Response<BidListResponse> getAllBid(@RequestParam(name = "itemId") Long itemId) {
+        BidListResponse itemBidList = bidService.getItemBidList(itemId);
+        return Response.success(HttpStatus.OK, "상품의 입찰 목록 조회 성공!", itemBidList);
+    }
     @PostMapping
     public Response<Void> bid(@RequestBody BidRequest bidRequest) {
         bidService.bid(bidRequest);

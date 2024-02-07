@@ -1,6 +1,6 @@
 package com.api.farmingsoon.domain.bid.service;
 
-import com.api.farmingsoon.domain.notification.event.BidRegisterEvent;
+import com.api.farmingsoon.domain.bid.dto.BidListResponse;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
@@ -13,7 +13,6 @@ import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -55,5 +54,10 @@ public class BidService {
     @Transactional(readOnly = true)
     public Page<Bid> getMyBidList(Member member, Pageable pageable){
         return bidRepository.findAllByMember(member, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public BidListResponse getItemBidList(Long itemId) {
+        return BidListResponse.of(bidRepository.findAllByItemId(itemId));
     }
 }
