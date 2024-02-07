@@ -4,15 +4,13 @@ import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
-import com.api.farmingsoon.domain.item.dto.ItemListResponse;
+import com.api.farmingsoon.domain.item.dto.LikeableItemListResponse;
 import com.api.farmingsoon.domain.item.service.ItemService;
-import com.api.farmingsoon.domain.like.model.LikeableItem;
 import com.api.farmingsoon.domain.like.service.LikeableItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
 import com.api.farmingsoon.util.Transaction;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,7 +33,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
@@ -178,9 +175,8 @@ class LikeableItemIntegrationTest {
                 .andReturn();
         //then
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
-        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+        LikeableItemListResponse likeableItemListResponse = objectMapper.readValue(result, LikeableItemListResponse.class);
 
-        Assertions.assertThat(itemListResponse.getItems().size()).isEqualTo(10);
-        Assertions.assertThat(itemListResponse.getItems().get(0).getLikeStatus()).isTrue();
+        Assertions.assertThat(likeableItemListResponse.getItems().size()).isEqualTo(10);
     }
 }

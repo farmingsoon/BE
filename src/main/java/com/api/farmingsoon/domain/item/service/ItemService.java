@@ -1,5 +1,6 @@
 package com.api.farmingsoon.domain.item.service;
 
+import com.api.farmingsoon.domain.item.dto.*;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
@@ -12,9 +13,6 @@ import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.image.service.ImageService;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
-import com.api.farmingsoon.domain.item.dto.ItemCreateRequest;
-import com.api.farmingsoon.domain.item.dto.ItemDetailResponse;
-import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,14 +67,14 @@ public class ItemService {
     }
     @Transactional(readOnly = true)
     public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortcode) {
-        Member viewer = authenticationUtils.getAuthenticationMember();
+        Optional<Member> viewer = authenticationUtils.getOptionalMember();
         return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable, sortcode), viewer);
     }
     @Transactional(readOnly = true)
     public ItemDetailResponse getItemDetail(Long itemId) {
-        Member viewer = authenticationUtils.getAuthenticationMember();
+        Optional<Member> viewer = authenticationUtils.getOptionalMember();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
-        return ItemDetailResponse.fromEntity(item, viewer);
+        return ItemDetailResponse.of(item, viewer);
     }
 
     @Transactional
@@ -91,17 +90,16 @@ public class ItemService {
         return itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
     }
     @Transactional(readOnly = true)
-    public ItemListResponse getMyItemList(Pageable pageable) {
-        Member viewer = authenticationUtils.getAuthenticationMember();
-        return ItemListResponse.of(itemRepository.findAllByMember(authenticationUtils.getAuthenticationMember(), pageable), viewer);
+    public MyItemListResponse getMyItemList(Pageable pageable) {
+        return MyItemListResponse.of(itemRepository.findAllByMember(authenticationUtils.getAuthenticationMember(), pageable));
     }
 
     @Transactional(readOnly = true)
-    public ItemListResponse getMyBidItemList(Pageable pageable) {
+    public MyBidItemListResponse getMyBidItemList(Pageable pageable) {
         Member viewer = authenticationUtils.getAuthenticationMember();
         Page<Bid> myBidList = bidService.getMyBidList(viewer, pageable);
 
-        return ItemListResponse.of(myBidList.map(Bid::getItem), viewer);
+        return MyBidItemListResponse.of(myBidList.map(Bid::getItem), viewer);
     }
 
     /**
