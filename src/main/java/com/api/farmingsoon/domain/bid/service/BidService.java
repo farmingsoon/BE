@@ -57,7 +57,7 @@ public class BidService {
     }
 
     @Transactional(readOnly = true)
-    public BidListResponse getItemBidList(Long itemId) {
-        return BidListResponse.of(bidRepository.findAllByItemId(itemId));
+    public BidListResponse getItemBidList(Long itemId, Pageable pageable) {
+        return BidListResponse.of(bidRepository.findAllByItemId(itemId, pageable));
     }
 }

@@ -12,5 +12,5 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
 
     void deleteAllByMember(Member member);
 
-    Page<Bid> findAllByItemId(Long itemId);
+    Page<Bid> findAllByItemId(Long itemId, Pageable pageable);
 }
