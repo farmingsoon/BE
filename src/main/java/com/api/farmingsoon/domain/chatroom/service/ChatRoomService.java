@@ -44,15 +44,15 @@ public class ChatRoomService {
     /**
      * @Description
      * 내가 판매자 또는 구매자로 참가하고 있는 채팅방 목록 조회
+     * 채팅이 하나라도 있어야 조회됨
      */
     @Transactional(readOnly = true)
     public List<ChatRoomResponse> getChatRooms() {
         Member fromMember = memberService.getMemberByEmail(authenticationUtils.getAuthenticationMember().getEmail());
         List<ChatRoom> myChatRooms = chatRoomRepository.findChatRoomByBuyerOrSeller(fromMember, fromMember);
-        return myChatRooms.stream().map
-                (
-                    chatRoom -> ChatRoomResponse.of(chatRoom, fromMember.getEmail())
-                )
+        return myChatRooms.stream().
+                filter(chatRoom -> !chatRoom.getChatList().isEmpty()).
+                map(chatRoom -> ChatRoomResponse.of(chatRoom, fromMember.getEmail()))
                 .toList();
     }
 
@@ -63,11 +63,11 @@ public class ChatRoomService {
      */
     @Transactional(readOnly = true)
     public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId) {
-        String fromUsername = authenticationUtils.getAuthenticationMember().getEmail();
+        String fromUserEmail = authenticationUtils.getAuthenticationMember().getEmail();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM));
 
-        return ChatRoomDetailResponse.of(chatRoom, fromUsername);
+        return ChatRoomDetailResponse.of(chatRoom, fromUserEmail);
     }
 
 
@@ -80,10 +80,9 @@ public class ChatRoomService {
     @Transactional
     public Long handleChatRoom(ChatRoomCreateRequest chatRoomCreateRequest) {
         Item item = itemService.getItemById(chatRoomCreateRequest.getItemId());
-        Member buyer = memberService.getMemberByEmail(chatRoomCreateRequest.getBuyerName());
+        Member buyer = memberService.getMemberById(chatRoomCreateRequest.getBuyerId());
         Member seller = item.getMember();
 
-        ChatRoom chatRoom = chatRoomRepository.findChatRoomByBuyerAndItem(buyer, item).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findChatRoomByBuyerAndItem(buyer, item);
 
         return optionalChatRoom.orElseGet(()

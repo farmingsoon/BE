@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,13 +34,14 @@ public class ChatRoomResponse {
         this.lastChatTime = lastChatTime;
     }
 
-    public static ChatRoomResponse of(ChatRoom chatRoom, String fromName) {
-        Member toMember =  ChatRoom.resolveToMember(chatRoom, fromName);
-        Chat lastChat = chatRoom.getChatList().get(0);
+    public static ChatRoomResponse of(ChatRoom chatRoom, String fromUserEmail) {
+        Member toMember =  ChatRoom.resolveToMember(chatRoom, fromUserEmail);
+        List<Chat> chatList = chatRoom.getChatList();
+        Chat lastChat = chatList.get(chatList.size() - 1);
 
         return ChatRoomResponse.builder()
                 .chatRoomId(chatRoom.getId())
-                .toUserName(toMember.getEmail())
+                .toUserName(toMember.getNickname())
                 .toUserProfileImage(toMember.getProfileImg())
                 .lastMessage(lastChat.getMessage())
                 .lastChatTime(lastChat.getCreatedAt())

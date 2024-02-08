@@ -1,4 +1,4 @@
-package com.api.farmingsoon.domain.like.controller;
+package com.api.farmingsoon.domain.like;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;

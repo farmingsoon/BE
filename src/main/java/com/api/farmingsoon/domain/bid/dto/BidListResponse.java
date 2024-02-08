@@ -36,23 +36,29 @@ public class BidListResponse {
     private static class BidResponse {
 
         private Long bidderId;
+        private Long bidId;
         private Long itemId;
-        private String itemName;
+        private String bidderName;
+        private String bidderProfileUrl;
         private int price;
 
         @Builder
-        private BidResponse(Long bidderId, Long itemId, String itemName, int price) {
+        private BidResponse(Long bidderId,Long bidId, Long itemId, String bidderName, String bidderProfileUrl, int price) {
+            this.bidId = bidId;
             this.bidderId = bidderId;
+            this.bidderName = bidderName;
+            this.bidderProfileUrl = bidderProfileUrl;
             this.itemId = itemId;
-            this.itemName = itemName;
             this.price = price;
         }
 
         public static BidResponse of(Bid bid) {
             return BidResponse.builder()
                     .bidderId(bid.getMember().getId())
+                    .bidId(bid.getId())
                     .itemId(bid.getItem().getId())
-                    .itemName(bid.getItem().getTitle())
+                    .bidderName(bid.getMember().getNickname())
+                    .bidderProfileUrl(bid.getMember().getProfileImg())
                     .price(bid.getPrice())
                     .build();
         }

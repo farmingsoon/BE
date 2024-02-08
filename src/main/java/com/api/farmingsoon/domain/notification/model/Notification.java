@@ -1,5 +1,6 @@
 package com.api.farmingsoon.domain.notification.model;
 
+import com.api.farmingsoon.common.auditing.BaseTimeEntity;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notification {
+public class Notification extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -37,6 +37,6 @@ public class ChatService {
     @Transactional(readOnly = true)
     public ChatListResponse getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-        return ChatListResponse.of(chatRepository.findByChatRoom(chatRoom, pageable));
+        return ChatListResponse.of(chatRepository.findByChatRoomOrderByIdDesc(chatRoom, pageable));
     }
 }

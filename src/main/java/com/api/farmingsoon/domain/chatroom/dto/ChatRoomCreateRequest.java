@@ -13,21 +13,21 @@ public class ChatRoomCreateRequest {
      * 추후에 모든 회원들은 nickname을 이용하며 이 부분도 email이 아닌 nickname을 사용하도록 만들면 좋을 것 같습니다.
      */
     @NotNull
-    private String buyerName;
+    private Long buyerId;
 
     @NotNull
     private Long itemId;
 
     @Builder
-    public ChatRoomCreateRequest(String buyerName, Long itemId) {
-        this.buyerName = buyerName;
+    public ChatRoomCreateRequest(Long buyerId, Long itemId) {
+        this.buyerId = buyerId;
         this.itemId = itemId;
     }
 
-    public static ChatRoomCreateRequest of(String buyerName, Long itemId) {
+    public static ChatRoomCreateRequest of(Long buyerId, Long itemId) {
         return ChatRoomCreateRequest
                 .builder()
-                .buyerName(buyerName)
+                .buyerId(buyerId)
                 .itemId(itemId)
                 .build();
     }

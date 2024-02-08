@@ -23,14 +23,11 @@ public class ChatRoomDetailResponse {
 
     private Integer highestPrice;
 
-    private String toUsername; // 상대방 식별
-
     private String toUserProfileImage;
 
 
     @Builder
-    private ChatRoomDetailResponse(String toUsername, String itemTitle, Integer highestPrice,String toUserProfileImage , String itemThumbnailImage,Long itemId) {
-        this.toUsername = toUsername;
+    private ChatRoomDetailResponse(String itemTitle, Integer highestPrice,String toUserProfileImage , String itemThumbnailImage,Long itemId) {
         this.itemTitle = itemTitle;
         this.highestPrice = highestPrice;
         this.itemThumbnailImage = itemThumbnailImage;
@@ -41,7 +38,6 @@ public class ChatRoomDetailResponse {
     public static ChatRoomDetailResponse of(ChatRoom chatRoom, String fromUsername) {
         Member toUser = ChatRoom.resolveToMember(chatRoom, fromUsername);
         return ChatRoomDetailResponse.builder()
-                .toUsername(toUser.getEmail())
                 .itemTitle(chatRoom.getItem().getTitle())
                 .highestPrice(chatRoom.getItem().getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))
                 .itemId(chatRoom.getItem().getId())
