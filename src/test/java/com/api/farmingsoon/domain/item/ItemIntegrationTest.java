@@ -1,10 +1,8 @@
-package com.api.farmingsoon.domain.item.controller;
+package com.api.farmingsoon.domain.item;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
-import com.api.farmingsoon.domain.bid.model.Bid;
-import com.api.farmingsoon.domain.bid.model.BidResult;
 import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
@@ -54,7 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-class ItemControllerTest {
+class ItemIntegrationTest {
 
     @Autowired
     private MemberService memberService;
