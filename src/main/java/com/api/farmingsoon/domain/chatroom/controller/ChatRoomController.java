@@ -23,13 +23,14 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @LoginChecking
-    @GetMapping
+    @GetMapping("/me")
     public Response<List<ChatRoomResponse>> getChatRoomList() {
         return Response.success(HttpStatus.OK,"나의 채팅방 목록", chatRoomService.getChatRooms());
     }
-    @GetMapping("{chatRoomId}")
-    public ChatRoomDetailResponse getChatRoomDetail(@PathVariable(name = "chatRoomId") Long chatRoomId){
-        return chatRoomService.getChatRoomDetail(chatRoomId);
+    @LoginChecking
+    @GetMapping("/{chatRoomId}")
+    public Response<ChatRoomDetailResponse> getChatRoomDetail(@PathVariable(name = "chatRoomId") Long chatRoomId){
+        return Response.success(HttpStatus.OK, "채팅방 상세", chatRoomService.getChatRoomDetail(chatRoomId));
     }
 
     /**
