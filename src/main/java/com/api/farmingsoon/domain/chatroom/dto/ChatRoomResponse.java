@@ -34,14 +34,14 @@ public class ChatRoomResponse {
         this.lastChatTime = lastChatTime;
     }
 
-    public static ChatRoomResponse of(ChatRoom chatRoom, String fromName) {
-        Member toMember =  ChatRoom.resolveToMember(chatRoom, fromName);
+    public static ChatRoomResponse of(ChatRoom chatRoom, String fromUserEmail) {
+        Member toMember =  ChatRoom.resolveToMember(chatRoom, fromUserEmail);
         List<Chat> chatList = chatRoom.getChatList();
         Chat lastChat = chatList.get(chatList.size() - 1);
 
         return ChatRoomResponse.builder()
                 .chatRoomId(chatRoom.getId())
-                .toUserName(toMember.getEmail())
+                .toUserName(toMember.getNickname())
                 .toUserProfileImage(toMember.getProfileImg())
                 .lastMessage(lastChat.getMessage())
                 .lastChatTime(lastChat.getCreatedAt())

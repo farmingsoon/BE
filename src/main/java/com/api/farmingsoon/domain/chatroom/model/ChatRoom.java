@@ -58,8 +58,8 @@ public class ChatRoom extends BaseTimeEntity {
      * 판매자라면 상대방은 구매자
      * 반대라면 상대방은 판매자
      */
-    public static Member resolveToMember(ChatRoom chatRoom, String fromUsername) {
-        return chatRoom.seller.getEmail().equals(fromUsername) ?
+    public static Member resolveToMember(ChatRoom chatRoom, String fromUserEmail) {
+        return chatRoom.seller.getEmail().equals(fromUserEmail) ?
                 chatRoom.buyer :
                 chatRoom.seller;
     }

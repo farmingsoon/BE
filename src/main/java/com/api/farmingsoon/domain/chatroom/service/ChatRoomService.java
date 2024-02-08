@@ -63,11 +63,11 @@ public class ChatRoomService {
      */
     @Transactional(readOnly = true)
     public ChatRoomDetailResponse getChatRoomDetail(Long chatRoomId) {
-        String fromUsername = authenticationUtils.getAuthenticationMember().getEmail();
+        String fromUserEmail = authenticationUtils.getAuthenticationMember().getEmail();
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHATROOM));
 
-        return ChatRoomDetailResponse.of(chatRoom, fromUsername);
+        return ChatRoomDetailResponse.of(chatRoom, fromUserEmail);
     }
 
 
@@ -80,7 +80,7 @@ public class ChatRoomService {
     @Transactional
     public Long handleChatRoom(ChatRoomCreateRequest chatRoomCreateRequest) {
         Item item = itemService.getItemById(chatRoomCreateRequest.getItemId());
-        Member buyer = memberService.getMemberByEmail(chatRoomCreateRequest.getBuyerName());
+        Member buyer = memberService.getMemberById(chatRoomCreateRequest.getBuyerId());
         Member seller = item.getMember();
 
         Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findChatRoomByBuyerAndItem(buyer, item);
