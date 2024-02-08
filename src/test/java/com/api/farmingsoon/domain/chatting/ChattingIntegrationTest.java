@@ -7,6 +7,7 @@ import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.service.ChatService;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomCreateRequest;
+import com.api.farmingsoon.domain.chatroom.dto.ChatRoomDetailResponse;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomResponse;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
@@ -18,6 +19,7 @@ import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
 import com.api.farmingsoon.util.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,7 +132,6 @@ public class ChattingIntegrationTest {
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
 
         // when
-
         MvcResult mvcResult = mockMvc.perform(post("/api/chat-rooms")
                         .content(objectMapper.writeValueAsString(chatRoomCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -143,10 +144,9 @@ public class ChattingIntegrationTest {
         
         transaction.invoke(() ->
             {
-            ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-
-            Assertions.assertThat(chatRoom.getSeller().getEmail()).isEqualTo("user1@naver.com");
-            Assertions.assertThat(chatRoom.getBuyer().getEmail()).isEqualTo("user2@naver.com");
+                ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
+                Assertions.assertThat(chatRoom.getSeller().getEmail()).isEqualTo("user1@naver.com");
+                Assertions.assertThat(chatRoom.getBuyer().getEmail()).isEqualTo("user2@naver.com");
             }
         );
 
@@ -159,7 +159,6 @@ public class ChattingIntegrationTest {
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
 
         // when
-
         MvcResult mvcResult = mockMvc.perform(post("/api/chat-rooms")
                         .content(objectMapper.writeValueAsString(chatRoomCreateRequest))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -167,13 +166,12 @@ public class ChattingIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
+
         //then
         Long chatRoomId = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").asLong();
-
         transaction.invoke(() ->
                 {
                     ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-
                     Assertions.assertThat(chatRoom.getSeller().getEmail()).isEqualTo("user1@naver.com");
                     Assertions.assertThat(chatRoom.getBuyer().getEmail()).isEqualTo("user2@naver.com");
                 }
@@ -190,19 +188,16 @@ public class ChattingIntegrationTest {
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
-        // when
 
+        // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
         //then
-
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get(0).toString();
         ChatRoomResponse chatRoomResponse = objectMapper.readValue(result, ChatRoomResponse.class);
-
-
 
         Assertions.assertThat(chatRoomResponse.getToUserName()).isEqualTo("user2@naver.com");
         Assertions.assertThat(chatRoomResponse.getLastMessage()).isEqualTo("chat2");
@@ -220,8 +215,8 @@ public class ChattingIntegrationTest {
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat3").build());
-        // when
 
+        // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -231,11 +226,54 @@ public class ChattingIntegrationTest {
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get(0).toString();
         ChatRoomResponse chatRoomResponse = objectMapper.readValue(result, ChatRoomResponse.class);
 
-
-
         Assertions.assertThat(chatRoomResponse.getToUserName()).isEqualTo("user1@naver.com");
         Assertions.assertThat(chatRoomResponse.getLastMessage()).isEqualTo("chat3");
 
+    }
+
+    @DisplayName("채팅이 없는 채팅방은 조회되지 않는다.")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getChatRoom1() throws Exception {
+        //given
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+
+        Assertions.assertThat(result).isEqualTo("[]");
+
+    }
+
+    @DisplayName("채팅방 상세 조회")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getChatRoomDetail() throws Exception {
+        //given
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/" + chatRoomId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ChatRoomDetailResponse chatRoomDetailResponse = objectMapper.readValue(result, ChatRoomDetailResponse.class);
+
+        Assertions.assertThat(chatRoomDetailResponse.getItemId()).isEqualTo(1);
+        Assertions.assertThat(chatRoomDetailResponse.getItemTitle()).isEqualTo("title");
+        Assertions.assertThat(chatRoomDetailResponse.getToUsername()).isEqualTo("user2@naver.com");
 
     }
 }

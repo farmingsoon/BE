@@ -29,8 +29,8 @@ public class ChatRoomController {
     }
     @LoginChecking
     @GetMapping("/{chatRoomId}")
-    public ChatRoomDetailResponse getChatRoomDetail(@PathVariable(name = "chatRoomId") Long chatRoomId){
-        return chatRoomService.getChatRoomDetail(chatRoomId);
+    public Response<ChatRoomDetailResponse> getChatRoomDetail(@PathVariable(name = "chatRoomId") Long chatRoomId){
+        return Response.success(HttpStatus.OK, "채팅방 상세", chatRoomService.getChatRoomDetail(chatRoomId));
     }
 
     /**
