@@ -3,11 +3,12 @@ package com.api.farmingsoon.domain.chat.dto;
 import com.api.farmingsoon.domain.chat.model.Chat;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Setter
+@NoArgsConstructor
 @Getter
 public class ChatResponse {
 

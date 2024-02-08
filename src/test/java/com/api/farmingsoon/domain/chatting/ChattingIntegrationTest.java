@@ -4,6 +4,7 @@ import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
 import com.api.farmingsoon.domain.bid.service.BidService;
+import com.api.farmingsoon.domain.chat.dto.ChatListResponse;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.service.ChatService;
 import com.api.farmingsoon.domain.chatroom.dto.ChatRoomCreateRequest;
@@ -273,6 +274,59 @@ public class ChattingIntegrationTest {
 
         Assertions.assertThat(chatRoomDetailResponse.getItemId()).isEqualTo(1);
         Assertions.assertThat(chatRoomDetailResponse.getItemTitle()).isEqualTo("title");
+
+    }
+
+    @DisplayName("채팅 목록 조회(구매자)")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getChatListBySeller() throws Exception {
+        //given
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
+        Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
+        for(int i = 1; i <= 20; i++) {
+            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).build());
+        }
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/chats/" + chatRoomId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ChatListResponse chatListResponse = objectMapper.readValue(result, ChatListResponse.class);
+
+        Assertions.assertThat(chatListResponse.getChats().get(0).getSenderId()).isEqualTo("1");
+        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat20");
+        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat13");
+
+    }
+    @DisplayName("채팅 목록 조회(구매자)")
+    @WithUserDetails(value = "user2@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getChatListByBuyer() throws Exception {
+        //given
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
+        Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
+        for(int i = 1; i <= 20; i++) {
+            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).build());
+        }
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/chats/" + chatRoomId))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ChatListResponse chatListResponse = objectMapper.readValue(result, ChatListResponse.class);
+
+        Assertions.assertThat(chatListResponse.getChats().get(0).getSenderId()).isEqualTo("2");
+        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat20");
+        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat13");
 
     }
 }
