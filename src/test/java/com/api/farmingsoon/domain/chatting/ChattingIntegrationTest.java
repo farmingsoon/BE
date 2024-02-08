@@ -92,7 +92,7 @@ public class ChattingIntegrationTest {
         for(int i = 1; i <= 2; i++){
             JoinRequest joinRequest = JoinRequest.builder()
                     .email("user" + i + "@naver.com")
-                    .nickname("user1")
+                    .nickname("user" + i)
                     .password("12345678")
                     .profileImg(profileImage).build();
 
@@ -129,7 +129,7 @@ public class ChattingIntegrationTest {
     @Test
     void createChatRoomByBuyer() throws Exception {
         //given
-        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/api/chat-rooms")
@@ -156,7 +156,7 @@ public class ChattingIntegrationTest {
     @Test
     void createChatRoomBySeller() throws Exception {
         //given
-        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
 
         // when
         MvcResult mvcResult = mockMvc.perform(post("/api/chat-rooms")
@@ -184,7 +184,7 @@ public class ChattingIntegrationTest {
     @Test
     void getChatRoomBySeller() throws Exception {
         //given
-        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
@@ -199,7 +199,7 @@ public class ChattingIntegrationTest {
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get(0).toString();
         ChatRoomResponse chatRoomResponse = objectMapper.readValue(result, ChatRoomResponse.class);
 
-        Assertions.assertThat(chatRoomResponse.getToUserName()).isEqualTo("user2@naver.com");
+        Assertions.assertThat(chatRoomResponse.getToUserName()).isEqualTo("user2");
         Assertions.assertThat(chatRoomResponse.getLastMessage()).isEqualTo("chat2");
 
 
@@ -210,7 +210,7 @@ public class ChattingIntegrationTest {
     @Test
     void getChatRoomByBuyer() throws Exception {
         //given
-        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
@@ -226,7 +226,7 @@ public class ChattingIntegrationTest {
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get(0).toString();
         ChatRoomResponse chatRoomResponse = objectMapper.readValue(result, ChatRoomResponse.class);
 
-        Assertions.assertThat(chatRoomResponse.getToUserName()).isEqualTo("user1@naver.com");
+        Assertions.assertThat(chatRoomResponse.getToUserName()).isEqualTo("user1");
         Assertions.assertThat(chatRoomResponse.getLastMessage()).isEqualTo("chat3");
 
     }
@@ -236,7 +236,7 @@ public class ChattingIntegrationTest {
     @Test
     void getChatRoom1() throws Exception {
         //given
-        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
 
         // when
@@ -257,7 +257,7 @@ public class ChattingIntegrationTest {
     @Test
     void getChatRoomDetail() throws Exception {
         //given
-        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of("user2@naver.com", 1L);
+        ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
 
@@ -273,7 +273,6 @@ public class ChattingIntegrationTest {
 
         Assertions.assertThat(chatRoomDetailResponse.getItemId()).isEqualTo(1);
         Assertions.assertThat(chatRoomDetailResponse.getItemTitle()).isEqualTo("title");
-        Assertions.assertThat(chatRoomDetailResponse.getToUsername()).isEqualTo("user2@naver.com");
 
     }
 }
