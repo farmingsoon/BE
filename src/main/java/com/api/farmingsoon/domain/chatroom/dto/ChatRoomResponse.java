@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -35,7 +36,8 @@ public class ChatRoomResponse {
 
     public static ChatRoomResponse of(ChatRoom chatRoom, String fromName) {
         Member toMember =  ChatRoom.resolveToMember(chatRoom, fromName);
-        Chat lastChat = chatRoom.getChatList().get(0);
+        List<Chat> chatList = chatRoom.getChatList();
+        Chat lastChat = chatList.get(chatList.size() - 1);
 
         return ChatRoomResponse.builder()
                 .chatRoomId(chatRoom.getId())
