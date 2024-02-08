@@ -7,6 +7,7 @@ import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.member.model.Member;
+import com.api.farmingsoon.domain.notification.dto.NotificationListResponse;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.model.Notification;
 import com.api.farmingsoon.domain.notification.repository.NotificationRepository;
@@ -34,10 +35,10 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationResponse> getMyNotifications(Pageable pageable) {
+    public NotificationListResponse getMyNotifications(Pageable pageable) {
         Page<Notification> notifications = notificationRepository.findByReceiverAndReadDateIsNull(authenticationUtils.getAuthenticationMember(), pageable);
 
-        return notifications.stream().map(NotificationResponse::of).toList();
+        return NotificationListResponse.of(notifications);
     }
     @Transactional
     public void readNotification(Long notificationId){
@@ -60,30 +61,35 @@ public class NotificationService {
      **/
 
     @Transactional
-    // 구매자와 판매자에게 입찰이 등록되었다고 알리기
+    // 현재 입찰을 등록하는 회원을 제외한 입찰자, 판매자에게 입찰이 등록되었다고 알리기
     public void createAndSendNewBidNotification(Item item) {
-        List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
+        Member bidder = authenticationUtils.getAuthenticationMember();
+        List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).filter(member -> bidder != member).toList()); // 입찰자들
         receiverList.add(item.getMember()); // 판매자 추가
 
         receiverList.forEach(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
         receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
+    // 입찰자들에 대해 먼저 처리한 후 List에 판매자를 추가하여 알림 전송에 재활용
     @Transactional
     public void createAndSendBidEndNotification(Item item) {
         List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
-        receiverList.add(item.getMember()); // 판매자 추가
+        receiverList.forEach(bidder -> notificationRepository.save(Notification.of(bidder,"입찰이 종료되었습니다. 거래를 기다려주세요", item.getId())));
 
-        receiverList.forEach(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
-        receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
+        Member seller = item.getMember();
+        notificationRepository.save(Notification.of(seller,"입찰이 종료되었습니다. 거래를 진행해주세요", item.getId()));
+        receiverList.add(seller); // 판매자 추가
+
+        receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰이 종료되었습니다"));
 
     }
     @Transactional
     public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {
-        notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다", item.getId()));
+        notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다.", item.getId()));
         bidderList.stream().skip(1).forEach(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));
 
-        bidderList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "알림"));
+        bidderList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰 등록한 상품이 판매 완료되었습니다."));
     }
 
 

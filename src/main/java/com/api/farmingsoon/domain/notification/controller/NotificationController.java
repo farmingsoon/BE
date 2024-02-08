@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.notification.controller;
 
 import com.api.farmingsoon.common.response.Response;
+import com.api.farmingsoon.domain.notification.dto.NotificationListResponse;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +39,10 @@ public class NotificationController {
     }
 
     @GetMapping("/me")
-    public Response<List<NotificationResponse>> getMyNotifications(
+    public Response<NotificationListResponse> getMyNotifications(
             @PageableDefault(size = 8, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        List<NotificationResponse> myNotifications = notificationService.getMyNotifications(pageable);
+        NotificationListResponse myNotifications = notificationService.getMyNotifications(pageable);
         return Response.success(HttpStatus.OK, "알림 조회 성공", myNotifications);
     }
     /**
