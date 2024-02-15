@@ -105,6 +105,7 @@ class ItemIntegrationTest {
                     .title("title" + i)
                     .description("description" + i)
                     .hopePrice(10000 * i)
+                    .bidPeriod(1)
                     .itemStatus(ItemStatus.BIDDING)
                     .viewCount(i)
                     .expiredAt(TimeUtils.setExpireAt(i)).build();

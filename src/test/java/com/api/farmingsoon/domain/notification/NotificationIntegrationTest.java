@@ -113,6 +113,7 @@ public class NotificationIntegrationTest {
                 .title("title")
                 .description("description")
                 .hopePrice(10000)
+                .bidPeriod(1)
                 .itemStatus(ItemStatus.BIDDING)
                 .viewCount(0)
                 .expiredAt(TimeUtils.setExpireAt(3)).build();

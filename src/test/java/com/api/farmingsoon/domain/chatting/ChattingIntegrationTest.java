@@ -112,12 +112,13 @@ public class ChattingIntegrationTest {
                 .hopePrice(10000)
                 .itemStatus(ItemStatus.BIDDING)
                 .viewCount(0)
+                .bidPeriod(1)
                 .expiredAt(TimeUtils.setExpireAt(3)).build();
 
         List<String> imageUrl = new ArrayList<>(Arrays.asList("/subFile1", "/subFile2" , "/subFile3"));
         imageUrl.add(0, "/thumnailImage");
 
-        itemService.saveItemAndImage(item, imageUrl);
+        itemService.saveItemAndImage(item,imageUrl);
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가

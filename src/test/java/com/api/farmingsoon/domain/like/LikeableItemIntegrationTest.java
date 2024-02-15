@@ -106,6 +106,7 @@ class LikeableItemIntegrationTest {
                     .description("description" + i)
                     .hopePrice(10000 * i)
                     .itemStatus(ItemStatus.BIDDING)
+                    .bidPeriod(1)
                     .viewCount(i)
                     .expiredAt(TimeUtils.setExpireAt(i)).build();
 
