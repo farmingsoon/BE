@@ -39,6 +39,9 @@ public class Item extends BaseTimeEntity {
     private Integer hopePrice;
 
     @Column
+    private Integer bidPeriod;
+
+    @Column
     private LocalDateTime expiredAt;
 
     @Column
@@ -66,11 +69,12 @@ public class Item extends BaseTimeEntity {
     }
 
     @Builder
-    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
+    private Item(Member member, String title, String description, Integer hopePrice, Integer bidPeriod, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
         this.member = member;
         this.title = title;
         this.description = description;
         this.hopePrice = hopePrice;
+        this.bidPeriod = bidPeriod;
         this.category = category;
         this.expiredAt = expiredAt;
         this.thumbnailImageUrl = thumbnailImageUrl;
