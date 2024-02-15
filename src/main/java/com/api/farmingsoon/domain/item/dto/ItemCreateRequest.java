@@ -47,8 +47,9 @@ public class ItemCreateRequest {
                 .title(this.title)
                 .description(this.description)
                 .hopePrice(this.hopePrice)
-                .category(category)
-                .expiredAt(TimeUtils.setExpireAt(period))
+                .category(this.category)
+                .expiredAt(TimeUtils.setExpireAt(this.period))
+                .bidPeriod(this.period)
                 .itemStatus(ItemStatus.BIDDING)
                 .build();
     }

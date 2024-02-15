@@ -36,6 +36,7 @@ public class ItemService {
     private final ApplicationEventPublisher eventPublisher;
     private final BidService bidService;
     private final NotificationService notificationService;
+    private final ItemRedisService itemRedisService;
 
     /**
      * @Description
@@ -63,6 +64,7 @@ public class ItemService {
                 (
                     imageUrl -> imageService.createImage(Image.of(imageUrl, item))
                 );
+        itemRedisService.setBidEndTime(item.getId(), item.getBidPeriod());
         return itemId;
     }
     @Transactional(readOnly = true)
