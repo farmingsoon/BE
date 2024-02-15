@@ -25,14 +25,17 @@ public class ChatRoomDetailResponse {
 
     private String toUserProfileImage;
 
+    private String toUsername;
+
 
     @Builder
-    private ChatRoomDetailResponse(String itemTitle, Integer highestPrice,String toUserProfileImage , String itemThumbnailImage,Long itemId) {
+    private ChatRoomDetailResponse(String itemTitle, Integer highestPrice,String toUserProfileImage , String itemThumbnailImage,Long itemId, String toUsername) {
         this.itemTitle = itemTitle;
         this.highestPrice = highestPrice;
         this.itemThumbnailImage = itemThumbnailImage;
         this.toUserProfileImage = toUserProfileImage;
         this.itemId = itemId;
+        this.toUsername = toUsername;
     }
 
     public static ChatRoomDetailResponse of(ChatRoom chatRoom, String fromUsername) {
@@ -43,6 +46,7 @@ public class ChatRoomDetailResponse {
                 .itemId(chatRoom.getItem().getId())
                 .itemThumbnailImage(chatRoom.getItem().getThumbnailImageUrl())
                 .toUserProfileImage(toUser.getProfileImg())
+                .toUsername(toUser.getNickname())
                 .build();
     }
 }
