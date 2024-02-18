@@ -83,4 +83,7 @@ public class Item extends BaseTimeEntity {
     }
 
 
+    public void increaseViewCount(Integer viewCount) {
+        this.viewCount += viewCount;
+    }
 }
