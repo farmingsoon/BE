@@ -42,10 +42,10 @@ public class RedisService {
     }
 
     public void addToSet(String key, Long itemId){
-        redisTemplate.opsForSet().add(key,itemId);
+        redisTemplate.opsForSet().add(key,String.valueOf(itemId));
     }
     public boolean isExistInSet(String key, Long itemId){
-        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, itemId));
+        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, String.valueOf(itemId)));
     }
 
 }

@@ -37,11 +37,14 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public Response<ItemDetailResponse> getItemDetail(@Valid @PathVariable(value = "itemId") Long itemId, HttpServletRequest request, HttpServletResponse response) {
         ItemDetailResponse itemDetailResponse = itemService.getItemDetail(itemId);
-        Optional<Cookie> viewCountCookie = CookieUtils.getViewCountCookie(request);
-        if(viewCountCookie.isEmpty())
-            CookieUtils.createAndAddViewCountCookie(response);
-        else
-            itemService.handleViewCount(itemId, viewCountCookie.get().getValue());
+
+        /**
+         * @Description
+         * 1. 쿠키가 없다면 만들고 있다면 value Return
+         * 2. 사용자의 아이템에 대한 접근 흔적이 없다면 조회수 증가
+         */
+        String viewCountCookieValue = CookieUtils.getViewCountCookieValue(request, response);
+        itemService.handleViewCount(itemId, viewCountCookieValue);
 
 
         return Response.success(HttpStatus.OK, String.format("%d번 상품 정보입니다.",itemId), itemDetailResponse);
