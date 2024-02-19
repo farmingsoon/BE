@@ -51,8 +51,7 @@ public class Item extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
-//
-    private Integer viewCount = 0;
+    private Integer viewCount;
 
     // *Todo 양방향 안쓰는 쪽으로 고려해보기
     @OneToMany(mappedBy = "item")
@@ -79,8 +78,11 @@ public class Item extends BaseTimeEntity {
         this.expiredAt = expiredAt;
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.itemStatus = itemStatus;
-        this.viewCount = viewCount;
+        this.viewCount = viewCount == null ? 0 : viewCount;
     }
 
 
+    public void increaseViewCount(Integer viewCount) {
+        this.viewCount += viewCount;
+    }
 }

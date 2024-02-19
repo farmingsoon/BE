@@ -188,8 +188,8 @@ public class ChattingIntegrationTest {
         //given
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(1L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").senderId(1L).build());
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
@@ -214,9 +214,9 @@ public class ChattingIntegrationTest {
         //given
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat3").build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(2L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").senderId(2L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat3").senderId(2L).build());
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
@@ -261,7 +261,7 @@ public class ChattingIntegrationTest {
         //given
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(1L).build());
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/" + chatRoomId))
@@ -286,7 +286,7 @@ public class ChattingIntegrationTest {
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         for(int i = 1; i <= 20; i++) {
-            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).build());
+            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).senderId(1L).build());
         }
 
         // when
@@ -312,7 +312,7 @@ public class ChattingIntegrationTest {
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         for(int i = 1; i <= 20; i++) {
-            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).build());
+            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).senderId(2L).build());
         }
 
         // when

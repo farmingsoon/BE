@@ -29,10 +29,6 @@ public class RedisService {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public Set<String> getKeySet(String domain) {
-        return redisTemplate.keys(domain);
-    }
-
     public void deleteData(String key) {
         redisTemplate.delete(key);
     }
@@ -40,4 +36,16 @@ public class RedisService {
     public void increaseData(String key) {
         redisTemplate.opsForValue().increment(key);
     }
+
+    public Set<String> getKeySet(String domain) {
+        return redisTemplate.keys(domain);
+    }
+
+    public void addToSet(String key, Long itemId){
+        redisTemplate.opsForSet().add(key,String.valueOf(itemId));
+    }
+    public boolean isExistInSet(String key, Long itemId){
+        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, String.valueOf(itemId)));
+    }
+
 }

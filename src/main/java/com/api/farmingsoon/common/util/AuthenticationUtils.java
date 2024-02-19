@@ -49,6 +49,14 @@ public class AuthenticationUtils {
     }
     public Optional<Member> getOptionalMember()
     {
-        return memberService.getOptionalMemberByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Optional<Member> member;
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        if(email == null)
+            member = Optional.of(memberService.getMemberByEmail(email));
+        else
+            member = Optional.empty();
+
+        return member;
     }
 }
