@@ -1,5 +1,6 @@
 package com.api.farmingsoon.common.redis;
 
+import com.api.farmingsoon.common.util.TimeUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -42,7 +43,13 @@ public class RedisService {
     }
 
     public void addToSet(String key, Long itemId){
-        redisTemplate.opsForSet().add(key,String.valueOf(itemId));
+        if(!redisTemplate.hasKey(key)) {// 키가 없다면(set이 없다면)
+            redisTemplate.opsForSet().add(key, String.valueOf(itemId)); // set생성
+            redisTemplate.expire(key, TimeUtils.getRemainingTimeUntilMidnight(), TimeUnit.SECONDS); // 만료기간 설정
+        }
+        else // 기존 키 값으로 된 set에 추가
+            redisTemplate.opsForSet().add(key,String.valueOf(itemId));
+
     }
     public boolean isExistInSet(String key, Long itemId){
         return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, String.valueOf(itemId)));
