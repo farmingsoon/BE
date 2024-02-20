@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +42,7 @@ public class CookieUtils {
                 .sameSite("None")
                 .httpOnly(true)
                 .secure(true)
-                .maxAge(60 * 60 * 24)
+                .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
