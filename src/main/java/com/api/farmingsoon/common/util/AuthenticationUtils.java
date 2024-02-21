@@ -52,7 +52,8 @@ public class AuthenticationUtils {
         Optional<Member> member;
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        if(email == null)
+        // @Description 인증객체가 존재할 때 DB에서 조회해서 반환
+        if(email != null)
             member = Optional.of(memberService.getMemberByEmail(email));
         else
             member = Optional.empty();
