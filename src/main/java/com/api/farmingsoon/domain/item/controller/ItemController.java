@@ -3,8 +3,12 @@ package com.api.farmingsoon.domain.item.controller;
 
 import com.api.farmingsoon.common.annotation.LoginChecking;
 import com.api.farmingsoon.common.response.Response;
+import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.domain.item.dto.*;
 import com.api.farmingsoon.domain.item.service.ItemService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +17,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -29,8 +35,18 @@ public class ItemController {
         return Response.success(HttpStatus.OK, "상품 등록이 완료되었습니다.", itemId);
     }
     @GetMapping("/{itemId}")
-    public Response<ItemDetailResponse> getItemDetail(@Valid @PathVariable(value = "itemId") Long itemId) {
+    public Response<ItemDetailResponse> getItemDetail(@Valid @PathVariable(value = "itemId") Long itemId, HttpServletRequest request, HttpServletResponse response) {
         ItemDetailResponse itemDetailResponse = itemService.getItemDetail(itemId);
+
+        /**
+         * @Description
+         * 1. 쿠키가 없다면 만들고 있다면 value Return
+         * 2. 사용자의 아이템에 대한 접근 흔적이 없다면 조회수 증가
+         */
+        String viewCountCookieValue = CookieUtils.getViewCountCookieValue(request, response);
+        itemService.handleViewCount(itemId, viewCountCookieValue);
+
+
         return Response.success(HttpStatus.OK, String.format("%d번 상품 정보입니다.",itemId), itemDetailResponse);
     }
 

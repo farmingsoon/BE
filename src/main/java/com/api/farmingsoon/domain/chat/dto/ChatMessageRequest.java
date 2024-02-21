@@ -7,10 +7,12 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChatMessageRequest {
     private Long chatRoomId;
+    private Long senderId;
     private String message;
 
     @Builder
-    public ChatMessageRequest(Long chatRoomId, String message) {
+    public ChatMessageRequest(Long chatRoomId,Long senderId, String message) {
+        this.senderId = senderId;
         this.chatRoomId = chatRoomId;
         this.message = message;
     }

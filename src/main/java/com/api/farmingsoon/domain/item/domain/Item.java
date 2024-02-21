@@ -39,6 +39,9 @@ public class Item extends BaseTimeEntity {
     private Integer hopePrice;
 
     @Column
+    private Integer bidPeriod;
+
+    @Column
     private LocalDateTime expiredAt;
 
     @Column
@@ -48,8 +51,7 @@ public class Item extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus;
 
-//
-    private Integer viewCount = 0;
+    private Integer viewCount;
 
     // *Todo 양방향 안쓰는 쪽으로 고려해보기
     @OneToMany(mappedBy = "item")
@@ -66,17 +68,21 @@ public class Item extends BaseTimeEntity {
     }
 
     @Builder
-    private Item(Member member, String title, String description, Integer hopePrice, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
+    private Item(Member member, String title, String description, Integer hopePrice, Integer bidPeriod, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
         this.member = member;
         this.title = title;
         this.description = description;
         this.hopePrice = hopePrice;
+        this.bidPeriod = bidPeriod;
         this.category = category;
         this.expiredAt = expiredAt;
         this.thumbnailImageUrl = thumbnailImageUrl;
         this.itemStatus = itemStatus;
-        this.viewCount = viewCount;
+        this.viewCount = viewCount == null ? 0 : viewCount;
     }
 
 
+    public void increaseViewCount(Integer viewCount) {
+        this.viewCount += viewCount;
+    }
 }

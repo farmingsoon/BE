@@ -112,12 +112,13 @@ public class ChattingIntegrationTest {
                 .hopePrice(10000)
                 .itemStatus(ItemStatus.BIDDING)
                 .viewCount(0)
+                .bidPeriod(1)
                 .expiredAt(TimeUtils.setExpireAt(3)).build();
 
         List<String> imageUrl = new ArrayList<>(Arrays.asList("/subFile1", "/subFile2" , "/subFile3"));
         imageUrl.add(0, "/thumnailImage");
 
-        itemService.saveItemAndImage(item, imageUrl);
+        itemService.saveItemAndImage(item,imageUrl);
 
         this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
                 .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
@@ -187,8 +188,8 @@ public class ChattingIntegrationTest {
         //given
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(1L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").senderId(1L).build());
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
@@ -213,9 +214,9 @@ public class ChattingIntegrationTest {
         //given
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").build());
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat3").build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(2L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").senderId(2L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat3").senderId(2L).build());
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
@@ -260,7 +261,7 @@ public class ChattingIntegrationTest {
         //given
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(1L).build());
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/" + chatRoomId))
@@ -285,7 +286,7 @@ public class ChattingIntegrationTest {
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         for(int i = 1; i <= 20; i++) {
-            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).build());
+            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).senderId(1L).build());
         }
 
         // when
@@ -299,8 +300,8 @@ public class ChattingIntegrationTest {
         ChatListResponse chatListResponse = objectMapper.readValue(result, ChatListResponse.class);
 
         Assertions.assertThat(chatListResponse.getChats().get(0).getSenderId()).isEqualTo(1);
-        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat20");
-        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat13");
+        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat1");
+        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat8");
 
     }
     @DisplayName("채팅 목록 조회(구매자)")
@@ -311,7 +312,7 @@ public class ChattingIntegrationTest {
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         for(int i = 1; i <= 20; i++) {
-            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).build());
+            chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat" + i).senderId(2L).build());
         }
 
         // when
@@ -325,8 +326,8 @@ public class ChattingIntegrationTest {
         ChatListResponse chatListResponse = objectMapper.readValue(result, ChatListResponse.class);
 
         Assertions.assertThat(chatListResponse.getChats().get(0).getSenderId()).isEqualTo(2);
-        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat20");
-        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat13");
+        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat1");
+        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat8");
 
     }
 }

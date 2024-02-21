@@ -15,6 +15,9 @@ import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -22,9 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class ItemService {
     private final ApplicationEventPublisher eventPublisher;
     private final BidService bidService;
     private final NotificationService notificationService;
+    private final ItemRedisService itemRedisService;
 
     /**
      * @Description
@@ -63,6 +65,7 @@ public class ItemService {
                 (
                     imageUrl -> imageService.createImage(Image.of(imageUrl, item))
                 );
+        itemRedisService.setBidEndTime(item.getId(), item.getBidPeriod());
         return itemId;
     }
     @Transactional(readOnly = true)
@@ -76,6 +79,10 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         return ItemDetailResponse.of(item, viewer);
     }
+    public void handleViewCount(Long itemId, String cookieValue) {
+        itemRedisService.handleViewCount(cookieValue, itemId);
+    }
+
 
     @Transactional
     public void delete(Long itemId) {
@@ -142,5 +149,9 @@ public class ItemService {
         notificationService.createAndSendBidEndNotification(item);
     }
 
-
+    @Transactional
+    public void increaseViewCount(Long itemId, Integer viewCount) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
+        item.increaseViewCount(viewCount);
+    }
 }

@@ -9,6 +9,7 @@ import com.api.farmingsoon.domain.chat.repository.ChatRepository;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
 import com.api.farmingsoon.domain.member.model.Member;
+import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,12 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatRoomService chatRoomService;
-    private final AuthenticationUtils authenticationUtils;
+    private final MemberService memberService;
 
     @Transactional
     public ChatResponse create(ChatMessageRequest chatMessageRequest) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
-        Member sender = authenticationUtils.getAuthenticationMember();
+        Member sender = memberService.getMemberById(chatMessageRequest.getSenderId());
         Chat chat = chatRepository.save(Chat.of(chatMessageRequest.getMessage(), sender, chatRoom));
 
         return ChatResponse.of(chat);
@@ -37,6 +38,6 @@ public class ChatService {
     @Transactional(readOnly = true)
     public ChatListResponse getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-        return ChatListResponse.of(chatRepository.findByChatRoomOrderByIdDesc(chatRoom, pageable));
+        return ChatListResponse.of(chatRepository.findByChatRoomOrderByIdAsc(chatRoom, pageable));
     }
 }
