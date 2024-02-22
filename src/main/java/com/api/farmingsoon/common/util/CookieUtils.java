@@ -43,7 +43,7 @@ public class CookieUtils {
         ResponseCookie cookie = ResponseCookie.from("viewCountCookie", randomCookieValue)
                 .path("/")
                 .sameSite("None")
-                .httpOnly(true)
+                //.httpOnly(true)
                 .domain(".farmingsoon.vercel.app")
                 .secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
