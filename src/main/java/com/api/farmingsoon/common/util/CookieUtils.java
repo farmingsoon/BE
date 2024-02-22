@@ -43,8 +43,8 @@ public class CookieUtils {
         ResponseCookie cookie = ResponseCookie.from("viewCountCookie", randomCookieValue)
                 .path("/")
                 .sameSite("None")
-                //.httpOnly(true)
-                .domain(".farmingsoon.site")
+                .httpOnly(true)
+                .domain("farmingsoon.site")
                 .secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
                 .build();
