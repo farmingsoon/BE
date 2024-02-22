@@ -44,7 +44,7 @@ public class CookieUtils {
                 .path("/")
                 .sameSite("None")
                 .httpOnly(true)
-                .domain("farmingsoon.site")
+                .domain("farmingsoon.vercel.app")
                 .secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
                 .build();
