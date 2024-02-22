@@ -42,10 +42,10 @@ public class CookieUtils {
         String randomCookieValue = UUID.randomUUID().toString();
         ResponseCookie cookie = ResponseCookie.from("viewCountCookie", randomCookieValue)
                 .path("/")
-                .sameSite("None")
+                //.sameSite("None")
                 .httpOnly(true)
-                .domain("farmingsoon.vercel.app")
-                .secure(true)
+                .domain("farmingsoon.site")
+                //.secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
                 .build();
 
