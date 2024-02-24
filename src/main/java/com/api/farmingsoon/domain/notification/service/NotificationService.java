@@ -9,9 +9,11 @@ import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.notification.dto.NotificationListResponse;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
+import com.api.farmingsoon.domain.notification.event.NotificationSaveEvent;
 import com.api.farmingsoon.domain.notification.model.Notification;
 import com.api.farmingsoon.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final SseService sseService;
     private final AuthenticationUtils authenticationUtils;
+    private final ApplicationEventPublisher eventPublisher;
 
     public SseEmitter subscribe() {
         //return sseService.subscribe(authenticationUtils.getAuthenticationMember().getId());
@@ -68,7 +71,9 @@ public class NotificationService {
         receiverList.add(item.getMember()); // 판매자 추가
 
         receiverList.forEach(receiver -> notificationRepository.save(Notification.of(receiver,"새로운 입찰이 등록되었습니다.", item.getId())));
-        receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
+
+        eventPublisher.publishEvent(NotificationSaveEvent.of(receiverList.stream().map(Member::getId).toList(), "새로운 입찰이 등록되었습니다."));
+        //receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "새로운 입찰이 등록되었습니다."));
 
     }
     // 입찰자들에 대해 먼저 처리한 후 List에 판매자를 추가하여 알림 전송에 재활용
@@ -81,7 +86,8 @@ public class NotificationService {
         notificationRepository.save(Notification.of(seller,"입찰이 종료되었습니다. 거래를 진행해주세요", item.getId()));
         receiverList.add(seller); // 판매자 추가
 
-        receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰이 종료되었습니다"));
+        eventPublisher.publishEvent(NotificationSaveEvent.of(receiverList.stream().map(Member::getId).toList(), "입찰이 종료되었습니다."));
+        //receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰이 종료되었습니다"));
 
     }
     @Transactional
@@ -89,7 +95,8 @@ public class NotificationService {
         notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다.", item.getId()));
         bidderList.stream().skip(1).forEach(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));
 
-        bidderList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰 등록한 상품이 판매 완료되었습니다."));
+        eventPublisher.publishEvent(NotificationSaveEvent.of(bidderList.stream().map(Member::getId).toList(), "입찰 등록한 상품이 판매 완료되었습니다."));
+        //bidderList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰 등록한 상품이 판매 완료되었습니다."));
     }
 
 
