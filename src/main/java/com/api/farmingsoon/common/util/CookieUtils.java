@@ -39,7 +39,7 @@ public class CookieUtils {
         String randomCookieValue = UUID.randomUUID().toString();
         ResponseCookie cookie = ResponseCookie.from("viewCountCookie", randomCookieValue)
                 .path("/")
-                .sameSite("None")
+                .sameSite("Strict")
                 .httpOnly(true)
                 .secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
