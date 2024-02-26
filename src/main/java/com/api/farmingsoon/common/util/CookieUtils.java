@@ -52,8 +52,8 @@ public class CookieUtils {
     }
 
     public static void createAndSetJwtCookie(JwtToken jwtToken, HttpServletResponse response) {
-        createAndSetAccessTokenCookie(jwtToken.getTokenType() + jwtToken.getAccessToken(), jwtToken.getAccessExpirationTime(), response);
-        createAndSetRefreshTokenCookie(jwtToken.getTokenType() + jwtToken.getRefreshToken(), jwtToken.getRefreshExpirationTime(), response);
+        createAndSetAccessTokenCookie(jwtToken.getAccessToken(), jwtToken.getAccessExpirationTime(), response);
+        createAndSetRefreshTokenCookie(jwtToken.getRefreshToken(), jwtToken.getRefreshExpirationTime(), response);
     }
 
 
@@ -65,7 +65,7 @@ public class CookieUtils {
                 .domain("farmingsoon.site")
                 .httpOnly(true)
                 .domain("farmingsoon.site")
-                //.secure(true)
+                .secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
                 .build();
 
