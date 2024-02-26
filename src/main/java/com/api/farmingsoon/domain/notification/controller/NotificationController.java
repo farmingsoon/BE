@@ -1,6 +1,8 @@
 package com.api.farmingsoon.domain.notification.controller;
 
+import com.api.farmingsoon.common.annotation.LoginChecking;
 import com.api.farmingsoon.common.response.Response;
+import com.api.farmingsoon.common.sse.SseService;
 import com.api.farmingsoon.domain.notification.dto.NotificationListResponse;
 import com.api.farmingsoon.domain.notification.dto.NotificationResponse;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
@@ -21,8 +23,9 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final SseService sseService;
 
-    //@LoginChecking - 테스트를 위해 비활성화
+    @LoginChecking
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe() {
         return notificationService.subscribe();
@@ -45,12 +48,10 @@ public class NotificationController {
         NotificationListResponse myNotifications = notificationService.getMyNotifications(pageable);
         return Response.success(HttpStatus.OK, "알림 조회 성공", myNotifications);
     }
-    /**
-     * @Description 테스트 용도
 
-    @PostMapping("/send-data/{id}")
+/*    @PostMapping("/send-data/{id}")
     public void sendData(@PathVariable(name = "id") Long id) {
-        notificationService.saveAndSend(id, "success");
-    }
-     */
+        sseService.sendToClient(id, "success");
+    }*/
+
 }
