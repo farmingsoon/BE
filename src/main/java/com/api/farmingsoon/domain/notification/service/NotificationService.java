@@ -33,8 +33,7 @@ public class NotificationService {
     private final ApplicationEventPublisher eventPublisher;
 
     public SseEmitter subscribe() {
-        //return sseService.subscribe(authenticationUtils.getAuthenticationMember().getId());
-        return sseService.subscribe(1L); // 테스트 전용
+        return sseService.subscribe(authenticationUtils.getAuthenticationMember().getId());
     }
 
     @Transactional(readOnly = true)
