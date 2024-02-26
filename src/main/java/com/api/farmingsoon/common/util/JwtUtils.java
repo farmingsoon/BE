@@ -2,11 +2,11 @@ package com.api.farmingsoon.common.util;
 
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.BadRequestException;
-import com.api.farmingsoon.common.exception.custom_exception.ForbiddenException;
 import com.api.farmingsoon.common.exception.custom_exception.UnauthorizedException;
 import com.api.farmingsoon.common.redis.RedisService;
-import jakarta.servlet.http.HttpServlet;
+import com.api.farmingsoon.common.security.jwt.JwtToken;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -48,7 +48,7 @@ public class JwtUtils {
     }
 
     public static String getRefreshToken(HttpServletRequest request) {
-        String refreshToken = extractBearerToken(request.getHeader("refreshToken"));
+        String refreshToken = extractBearerToken(CookieUtils.getRefreshTokenCookieValue(request));
         if(refreshToken.isBlank()) {
             throw new BadRequestException(ErrorCode.EMPTY_REFRESH_TOKEN);
         }
@@ -60,4 +60,7 @@ public class JwtUtils {
             throw new UnauthorizedException(ErrorCode.LOGOUTED_TOKEN);
     }
 
+    public void setJwtCookie(JwtToken jwtToken, HttpServletResponse response) {
+        CookieUtils.createAndSetJwtCookie(jwtToken, response);
+    }
 }

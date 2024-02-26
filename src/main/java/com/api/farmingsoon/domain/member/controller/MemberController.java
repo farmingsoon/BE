@@ -9,6 +9,7 @@ import com.api.farmingsoon.domain.member.dto.LoginRequest;
 import com.api.farmingsoon.domain.member.dto.LoginResponse;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,8 +31,8 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public Response<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
-        LoginResponse loginResponse = memberService.login(loginRequest);
+    public Response<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
+        LoginResponse loginResponse = memberService.login(loginRequest, response);
         return Response.success(HttpStatus.OK, "토큰이 발급 되었습니다.", loginResponse);
     }
 
@@ -44,11 +45,11 @@ public class MemberController {
     }
 
     @GetMapping("/rotate")
-    public Response<JwtToken> rotateToken(HttpServletRequest request){
+    public Response<Void> rotateToken(HttpServletRequest request, HttpServletResponse response){
         String refreshToken = JwtUtils.getRefreshToken(request);
-        JwtToken jwtToken = memberService.rotateToken(refreshToken);
+        memberService.rotateToken(refreshToken, response);
 
-        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.", jwtToken);
+        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.");
     }
 
 }

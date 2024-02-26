@@ -1,6 +1,7 @@
 package com.api.farmingsoon.common.interceptor;
 
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
+import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.common.util.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +24,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         log.info(request.getHeader("Origin"));
         log.info("Authentication Interceptor : " + request.getRequestURI());
         log.info(request.getHeader("Origin"));
-        String accessToken = JwtUtils.extractBearerToken(request.getHeader(HttpHeaders.AUTHORIZATION));
+        String accessToken = JwtUtils.extractBearerToken(CookieUtils.getAccessTokenCookieValue(request));
 
         if (accessToken != null) { // 토큰 재발급의 요청이 아니면서 accessToken이 존재할 때
 
