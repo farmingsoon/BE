@@ -7,6 +7,7 @@ import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -82,7 +86,7 @@ class MemberIntegrationTest {
         Assertions.assertThat(passwordEncoder.matches("TestPassword1234@@", member.getPassword())).isTrue();
     }
 
-    @DisplayName("로그인 성공")
+   @DisplayName("로그인 성공")
     @Test
     void loginSuccess() throws Exception {
         // given
@@ -96,18 +100,15 @@ class MemberIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(cookie().exists("AccessToken"))
+                .andExpect(cookie().exists("RefreshToken"))
                 .andReturn();
 
-        String accessToken = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get("accessToken").asText();
-        String refreshToken = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
-
-        Assertions.assertThat(accessToken).isNotBlank();
-        Assertions.assertThat(refreshToken).isNotBlank();
     }
 
-    /**
-     * @Description
-     * 토큰 재발급 시 이전 토큰과 다른 토큰임을 확인
+     /*
+      @Description
+      토큰 재발급 시 이전 토큰과 다른 토큰임을 확인
      */
     @DisplayName("토큰 재발급 성공")
     @Test
@@ -125,26 +126,36 @@ class MemberIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String refreshToken = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
-        String accessToken = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").get("accessToken").asText();
+        Optional<Cookie> refreshTokenCookie = Arrays.stream(mvcResult1.getResponse().getCookies())
+                .filter(cookie -> cookie.getName().equals("RefreshToken"))
+                .findFirst();
+        Optional<Cookie> accessTokenCookie = Arrays.stream(mvcResult1.getResponse().getCookies())
+                .filter(cookie -> cookie.getName().equals("AccessToken"))
+                .findFirst();
+
 
         MvcResult mvcResult2 = mockMvc.perform(get("/api/members/rotate")
-                        .header("refreshToken", "Bearer " + refreshToken))
+                        .cookie(refreshTokenCookie.get())
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String rotateRefreshToken = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
-        String rotateAccessToken = objectMapper.readTree(mvcResult2.getResponse().getContentAsString()).get("result").get("accessToken").asText();
+        Optional<Cookie> rotateRefreshTokenCookie = Arrays.stream(mvcResult2.getResponse().getCookies())
+                .filter(cookie -> cookie.getName().equals("RefreshToken"))
+                .findFirst();
+        Optional<Cookie> rotateAccessTokenCookie = Arrays.stream(mvcResult2.getResponse().getCookies())
+                .filter(cookie -> cookie.getName().equals("AccessToken"))
+                .findFirst();
 
-        Assertions.assertThat(refreshToken).isNotEqualTo(rotateRefreshToken);
-        Assertions.assertThat(accessToken).isNotEqualTo(rotateAccessToken);
+        Assertions.assertThat(refreshTokenCookie.get()).isNotEqualTo(rotateRefreshTokenCookie.get());
+        Assertions.assertThat(accessTokenCookie.get()).isNotEqualTo(rotateAccessTokenCookie.get());
     }
-
-    /**
+    /*
      * @Description
      * 로그아웃 후 재발급 요청 시 이미 로그아웃된 토큰으로 401 예외처리
-     */
+     *
+     * */
     @DisplayName("로그아웃")
     @Test
     void logout() throws Exception {
@@ -161,17 +172,20 @@ class MemberIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String refreshToken = objectMapper.readTree(mvcResult1.getResponse().getContentAsString()).get("result").get("refreshToken").asText();
+
+        Optional<Cookie> refreshTokenCookie = Arrays.stream(mvcResult1.getResponse().getCookies())
+                .filter(cookie -> cookie.getName().equals("RefreshToken"))
+                .findFirst();
 
         MvcResult mvcResult2 = mockMvc.perform(post("/api/members/logout")
-                        .header("refreshToken", "Bearer " + refreshToken))
+                        .cookie(refreshTokenCookie.get()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
 
         MvcResult mvcResult3 = mockMvc.perform(get("/api/members/rotate")
-                        .header("refreshToken", "Bearer " + refreshToken))
+                        .cookie(refreshTokenCookie.get()))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andReturn();
