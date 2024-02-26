@@ -21,7 +21,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     private final JwtProvider jwtProvider;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+        log.info(request.getHeader("Origin"));
         log.info("Authentication Interceptor : " + request.getRequestURI());
         log.info(request.getHeader("Origin"));
         String accessToken = JwtUtils.extractBearerToken(CookieUtils.getAccessTokenCookieValue(request));

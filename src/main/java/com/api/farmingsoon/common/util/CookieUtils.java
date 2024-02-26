@@ -4,6 +4,7 @@ import com.api.farmingsoon.common.security.jwt.JwtToken;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +13,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class CookieUtils {
 
     public static String getViewCountCookieValue(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
+        log.info(Arrays.toString(cookies));
         if (cookies != null) {
             Optional<Cookie> viewCountCookie = Arrays.stream(cookies)
                     .filter(cookie -> cookie.getName().equals("viewCountCookie"))
@@ -61,7 +64,8 @@ public class CookieUtils {
                 .sameSite("Strict")
                 .domain("farmingsoon.site")
                 .httpOnly(true)
-                .secure(true)
+                .domain("farmingsoon.site")
+                //.secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
                 .build();
 

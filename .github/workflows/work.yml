@@ -55,9 +55,7 @@ jobs:
 
       - name: gradle 빌드
         run: ./gradlew build --no-daemon -i
-        env:
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
+
 
                   
       - name: build 폴더를 캐시에 저장
@@ -90,3 +88,4 @@ jobs:
             sudo docker pull ${{ secrets.DOCKER_REPO }}/farming
             sudo docker run --name=farming_app --restart unless-stopped \
             -p 8080:8080 -e TZ=Asia/Seoul -d ${{ secrets.DOCKER_REPO }}/farming
+            sudo docker image prune -f
