@@ -6,6 +6,7 @@ import com.api.farmingsoon.common.util.JwtUtils;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,10 +59,12 @@ public class JwtProvider {
         claims.put("currentTimeMillis", System.currentTimeMillis());
         claims.put("roles", authorities);
 
-        String accessToken = createAccessToken(claims, new Date(now.getTime() + accessExpirationTime));
-        String refreshToken = createRefreshToken(claims, new Date(now.getTime() + refreshExpirationTime));
-
-        return new JwtToken("Bearer", accessToken, refreshToken);
+        return JwtToken.builder()
+                .accessToken(createAccessToken(claims, new Date(now.getTime() + accessExpirationTime)))
+                .refreshToken(createRefreshToken(claims, new Date(now.getTime() + refreshExpirationTime)))
+                .tokenType("Bearer ")
+                .accessExpirationTime(accessExpirationTime)
+                .refreshExpirationTime(refreshExpirationTime).build();
     }
 
     public String createAccessToken(Claims claims, Date expiredDate){

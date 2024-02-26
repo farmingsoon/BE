@@ -32,7 +32,6 @@ public class ChatRoomController {
     public Response<ChatRoomDetailResponse> getChatRoomDetail(@PathVariable(name = "chatRoomId") Long chatRoomId){
         return Response.success(HttpStatus.OK, "채팅방 상세", chatRoomService.getChatRoomDetail(chatRoomId));
     }
-
     /**
      * 채팅방 생성 후 해당 채팅방을 선택하도록 구현
      */
@@ -42,4 +41,6 @@ public class ChatRoomController {
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
         return Response.success(HttpStatus.OK, "채팅방이 성공적으로 생성되었습니다.", chatRoomId);
     }
+
+
 }

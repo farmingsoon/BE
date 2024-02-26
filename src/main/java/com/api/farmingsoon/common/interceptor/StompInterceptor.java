@@ -26,8 +26,10 @@ public class StompInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         log.info("command : " + accessor.getCommand() + " token : " + accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION));
 
+/*
         if (StompCommand.CONNECT.equals(accessor.getCommand()))
             validateToken(accessor);
+*/
 
         return message;
     }

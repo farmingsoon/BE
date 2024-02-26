@@ -4,6 +4,7 @@ import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
+import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.model.MemberRole;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
@@ -16,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -29,6 +29,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+    private final JwtUtils jwtUtils;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -60,6 +61,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         // OAuth2User 객체에서 권한 가져옴
         JwtToken jwtToken = jwtProvider.createJwtToken(member.getEmail(), member.getRole().getValue());
+        jwtUtils.setJwtCookie(jwtToken, response);
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");

@@ -11,6 +11,7 @@ import com.api.farmingsoon.domain.member.dto.LoginRequest;
 import com.api.farmingsoon.domain.member.dto.LoginResponse;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -48,7 +49,7 @@ public class MemberService {
         return memberRepository.save(member).getId(); // @todo 중복된 회원이 있으면 예외처리
     }
     @Transactional(readOnly = true)
-    public LoginResponse login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
@@ -57,8 +58,10 @@ public class MemberService {
                 .collect(Collectors.joining(","));
 
         JwtToken jwtToken = jwtProvider.createJwtToken(loginRequest.getEmail(), authorities);
+        jwtUtils.setJwtCookie(jwtToken, response);
+
         Member member = getMemberByEmail(loginRequest.getEmail());
-        return LoginResponse.of(jwtToken, member);
+        return LoginResponse.of(member);
     }
 
 
@@ -69,9 +72,9 @@ public class MemberService {
      *  2. 토큰 검증
      *  3. 인증객체 불러오기
      *  4. 기존 토큰 만료처리 and 새로운 토큰 재등록
-     *  5. return
+     *  5. 쿠키 재설정
      */
-    public JwtToken rotateToken(String prevRefreshToken) {
+    public void rotateToken(String prevRefreshToken, HttpServletResponse response) {
         jwtUtils.checkLogout(prevRefreshToken);
         jwtProvider.validateRefreshToken(prevRefreshToken);
         Authentication authentication = jwtProvider.getAuthenticationByRefreshToken(prevRefreshToken);
@@ -81,8 +84,10 @@ public class MemberService {
                 .collect(Collectors.joining(","));
 
         JwtToken jwtToken = jwtProvider.createJwtToken(authentication.getName(), authorities);
+
         jwtUtils.rotateRefreshToken(prevRefreshToken, jwtToken.getRefreshToken(), authentication.getName());
-        return jwtToken;
+        jwtUtils.setJwtCookie(jwtToken, response);
+
     }
 
     public void logout(String refreshToken) {
