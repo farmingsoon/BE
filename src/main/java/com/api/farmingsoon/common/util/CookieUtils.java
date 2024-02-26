@@ -30,6 +30,7 @@ public class CookieUtils {
     }
     public static String getAccessTokenCookieValue(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        log.info(Arrays.toString(cookies));
         if (cookies != null) {
             Optional<Cookie> accessTokenCookie = Arrays.stream(cookies)
                     .filter(cookie -> cookie.getName().equals("AccessToken"))
@@ -41,6 +42,7 @@ public class CookieUtils {
     }
     public static String getRefreshTokenCookieValue(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
+        log.info(Arrays.toString(cookies));
         if (cookies != null) {
             Optional<Cookie> refreshTokenCookie = Arrays.stream(cookies)
                     .filter(cookie -> cookie.getName().equals("RefreshToken"))
