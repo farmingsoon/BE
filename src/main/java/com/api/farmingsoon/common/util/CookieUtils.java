@@ -62,11 +62,10 @@ public class CookieUtils {
     private static String createAndSetViewCountCookie(HttpServletResponse response) {
         String randomCookieValue = UUID.randomUUID().toString();
         ResponseCookie cookie = ResponseCookie.from("viewCountCookie", randomCookieValue)
-                .path("/")
+                .path("/api/items/")
                 .sameSite("Strict")
                 .domain("farmingsoon.site")
                 .httpOnly(true)
-                .domain("farmingsoon.site")
                 .secure(true)
                 .maxAge(TimeUtils.getRemainingTimeUntilMidnight())
                 .build();
@@ -90,7 +89,7 @@ public class CookieUtils {
 
     private static void createAndSetRefreshTokenCookie(String refreshToken, Long refreshExpirationTime, HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("RefreshToken", refreshToken)
-                .path("/")
+                .path("/api/members/refresh-token/")
                 .sameSite("Strict")
                 .domain("farmingsoon.site")
                 .httpOnly(true)
