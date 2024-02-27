@@ -95,7 +95,7 @@ class MemberIntegrationTest {
                 .password("12345678").build();
 
         //when
-        MvcResult mvcResult = mockMvc.perform(post("/api/members/login")
+        MvcResult mvcResult = mockMvc.perform(post("/api/members/refresh-token/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -119,7 +119,7 @@ class MemberIntegrationTest {
                 .password("12345678").build();
 
         //when
-        MvcResult mvcResult1 = mockMvc.perform(post("/api/members/login")
+        MvcResult mvcResult1 = mockMvc.perform(post("/api/members/refresh-token/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -165,7 +165,7 @@ class MemberIntegrationTest {
                 .password("12345678").build();
 
         //when
-        MvcResult mvcResult1 = mockMvc.perform(post("/api/members/login")
+        MvcResult mvcResult1 = mockMvc.perform(post("/api/members/refresh-token/login")
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
