@@ -15,7 +15,7 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private  final AuthenticationInterceptor authenticationInterceptor;
-    private final List<String> excludePointList = Arrays.asList();
+    private final List<String> excludePointList = Arrays.asList("/api/members/refresh-token/**");
 
     private final List<String> addEndPointList = Arrays.asList("/api/**");
     /**

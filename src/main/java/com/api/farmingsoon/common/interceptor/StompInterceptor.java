@@ -3,6 +3,7 @@ package com.api.farmingsoon.common.interceptor;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.ForbiddenException;
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
+import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.common.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class StompInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        log.info("command : " + accessor.getCommand() + " token : " + accessor.getFirstNativeHeader(HttpHeaders.AUTHORIZATION));
+        log.info("command : " + accessor.getCommand());
 
 /*
         if (StompCommand.CONNECT.equals(accessor.getCommand()))
