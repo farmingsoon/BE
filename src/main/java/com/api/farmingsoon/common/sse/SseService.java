@@ -27,7 +27,7 @@ public class SseService {
         if (emitter != null) {
             try {
                 log.info("메시지 전송 전");
-                emitter.send(SseEmitter.event().id(String.valueOf(receiverId)).name("sse").data(data));
+                emitter.send(SseEmitter.event().id(String.valueOf(receiverId)).name("sse").data(data + "\n\n"));
                 log.info("메시지 전송 후");
             } catch (IOException exception) {
                 sseEmitterRepository.deleteById(receiverId);
