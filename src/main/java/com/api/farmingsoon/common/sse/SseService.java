@@ -7,6 +7,8 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 
+import static org.springframework.web.servlet.mvc.method.annotation.SseEmitter.*;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -27,7 +29,10 @@ public class SseService {
         if (emitter != null) {
             try {
                 log.info("메시지 전송 전");
-                emitter.send(SseEmitter.event().id(String.valueOf(receiverId)).name("sse").data(data + "\n\n"));
+                emitter.send(
+                    event().name("sse")
+                            .data(data)
+                );
                 log.info("메시지 전송 후");
             } catch (IOException exception) {
                 sseEmitterRepository.deleteById(receiverId);
