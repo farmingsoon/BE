@@ -134,7 +134,7 @@ class MemberIntegrationTest {
                 .findFirst();
 
 
-        MvcResult mvcResult2 = mockMvc.perform(get("/api/members/rotate")
+        MvcResult mvcResult2 = mockMvc.perform(get("/api/members/refresh-token/rotate")
                         .cookie(refreshTokenCookie.get())
                 )
                 .andDo(print())
@@ -177,14 +177,14 @@ class MemberIntegrationTest {
                 .filter(cookie -> cookie.getName().equals("RefreshToken"))
                 .findFirst();
 
-        MvcResult mvcResult2 = mockMvc.perform(post("/api/members/logout")
+        MvcResult mvcResult2 = mockMvc.perform(post("/api/members/refresh-token/logout")
                         .cookie(refreshTokenCookie.get()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
 
-        MvcResult mvcResult3 = mockMvc.perform(get("/api/members/rotate")
+        MvcResult mvcResult3 = mockMvc.perform(get("/api/members/refresh-token/rotate")
                         .cookie(refreshTokenCookie.get()))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())

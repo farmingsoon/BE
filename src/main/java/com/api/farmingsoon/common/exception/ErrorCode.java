@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    // 303
+    ALREADY_LOGIN("이미 로그인 상태입니다.", HttpStatus.SEE_OTHER),
+
     // 400
     EMPTY_REFRESH_TOKEN("RefreshToken이 필요합니다.", HttpStatus.BAD_REQUEST),
     EMPTY_EMAIL("이메일이 필요합니다.", HttpStatus.BAD_REQUEST),
