@@ -40,7 +40,15 @@ public class SseService {
         SseEmitter emitter = new SseEmitter(DEFAULT_TIMEOUT);
         sseEmitterRepository.save(id, emitter);
 
+        emitter.onError((callback) ->
+        {
+            sseEmitterRepository.deleteById(id);
+            log.info(String.valueOf(callback));
+            log.info("모든 데이터 전송 완료");
+        });
+
         // Emitter가 완료될 때(모든 데이터가 성공적으로 전송된 상태) Emitter를 삭제한다.
+
         emitter.onCompletion(() ->
         {
             sseEmitterRepository.deleteById(id);
