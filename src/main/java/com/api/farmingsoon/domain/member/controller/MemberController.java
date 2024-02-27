@@ -37,14 +37,14 @@ public class MemberController {
     }
 
 
-    @PostMapping("/logout")
+    @PostMapping("/refresh-token/logout")
     public Response<Void> logoutMember(HttpServletRequest request) {
         String refreshToken = JwtUtils.getRefreshToken(request);
         memberService.logout(refreshToken);
         return Response.success(HttpStatus.OK, "로그아웃 처리 되었습니다.");
     }
 
-    @GetMapping("/rotate")
+    @GetMapping("/refresh-token/rotate")
     public Response<Void> rotateToken(HttpServletRequest request, HttpServletResponse response){
         String refreshToken = JwtUtils.getRefreshToken(request);
         memberService.rotateToken(refreshToken, response);
