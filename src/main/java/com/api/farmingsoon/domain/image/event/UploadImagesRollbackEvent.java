@@ -1,4 +1,4 @@
-package com.api.farmingsoon.common.event;
+package com.api.farmingsoon.domain.image.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

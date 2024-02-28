@@ -1,13 +1,9 @@
 package com.api.farmingsoon.domain.image.service;
 
-import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.s3.service.S3Service;
-import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.domain.image.domain.Image;
 import com.api.farmingsoon.domain.image.repository.ImageRepository;
-import com.api.farmingsoon.domain.item.domain.Item;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;

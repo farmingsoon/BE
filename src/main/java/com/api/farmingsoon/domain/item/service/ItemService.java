@@ -2,7 +2,7 @@ package com.api.farmingsoon.domain.item.service;
 
 import com.api.farmingsoon.domain.item.dto.*;
 import com.api.farmingsoon.domain.member.model.Member;
-import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
+import com.api.farmingsoon.domain.image.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
@@ -15,9 +15,6 @@ import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.repository.ItemRepository;
 import com.api.farmingsoon.domain.notification.service.NotificationService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
