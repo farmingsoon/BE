@@ -49,9 +49,9 @@ public class NotificationController {
         return Response.success(HttpStatus.OK, "알림 조회 성공", myNotifications);
     }
 
-/*    @PostMapping("/send-data/{id}")
+    @PostMapping("/send-data/{id}")
     public void sendData(@PathVariable(name = "id") Long id) {
         sseService.sendToClient(id, "success");
-    }*/
+    }
 
 }
