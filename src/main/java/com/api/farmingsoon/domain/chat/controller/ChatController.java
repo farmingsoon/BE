@@ -21,7 +21,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @MessageMapping("/chat/message")
-    public void sendMessage(ChatMessageRequest chatMessageRequest, @Header("Authorization") String accessToken) {
+    public void sendMessage(ChatMessageRequest chatMessageRequest) {
         chatService.create(chatMessageRequest);
     }
 
