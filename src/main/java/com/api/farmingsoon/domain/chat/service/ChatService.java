@@ -1,9 +1,9 @@
 package com.api.farmingsoon.domain.chat.service;
 
-import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.chat.dto.ChatListResponse;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.dto.ChatResponse;
+import com.api.farmingsoon.domain.chat.event.ChatSaveEvent;
 import com.api.farmingsoon.domain.chat.model.Chat;
 import com.api.farmingsoon.domain.chat.repository.ChatRepository;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
@@ -11,12 +11,10 @@ import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,14 +23,19 @@ public class ChatService {
     private final ChatRepository chatRepository;
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public ChatResponse create(ChatMessageRequest chatMessageRequest) {
+    public void create(ChatMessageRequest chatMessageRequest) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
         Member sender = memberService.getMemberById(chatMessageRequest.getSenderId());
         Chat chat = chatRepository.save(Chat.of(chatMessageRequest.getMessage(), sender, chatRoom));
-
-        return ChatResponse.of(chat);
+        eventPublisher.publishEvent(
+                ChatSaveEvent.builder()
+                        .chatRoomId(chatMessageRequest.getChatRoomId())
+                        .receiverId(ChatRoom.resolveToReceiver(chatRoom, sender.getEmail()).getId())
+                        .chatResponse(ChatResponse.of(chat))
+                .build());
 
     }
     @Transactional(readOnly = true)

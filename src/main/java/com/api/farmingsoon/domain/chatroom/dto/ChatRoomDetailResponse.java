@@ -1,15 +1,12 @@
 package com.api.farmingsoon.domain.chatroom.dto;
 
 import com.api.farmingsoon.domain.bid.model.Bid;
-import com.api.farmingsoon.domain.chat.dto.ChatResponse;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.member.model.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -39,7 +36,7 @@ public class ChatRoomDetailResponse {
     }
 
     public static ChatRoomDetailResponse of(ChatRoom chatRoom, String fromUsername) {
-        Member toUser = ChatRoom.resolveToMember(chatRoom, fromUsername);
+        Member toUser = ChatRoom.resolveToReceiver(chatRoom, fromUsername);
         return ChatRoomDetailResponse.builder()
                 .itemTitle(chatRoom.getItem().getTitle())
                 .highestPrice(chatRoom.getItem().getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))

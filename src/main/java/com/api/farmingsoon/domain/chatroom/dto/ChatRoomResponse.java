@@ -35,7 +35,7 @@ public class ChatRoomResponse {
     }
 
     public static ChatRoomResponse of(ChatRoom chatRoom, String fromUserEmail) {
-        Member toMember =  ChatRoom.resolveToMember(chatRoom, fromUserEmail);
+        Member toMember =  ChatRoom.resolveToReceiver(chatRoom, fromUserEmail);
         List<Chat> chatList = chatRoom.getChatList();
         Chat lastChat = chatList.get(chatList.size() - 1);
 

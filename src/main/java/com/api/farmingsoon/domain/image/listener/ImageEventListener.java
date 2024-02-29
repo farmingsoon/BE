@@ -1,13 +1,11 @@
-package com.api.farmingsoon.common.listener;
+package com.api.farmingsoon.domain.image.listener;
 
-import com.api.farmingsoon.common.event.UploadImagesRollbackEvent;
+import com.api.farmingsoon.domain.image.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.common.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component
