@@ -51,7 +51,7 @@ public class NotificationController {
 
     @PostMapping("/send-data/{id}")
     public void sendData(@PathVariable(name = "id") Long id) {
-        sseService.sendToClient(id, "success");
+        sseService.sendToClient("NOTIFICATION", id, "success");
     }
 
 }

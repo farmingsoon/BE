@@ -12,7 +12,7 @@ public class ItemRedisService {
     private final RedisService redisService;
 
     public void setBidEndTime(Long itemId, Integer expire){
-        redisService.setData(String.valueOf(itemId), "", Long.valueOf(expire), TimeUnit.DAYS);
+        redisService.setData("bidEnd_" + String.valueOf(itemId), "", Long.valueOf(expire), TimeUnit.DAYS);
     }
 
 
