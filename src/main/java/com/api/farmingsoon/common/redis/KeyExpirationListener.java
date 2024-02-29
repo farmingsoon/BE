@@ -25,7 +25,7 @@ public class KeyExpirationListener extends KeyExpirationEventMessageListener {
 
     @Override
     public void onMessage(Message key, byte[] pattern) {
-        log.info("key: " + key.toString() + " patter: " + Arrays.toString(pattern));
+        log.info("key_expired : " + key.toString());
         String[] expiredKey = key.toString().split("_");
         if (expiredKey[0].equals("bidEnd")) {
             applicationEventPublisher.publishEvent(new BidEndEvent((Long.valueOf(expiredKey[1]))));  ; // itemId
