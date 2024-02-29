@@ -15,16 +15,16 @@ public class SseService {
     public SseEmitter subscribe(Long userId) {
         SseEmitter emitter = createEmitter(userId);
 
-        sendToClient(userId, "EventStream Created. [userId=" + userId + "]");
+        sendToClient("CONNECT", userId, "EventStream Created. [userId=" + userId + "]");
         return emitter;
     }
 
 
-    public void sendToClient(Long receiverId, Object data) {
+    public void sendToClient(String notificationType, Long receiverId, Object message) {
         SseEmitter emitter = sseEmitterRepository.get(receiverId);
         if (emitter != null) {
             try {
-                emitter.send(SseEmitter.event().id(String.valueOf(receiverId)).name("sse").data(data));
+                emitter.send(SseEmitter.event().id(String.valueOf(receiverId)).name(notificationType).data(message));
             } catch (IOException exception) {
                 sseEmitterRepository.deleteById(receiverId);
                 emitter.completeWithError(exception);

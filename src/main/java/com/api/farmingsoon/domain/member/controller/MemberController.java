@@ -32,7 +32,7 @@ public class MemberController {
         return Response.success(HttpStatus.OK, "회원가입이 성공적으로 처리되었습니다.", memberId);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/refresh-token/login")
     public Response<LoginResponse> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
         LoginResponse loginResponse = memberService.login(loginRequest, response);
         return Response.success(HttpStatus.OK, "토큰이 발급 되었습니다.", loginResponse);

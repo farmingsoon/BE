@@ -18,6 +18,6 @@ public class NotificationSaveEventListener {
     @Async("testExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendNotification(NotificationSaveEvent event) throws InterruptedException {
-        event.getSenderIdList().forEach(sender -> sseService.sendToClient(sender, event.getMessage()));
+        event.getSenderIdList().forEach(sender -> sseService.sendToClient("NOTIFICATION", sender, event.getMessage()));
     }
 }
