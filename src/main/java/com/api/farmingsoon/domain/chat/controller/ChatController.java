@@ -17,15 +17,12 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
-    private final SimpMessagingTemplate messagingTemplate;
+
     private final ChatService chatService;
-    private final JwtProvider jwtProvider;
 
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageRequest chatMessageRequest, @Header("Authorization") String accessToken) {
-        String ac = JwtUtils.extractBearerToken(accessToken);
-        ChatResponse chatResponse = chatService.create(chatMessageRequest);
-        messagingTemplate.convertAndSend("/sub/chat-room/" + chatMessageRequest.getChatRoomId(), chatResponse);
+        chatService.create(chatMessageRequest);
     }
 
 
