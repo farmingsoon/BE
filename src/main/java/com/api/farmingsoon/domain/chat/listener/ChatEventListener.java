@@ -1,6 +1,8 @@
 package com.api.farmingsoon.domain.chat.listener;
 
+import com.api.farmingsoon.common.redis.RedisService;
 import com.api.farmingsoon.common.sse.SseService;
+import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.domain.chat.event.ChatSaveEvent;
 import com.api.farmingsoon.domain.notification.event.NotificationSaveEvent;
 import lombok.RequiredArgsConstructor;
@@ -9,15 +11,22 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+
+import java.util.concurrent.TimeUnit;
+
 @RequiredArgsConstructor
 @Component
 public class ChatEventListener {
     private final SimpMessagingTemplate messagingTemplate;
-    private final SseService sseService;
+    private final RedisService redisService;
+
     @Async("testExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void sendNotification(ChatSaveEvent event) throws InterruptedException {
+    public void sendChatAndDebounceNotification(ChatSaveEvent event) throws InterruptedException {
         messagingTemplate.convertAndSend("/sub/chat-room/" + event.getChatRoomId(), event.getChatResponse());
-        sseService.sendToClient("CHATTING", event.getReceiverId(), "새로운 채팅이 있습니다.");
+
+        if(!redisService.isExistsKey("chatting_" + event.getReceiverId())) // 알림 디바운싱
+            redisService.setData("chatting_" + event.getReceiverId(),"", 2L,TimeUnit.SECONDS);
+
     }
 }

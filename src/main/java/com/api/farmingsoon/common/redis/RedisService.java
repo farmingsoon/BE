@@ -42,8 +42,12 @@ public class RedisService {
         return redisTemplate.keys(domain);
     }
 
+    public boolean isExistsKey(String key){
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
     public void addToSet(String key, Long itemId){
-        if(!redisTemplate.hasKey(key)) {// 키가 없다면(set이 없다면)
+        if(!isExistsKey(key)) {// 키가 없다면(set이 없다면)
             redisTemplate.opsForSet().add(key, String.valueOf(itemId)); // set생성
             redisTemplate.expire(key, TimeUtils.getRemainingTimeUntilMidnight(), TimeUnit.SECONDS); // 만료기간 설정
         }
