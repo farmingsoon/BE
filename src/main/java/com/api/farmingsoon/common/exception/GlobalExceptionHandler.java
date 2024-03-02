@@ -2,9 +2,11 @@ package com.api.farmingsoon.common.exception;
 
 import com.api.farmingsoon.common.alert.discord.DiscordService;
 import com.api.farmingsoon.common.response.Response;
+import io.lettuce.core.RedisCommandTimeoutException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -23,6 +25,7 @@ public class GlobalExceptionHandler {
 
     /**
      * 서비스 로직 도중 발생하는 에러들을 커스텀하여 응답값을 내려줍니다.
+     * 디스코드로 에러메시지를 전송합니다.
      */
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<?> handleCustomException(HttpServletRequest request, CustomException e){
@@ -45,5 +48,11 @@ public class GlobalExceptionHandler {
         log.error(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Response.error(HttpStatus.BAD_REQUEST, errors));
     }
-
+    @ExceptionHandler({RedisCommandTimeoutException.class, QueryTimeoutException.class})
+    public ResponseEntity<?> handleException(Exception exception){
+        log.info("Redis response delay");
+        return ResponseEntity.
+                status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Response.error(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 문제가 발생했습니다."));
+    }
 }
