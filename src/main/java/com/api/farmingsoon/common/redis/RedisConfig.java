@@ -36,7 +36,7 @@ public class RedisConfig {
         config.setPort(redisPort);
         LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
                 .clientOptions(ClientOptions.builder()
-                        .timeoutOptions(TimeoutOptions.enabled(Duration.ofSeconds(5))).build()).build();
+                        .timeoutOptions(TimeoutOptions.enabled(Duration.ofSeconds(30))).build()).build();
         return new LettuceConnectionFactory(config, lettuceClientConfiguration);
     }
 
