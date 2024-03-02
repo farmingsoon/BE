@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class BidEndEvent {
+public class BidEndKeyExpiredEvent {
     private Long itemId;
 
-    public BidEndEvent(Long itemId) {
+    public BidEndKeyExpiredEvent(Long itemId) {
         this.itemId = itemId;
     }
 }

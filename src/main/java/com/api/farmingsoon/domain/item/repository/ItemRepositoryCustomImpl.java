@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.item.repository;
 
 import com.api.farmingsoon.domain.item.domain.Item;
+import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +49,20 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public List<Item> findNotEndBidItemList() {
+        return queryFactory.selectFrom(item)
+                .where(item.itemStatus.eq(ItemStatus.BIDDING), item.expiredAt.before(LocalDateTime.now()))
+                .fetch();
+    }
+
+    @Override
+    public List<Item> findBiddingItemList() {
+        return queryFactory.selectFrom(item)
+                .where(item.itemStatus.eq(ItemStatus.BIDDING), item.expiredAt.after(LocalDateTime.now()))
+                .fetch();
     }
 
     private BooleanExpression eqCategory(String category) {
