@@ -23,5 +23,5 @@ public class BaseTimeEntity {
     @Column(nullable = false)
     private LocalDateTime modifiedAt;
 
-    private Boolean deleted;
+    private Boolean deleted = Boolean.FALSE;
 }
