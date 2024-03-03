@@ -2,8 +2,7 @@ package com.api.farmingsoon.domain.chatting;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
-import com.api.farmingsoon.domain.bid.dto.BidRequest;
-import com.api.farmingsoon.domain.bid.service.BidService;
+import com.api.farmingsoon.common.util.Transaction;
 import com.api.farmingsoon.domain.chat.dto.ChatListResponse;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.service.ChatService;
@@ -18,9 +17,7 @@ import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
-import com.api.farmingsoon.util.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.assertj.core.api.Assert;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +146,7 @@ public class ChattingIntegrationTest {
                 ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
                 Assertions.assertThat(chatRoom.getSeller().getEmail()).isEqualTo("user1@naver.com");
                 Assertions.assertThat(chatRoom.getBuyer().getEmail()).isEqualTo("user2@naver.com");
+                return chatRoom.getId();
             }
         );
 
@@ -176,6 +174,7 @@ public class ChattingIntegrationTest {
                     ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
                     Assertions.assertThat(chatRoom.getSeller().getEmail()).isEqualTo("user1@naver.com");
                     Assertions.assertThat(chatRoom.getBuyer().getEmail()).isEqualTo("user2@naver.com");
+                    return chatRoom.getId();
                 }
         );
 

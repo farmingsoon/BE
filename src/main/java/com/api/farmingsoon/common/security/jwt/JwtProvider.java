@@ -60,14 +60,14 @@ public class JwtProvider {
         claims.put("roles", authorities);
 
         return JwtToken.builder()
-                .accessToken(createAccessToken(claims, new Date(now.getTime() + accessExpirationTime)))
-                .refreshToken(createRefreshToken(claims, new Date(now.getTime() + refreshExpirationTime)))
+                .accessToken(createToken(claims, new Date(now.getTime() + accessExpirationTime)))
+                .refreshToken(createToken(claims, new Date(now.getTime() + refreshExpirationTime)))
                 .tokenType("Bearer ")
                 .accessExpirationTime(accessExpirationTime)
                 .refreshExpirationTime(refreshExpirationTime).build();
     }
 
-    public String createAccessToken(Claims claims, Date expiredDate){
+    public String createToken(Claims claims, Date expiredDate){
         return  Jwts.builder()
                 .setClaims(claims) // 아이디, 권한정보
                 .setExpiration(expiredDate) // 만료기간
@@ -75,15 +75,7 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String createRefreshToken(Claims claims, Date expiredDate){
-        String refreshToken = Jwts.builder()
-                .setClaims(claims) // 아이디, 권한정보
-                .setExpiration(expiredDate) // 만료기간
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-        jwtUtils.setRefreshToken(refreshToken, claims.getSubject());
-        return  refreshToken;
-    }
+
 
     public Authentication getAuthenticationByAccessToken(String accessToken){
         Claims claims = parseAccessTokenClaims(accessToken);

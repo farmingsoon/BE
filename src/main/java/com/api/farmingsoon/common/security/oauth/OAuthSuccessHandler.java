@@ -4,6 +4,7 @@ import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
+import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.model.MemberRole;
@@ -61,7 +62,8 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         // OAuth2User 객체에서 권한 가져옴
         JwtToken jwtToken = jwtProvider.createJwtToken(member.getEmail(), member.getRole().getValue());
-        jwtUtils.setJwtCookie(jwtToken, response);
+        CookieUtils.createAndSetJwtCookie(jwtToken, response);
+        jwtUtils.setRefreshToken(jwtToken.getRefreshToken(), email);
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");

@@ -40,10 +40,10 @@ public class MemberController {
 
 
     @PostMapping("/refresh-token/logout")
-    public Response<Void> logoutMember(HttpServletRequest request) {
+    public Response<Void> logoutMember(HttpServletRequest request,HttpServletResponse response) {
         String refreshToken = JwtUtils.getRefreshToken(request);
         log.info(refreshToken);
-        memberService.logout(refreshToken);
+        memberService.logout(refreshToken, response);
         return Response.success(HttpStatus.OK, "로그아웃 처리 되었습니다.");
     }
 
