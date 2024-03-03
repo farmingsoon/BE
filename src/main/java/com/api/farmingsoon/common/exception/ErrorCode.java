@@ -24,6 +24,7 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN("유효하지 않은 RefreshToken입니다.", HttpStatus.UNAUTHORIZED),
     INVALID_CURRENT_PASSWORD("현재 비밀번호가 일치하지 않습니다!", HttpStatus.UNAUTHORIZED),
     INVALID_NEW_PASSWORD("새 비밀번호가 일치하지 않습니다!", HttpStatus.UNAUTHORIZED),
+    SNATCH_TOKEN("Refresh Token 탈취를 감지하여 로그아웃 처리됩니다.", HttpStatus.UNAUTHORIZED),
 
     // 403
     NOT_LOGIN("로그인 후 이용할 수 있습니다.", HttpStatus.FORBIDDEN),

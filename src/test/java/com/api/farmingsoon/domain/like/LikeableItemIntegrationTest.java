@@ -2,6 +2,7 @@ package com.api.farmingsoon.domain.like;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
+import com.api.farmingsoon.common.util.Transaction;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.LikeableItemListResponse;
@@ -10,7 +11,6 @@ import com.api.farmingsoon.domain.like.service.LikeableItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import com.api.farmingsoon.util.TestImageUtils;
-import com.api.farmingsoon.util.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -144,6 +144,7 @@ class LikeableItemIntegrationTest {
         transaction.invoke(() -> {
                 Item item = itemService.getItemById(1L);
                 Assertions.assertThat(item.getLikeableItemList().size()).isEqualTo(1);
+                return item.getId();
             }
         );
     }
@@ -162,6 +163,7 @@ class LikeableItemIntegrationTest {
         transaction.invoke(() -> {
                     Item item = itemService.getItemById(2L);
                     Assertions.assertThat(item.getLikeableItemList().size()).isEqualTo(0);
+                    return  item.getId();
                 }
         );
     }
