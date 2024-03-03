@@ -10,7 +10,5 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long>, ItemRepositoryCustom {
 
-    Page<Item> findAllByIdIn(List<Long> itemIds, Pageable pageable);
-
     Page<Item> findAllByMember(Member member, Pageable pageable);
 }
