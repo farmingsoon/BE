@@ -5,7 +5,8 @@ spring:
 
   datasource:
     username: root
-    password:
+    password: 1234
+#    driver-class-name: org.mariadb.jdbc.Driver
     driver-class-name: org.h2.Driver
   h2:
     console:

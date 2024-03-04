@@ -57,6 +57,28 @@ public class CookieUtils {
         createAndSetAccessTokenCookie(jwtToken.getAccessToken(), jwtToken.getAccessExpirationTime(), response);
         createAndSetRefreshTokenCookie(jwtToken.getRefreshToken(), jwtToken.getRefreshExpirationTime(), response);
     }
+    public static void deleteJwtCookie(HttpServletResponse response) {
+        ResponseCookie accessTokenCookie = ResponseCookie.from("AccessToken")
+                .path("/")
+                .sameSite("Strict")
+                .domain("farmingsoon.site")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("RefreshToken")
+                .path("/api/members/refresh-token/")
+                .sameSite("Strict")
+                .domain("farmingsoon.site")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0)
+                .build();
+
+        response.addHeader("Set-Cookie", accessTokenCookie.toString());
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
+    }
 
 
     private static String createAndSetViewCountCookie(HttpServletResponse response) {

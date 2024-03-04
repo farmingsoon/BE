@@ -8,6 +8,7 @@ import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "UPDATE item SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
 public class Item extends BaseTimeEntity {
 
     @Id

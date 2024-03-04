@@ -4,12 +4,12 @@ import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.BadRequestException;
 import com.api.farmingsoon.common.exception.custom_exception.UnauthorizedException;
 import com.api.farmingsoon.common.redis.RedisService;
-import com.api.farmingsoon.common.security.jwt.JwtToken;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 @Component
 @RequiredArgsConstructor
@@ -35,16 +35,16 @@ public class JwtUtils {
     }
     public void rotateRefreshToken(String prevRefreshToken, String newRefreshToken, String email) {
         // 만료: redis 에서 삭제 후 재등록..
-        deleteRefreshToken(prevRefreshToken);
+        deleteRefreshToken(prevRefreshToken, email);
         setRefreshToken(newRefreshToken, email);
     }
 
     public void setRefreshToken(String refreshToken, String email) {
-        redisService.setData(refreshToken, email, refreshExpirationTime, TimeUnit.SECONDS);
+        redisService.setData(email + ":" + refreshToken, "", refreshExpirationTime, TimeUnit.SECONDS);
     }
 
-    public void deleteRefreshToken(String refreshToken) {
-        redisService.deleteData(refreshToken);
+    public void deleteRefreshToken(String refreshToken, String email) {
+        redisService.deleteData(email + ":" + refreshToken);
     }
 
     public static String getRefreshToken(HttpServletRequest request) {
@@ -55,12 +55,11 @@ public class JwtUtils {
         return refreshToken;
     }
 
-    public void checkLogout(String refreshToken){
-        if (redisService.getData(refreshToken) == null)
-            throw new UnauthorizedException(ErrorCode.LOGOUTED_TOKEN);
-    }
-
-    public void setJwtCookie(JwtToken jwtToken, HttpServletResponse response) {
-        CookieUtils.createAndSetJwtCookie(jwtToken, response);
+    public void checkSnatch(String refreshToken, String email){
+        if (redisService.getData(email + ":" + refreshToken) == null) {
+            Set<String> keySet = redisService.getKeySet(email + ":*");
+            keySet.forEach(redisService::deleteData);
+            throw new UnauthorizedException(ErrorCode.SNATCH_TOKEN);
+        }
     }
 }

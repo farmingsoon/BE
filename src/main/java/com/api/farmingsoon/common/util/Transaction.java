@@ -1,4 +1,4 @@
-package com.api.farmingsoon.util;
+package com.api.farmingsoon.common.util;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class Transaction {
     @Transactional
-    public void invoke(TransactionFunction transactionFunction){
-        transactionFunction.apply();
+    public <T> T invoke(TransactionFunction<T> transactionFunction){
+        return transactionFunction.apply();
     }
 }

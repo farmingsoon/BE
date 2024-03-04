@@ -25,19 +25,26 @@ public class ChatRoomResponse {
 
     private LocalDateTime lastChatTime;
 
+    private Long unReadMessageCount;
+
     @Builder
-    public ChatRoomResponse(Long chatRoomId, String toUserName, String toUserProfileImage, String lastMessage, LocalDateTime lastChatTime ){
+    public ChatRoomResponse(Long chatRoomId, String toUserName, String toUserProfileImage, String lastMessage, LocalDateTime lastChatTime, Long unReadMessageCount){
         this.chatRoomId = chatRoomId;
         this.toUserName = toUserName;
         this.toUserProfileImage = toUserProfileImage;
         this.lastMessage = lastMessage;
         this.lastChatTime = lastChatTime;
+        this.unReadMessageCount = unReadMessageCount;
     }
 
     public static ChatRoomResponse of(ChatRoom chatRoom, String fromUserEmail) {
         Member toMember =  ChatRoom.resolveToReceiver(chatRoom, fromUserEmail);
         List<Chat> chatList = chatRoom.getChatList();
         Chat lastChat = chatList.get(chatList.size() - 1);
+        // 읽지 않았고 sender가 내가 아닌
+        Long unReadMessageCount = (long) chatList.stream()
+                .filter(chat -> chat.getIsRead() == false && chat.getSender().getEmail() != fromUserEmail)
+                .toList().size();
 
         return ChatRoomResponse.builder()
                 .chatRoomId(chatRoom.getId())
@@ -45,6 +52,7 @@ public class ChatRoomResponse {
                 .toUserProfileImage(toMember.getProfileImg())
                 .lastMessage(lastChat.getMessage())
                 .lastChatTime(lastChat.getCreatedAt())
+                .unReadMessageCount(unReadMessageCount)
                 .build();
     }
 }
