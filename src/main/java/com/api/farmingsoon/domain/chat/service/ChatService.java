@@ -14,6 +14,7 @@ import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
 
     private final ChatRepository chatRepository;
@@ -60,6 +62,7 @@ public class ChatService {
     public void read(ReadMessageRequest readMessageRequest) {
         Chat chat = chatRepository.findById(readMessageRequest.getChatId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHAT));
         chat.read();
+        log.info(chat.getId() + " "+ chat.getIsRead());
     }
 
     @Transactional
