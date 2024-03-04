@@ -29,7 +29,14 @@ public class ChatService {
     public void create(ChatMessageRequest chatMessageRequest) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
         Member sender = memberService.getMemberById(chatMessageRequest.getSenderId());
-        Chat chat = chatRepository.save(Chat.of(chatMessageRequest.getMessage(), sender, chatRoom));
+        Chat chat = chatRepository.save(
+                Chat.builder().
+                    sender(sender)
+                    .message(chatMessageRequest.getMessage())
+                    .isRead(false)
+                    .chatRoom(chatRoom).build()
+        );
+
         eventPublisher.publishEvent(
                 ChatSaveEvent.builder()
                         .chatRoomId(chatMessageRequest.getChatRoomId())
