@@ -63,7 +63,7 @@ public class ChatService {
     }
 
     @Transactional
-    public void readAll(Long chatRoomId, Long memberId) {
+    public void readAllMyNotReadChatList(Long chatRoomId, Long memberId) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
         Member member = memberService.getMemberById(memberId);
         List<Chat> myNotReadChatList = chatRepository.findMyNotReadChatList(chatRoom, member);

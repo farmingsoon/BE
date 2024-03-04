@@ -2,7 +2,6 @@ package com.api.farmingsoon.domain.chatroom.listener;
 
 import com.api.farmingsoon.domain.chat.service.ChatService;
 import com.api.farmingsoon.domain.chatroom.event.ChatRoomConnectEvent;
-import com.api.farmingsoon.domain.item.event.BidEndKeyExpiredEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ public class ChatRoomEventListener {
 
     @EventListener
     public void readAllChatMessage(ChatRoomConnectEvent event){
-        chatService.readAll(event.getChatRoomId(), event.getMemberId());
+        chatService.readAllMyNotReadChatList(event.getChatRoomId(), event.getMemberId());
     }
 
 }
