@@ -187,8 +187,8 @@ public class ChattingIntegrationTest {
         //given
         ChatRoomCreateRequest chatRoomCreateRequest = ChatRoomCreateRequest.of(2L, 1L);
         Long chatRoomId = chatRoomService.handleChatRoom(chatRoomCreateRequest);
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(1L).build());
-        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").senderId(1L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat1").senderId(2L).build());
+        chatService.create(ChatMessageRequest.builder().chatRoomId(chatRoomId).message("chat2").senderId(2L).build());
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/chat-rooms/me"))
@@ -202,6 +202,7 @@ public class ChattingIntegrationTest {
 
         Assertions.assertThat(chatRoomResponse.getToUserName()).isEqualTo("user2");
         Assertions.assertThat(chatRoomResponse.getLastMessage()).isEqualTo("chat2");
+        Assertions.assertThat(chatRoomResponse.getUnReadMessageCount()).isEqualTo(2);
 
 
     }

@@ -5,6 +5,7 @@ import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.dto.ChatResponse;
+import com.api.farmingsoon.domain.chat.dto.ReadMessageRequest;
 import com.api.farmingsoon.domain.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.Header;
@@ -23,6 +24,10 @@ public class ChatController {
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageRequest chatMessageRequest) {
         chatService.create(chatMessageRequest);
+    }
+    @MessageMapping("/chat/read")
+    public void readMessage(ReadMessageRequest readMessageRequest) {
+        chatService.read(readMessageRequest);
     }
 
 

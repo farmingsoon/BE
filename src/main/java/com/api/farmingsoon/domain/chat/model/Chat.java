@@ -29,18 +29,18 @@ public class Chat extends BaseTimeEntity {
     @Column(length = 500)
     private String message;
 
+    @Column
+    private Boolean isRead;
+
     @Builder
-    public Chat(Member sender, ChatRoom chatRoom, String message) {
+    public Chat(Member sender, ChatRoom chatRoom, String message, Boolean isRead) {
         this.sender = sender;
         this.chatRoom = chatRoom;
         this.message = message;
+        this.isRead = isRead;
     }
 
-    public static Chat of(String message, Member sender, ChatRoom chatRoom){
-        return Chat.builder()
-                .message(message)
-                .sender(sender)
-                .chatRoom(chatRoom)
-                .build();
+    public void read() {
+        this.isRead = true;
     }
 }
