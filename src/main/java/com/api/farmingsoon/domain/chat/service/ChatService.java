@@ -19,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ChatService {
@@ -58,5 +60,13 @@ public class ChatService {
     public void read(ReadMessageRequest readMessageRequest) {
         Chat chat = chatRepository.findById(readMessageRequest.getChatId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHAT));
         chat.read();
+    }
+
+    @Transactional
+    public void readAll(Long chatRoomId, Long memberId) {
+        ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
+        Member member = memberService.getMemberById(memberId);
+        List<Chat> myNotReadChatList = chatRepository.findMyNotReadChatList(chatRoom, member);
+        myNotReadChatList.forEach(Chat::read);
     }
 }
