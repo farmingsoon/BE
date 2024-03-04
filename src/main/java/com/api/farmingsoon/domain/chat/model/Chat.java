@@ -39,4 +39,8 @@ public class Chat extends BaseTimeEntity {
         this.message = message;
         this.isRead = isRead;
     }
+
+    public void read() {
+        this.isRead = true;
+    }
 }
