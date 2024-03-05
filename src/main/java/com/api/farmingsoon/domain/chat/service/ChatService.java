@@ -69,13 +69,6 @@ public class ChatService {
     }
 
     @Transactional
-    public void read(ReadMessageRequest readMessageRequest) {
-        Chat chat = chatRepository.findById(readMessageRequest.getChatId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHAT));
-        chat.read();
-        log.info(chat.getId() + " "+ chat.getIsRead());
-    }
-
-    @Transactional
     public void readAllMyNotReadChatList(Long chatRoomId, Long memberId) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
         Member member = memberService.getMemberById(memberId);

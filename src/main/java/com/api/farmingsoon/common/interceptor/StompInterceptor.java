@@ -38,7 +38,7 @@ public class StompInterceptor implements ChannelInterceptor {
          */
         if (StompCommand.CONNECT.equals(command))
             eventPublisher.publishEvent(ChatRoomConnectEvent.builder()
-                        .memberId(Long.valueOf(accessor.getFirstNativeHeader("memberId")))
+                        .connectMemberId(Long.valueOf(accessor.getFirstNativeHeader("memberId")))
                         .chatRoomId(Long.valueOf(accessor.getFirstNativeHeader("chatRoomId")))
                         .sessionId(accessor.getSessionId())
                         .build()
