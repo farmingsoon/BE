@@ -60,8 +60,8 @@ public class RedisService {
 
     }
 
-    public boolean isNotExistInSet(String key, Long itemId){
-        return Boolean.FALSE.equals(redisTemplate.opsForSet().isMember(key, String.valueOf(itemId)));
+    public boolean isNotExistInSet(String key, String value){
+        return Boolean.FALSE.equals(redisTemplate.opsForSet().isMember(key, value));
     }
 
 }

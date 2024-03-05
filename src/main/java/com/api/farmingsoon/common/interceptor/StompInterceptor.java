@@ -28,17 +28,23 @@ public class StompInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        log.info("command : " + accessor.getCommand());
-
-
-        if (StompCommand.CONNECT.equals(accessor.getCommand()))
+        StompCommand command = accessor.getCommand();
+        log.info("command : " + command);
+        /**
+         * @Description
+         * 1. 모든 메시지 읽음 처리
+         * 2. Redis에 채팅방 참여 정보 저장
+         */
+        if (StompCommand.CONNECT.equals(command))
             eventPublisher.publishEvent(ChatRoomConnectEvent.builder()
                             .memberId(Long.valueOf(accessor.getFirstNativeHeader("memberId")))
                             .chatRoomId(Long.valueOf(accessor.getFirstNativeHeader("chatRoomId")))
+                            .sessionId(accessor.getSessionId())
                             .build()
             );
+        else if (StompCommand.DISCONNECT.equals(command)) {
 
-
+        }
 
         return message;
     }

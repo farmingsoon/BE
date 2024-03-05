@@ -27,7 +27,7 @@ public class ItemRedisService {
 
      @Async("testExecutor")
      public void handleViewCount(String cookieValueOfViewer, Long itemId) {
-         if (redisService.isNotExistInSet(cookieValueOfViewer, itemId))
+         if (redisService.isNotExistInSet(cookieValueOfViewer, String.valueOf(itemId)))
          {
              redisService.increaseData("viewCount_item_" + itemId);
              if(redisService.isNotExistsKey(cookieValueOfViewer))

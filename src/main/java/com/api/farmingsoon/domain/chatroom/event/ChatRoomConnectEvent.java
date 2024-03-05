@@ -10,10 +10,12 @@ public class ChatRoomConnectEvent {
 
     private Long memberId;
     private Long chatRoomId;
+    private String sessionId;
 
     @Builder
-    private ChatRoomConnectEvent(Long memberId, Long chatRoomId) {
+    private ChatRoomConnectEvent(Long memberId, Long chatRoomId, String sessionId) {
         this.memberId = memberId;
         this.chatRoomId = chatRoomId;
+        this.sessionId = sessionId;
     }
 }
