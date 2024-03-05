@@ -26,7 +26,7 @@ public class KeyExpirationListener extends KeyExpirationEventMessageListener {
         String[] expiredKey = key.toString().split("_");
         if (expiredKey[0].equals("bidEnd")) {
             applicationEventPublisher.publishEvent(new BidEndKeyExpiredEvent((Long.valueOf(expiredKey[1]))));  ; // itemId
-        } else if (expiredKey[0].equals("chatting")) { // memberId
+        } else if (expiredKey[0].equals("debouncing")) { // memberId
             applicationEventPublisher.publishEvent(new ChatNotificationDebounceKeyExpiredEvent(Long.valueOf(expiredKey[1]))); // receiverId
         }
     }

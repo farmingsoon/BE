@@ -2,6 +2,7 @@ package com.api.farmingsoon.domain.notification.listener;
 
 import com.api.farmingsoon.common.sse.SseService;
 import com.api.farmingsoon.domain.notification.event.ChatNotificationDebounceKeyExpiredEvent;
+import com.api.farmingsoon.domain.notification.event.NotReadChatEvent;
 import com.api.farmingsoon.domain.notification.event.NotificationSaveEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +27,13 @@ public class NotificationEventListener {
     }
 
     @EventListener
-    public void sendChatNotification(ChatNotificationDebounceKeyExpiredEvent event) throws InterruptedException {
-        sseService.sendToClient("CHATTING", event.getReceiverId(), "새로운 채팅 메시지가 있습니다.");
-        log.info("채팅 알림 전송");
+    public void sendChatRoomUpdateNotification(ChatNotificationDebounceKeyExpiredEvent event) throws InterruptedException {
+        sseService.sendToClient("CHATROOM_UPDATE", event.getReceiverId(), "채팅방 목록을 업데이트 해주세요.");
+        log.info("채팅방 업데이트 알림 전송");
+    }
+    @EventListener
+    public void sendNewChatNotification(NotReadChatEvent event) throws InterruptedException {
+        sseService.sendToClient("NEW_CHAT", event.getReceiverId(), "새로운 채팅 메시지가 있습니다.");
+        log.info("새로운 채팅 알림 전송");
     }
 }
