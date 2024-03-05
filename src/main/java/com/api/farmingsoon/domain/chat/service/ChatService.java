@@ -10,6 +10,7 @@ import com.api.farmingsoon.domain.chat.event.ChatSaveEvent;
 import com.api.farmingsoon.domain.chat.model.Chat;
 import com.api.farmingsoon.domain.chat.repository.ChatRepository;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
+import com.api.farmingsoon.domain.chatroom.service.ChatRoomRedisService;
 import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
@@ -31,16 +32,19 @@ public class ChatService {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
     private final ApplicationEventPublisher eventPublisher;
+    private final ChatRoomRedisService chatRoomRedisService;
 
     @Transactional
     public void create(ChatMessageRequest chatMessageRequest) {
+        Long connectMemberSize = chatRoomRedisService.getConnectMemberSize("chatRoom_" + chatMessageRequest.getChatRoomId());
+
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
         Member sender = memberService.getMemberById(chatMessageRequest.getSenderId());
         Chat chat = chatRepository.save(
                 Chat.builder().
                     sender(sender)
                     .message(chatMessageRequest.getMessage())
-                    .isRead(false)
+                    .isRead(connectMemberSize == 2) // 채팅방에 둘 모두 존재한다면 읽음으로 처리
                     .chatRoom(chatRoom).build()
         );
 

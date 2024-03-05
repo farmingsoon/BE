@@ -6,6 +6,7 @@ import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.domain.chatroom.event.ChatRoomConnectEvent;
+import com.api.farmingsoon.domain.chatroom.event.ChatRoomDisConnectEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -37,13 +38,16 @@ public class StompInterceptor implements ChannelInterceptor {
          */
         if (StompCommand.CONNECT.equals(command))
             eventPublisher.publishEvent(ChatRoomConnectEvent.builder()
-                            .memberId(Long.valueOf(accessor.getFirstNativeHeader("memberId")))
-                            .chatRoomId(Long.valueOf(accessor.getFirstNativeHeader("chatRoomId")))
-                            .sessionId(accessor.getSessionId())
-                            .build()
+                        .memberId(Long.valueOf(accessor.getFirstNativeHeader("memberId")))
+                        .chatRoomId(Long.valueOf(accessor.getFirstNativeHeader("chatRoomId")))
+                        .sessionId(accessor.getSessionId())
+                        .build()
             );
         else if (StompCommand.DISCONNECT.equals(command)) {
-
+            eventPublisher.publishEvent(ChatRoomDisConnectEvent.builder()
+                        .chatRoomId(Long.valueOf(accessor.getFirstNativeHeader("chatRoomId")))
+                        .sessionId(accessor.getSessionId())
+                        .build());
         }
 
         return message;

@@ -55,13 +55,14 @@ public class RedisService {
     public void createSet(String key, String value){
         redisTemplate.opsForSet().add(key, value); // set생성
     }
-    public void addToSet(String key,Long ttl, String value){
-        redisTemplate.opsForSet().add(key,value);
-
+    public void deleteToSet(String key, String value){
+        redisTemplate.opsForSet().remove(key, value);
+    }
+    public Long getSetSize(String key){
+        return redisTemplate.opsForSet().size(key);
     }
 
     public boolean isNotExistInSet(String key, String value){
         return Boolean.FALSE.equals(redisTemplate.opsForSet().isMember(key, value));
     }
-
 }
