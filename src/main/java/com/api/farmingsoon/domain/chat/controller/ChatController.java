@@ -25,10 +25,5 @@ public class ChatController {
     public void sendMessage(ChatMessageRequest chatMessageRequest) {
         chatService.create(chatMessageRequest);
     }
-    @MessageMapping("/chat/read")
-    public void readMessage(ReadMessageRequest readMessageRequest) {
-        chatService.read(readMessageRequest);
-    }
-
 
 }
