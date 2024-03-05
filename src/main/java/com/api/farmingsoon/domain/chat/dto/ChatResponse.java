@@ -17,6 +17,7 @@ public class ChatResponse {
     private Long senderId;
     private Boolean isRead;
     private LocalDateTime createAt;
+    private final String type = "SEND";
 
     @Builder
     private ChatResponse(Long senderId, String message, Boolean isRead, Long chatId, LocalDateTime createAt) {

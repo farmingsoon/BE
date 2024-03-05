@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ChatRoomConnectEvent {
 
-    private Long memberId;
+    private Long connectMemberId;
     private Long chatRoomId;
     private String sessionId;
 
     @Builder
-    private ChatRoomConnectEvent(Long memberId, Long chatRoomId, String sessionId) {
-        this.memberId = memberId;
+    private ChatRoomConnectEvent(Long connectMemberId, Long chatRoomId, String sessionId) {
+        this.connectMemberId = connectMemberId;
         this.chatRoomId = chatRoomId;
         this.sessionId = sessionId;
     }
