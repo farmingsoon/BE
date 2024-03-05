@@ -42,21 +42,26 @@ public class RedisService {
         return redisTemplate.keys(domain);
     }
 
-    public boolean isExistsKey(String key){
-        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    public boolean isNotExistsKey(String key){
+        return Boolean.FALSE.equals(redisTemplate.hasKey(key));
     }
 
-    public void addToSet(String key, Long itemId){
-        if(!isExistsKey(key)) {// 키가 없다면(set이 없다면)
-            redisTemplate.opsForSet().add(key, String.valueOf(itemId)); // set생성
-            redisTemplate.expire(key, TimeUtils.getRemainingTimeUntilMidnight(), TimeUnit.SECONDS); // 만료기간 설정
-        }
-        else // 기존 키 값으로 된 set에 추가
-            redisTemplate.opsForSet().add(key,String.valueOf(itemId));
+    public void addToSet(String key, String value){
+            redisTemplate.opsForSet().add(key,value);
+    }
+    public void setExpireTime(String key, Long ttl){
+        redisTemplate.expire(key, ttl , TimeUnit.SECONDS); // 만료기간 설정
+    }
+    public void createSet(String key, String value){
+        redisTemplate.opsForSet().add(key, value); // set생성
+    }
+    public void addToSet(String key,Long ttl, String value){
+        redisTemplate.opsForSet().add(key,value);
 
     }
-    public boolean isExistInSet(String key, Long itemId){
-        return Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, String.valueOf(itemId)));
+
+    public boolean isNotExistInSet(String key, Long itemId){
+        return Boolean.FALSE.equals(redisTemplate.opsForSet().isMember(key, String.valueOf(itemId)));
     }
 
 }
