@@ -2,16 +2,18 @@ package com.api.farmingsoon.domain.item.repository;
 
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
+import com.api.farmingsoon.domain.item.dto.ItemResponseBySubQuery;
+import com.api.farmingsoon.domain.item.dto.QItemResponseBySubQuery;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ import java.util.List;
 
 import static com.api.farmingsoon.domain.bid.model.QBid.bid;
 import static com.api.farmingsoon.domain.item.domain.QItem.item;
-import static com.api.farmingsoon.domain.member.model.QMember.member;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,11 +28,11 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
 
+
     @Override
     public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortcode) {
         List<Item> content = queryFactory
                 .selectFrom(item)
-                .innerJoin(item.member, member).fetchJoin()
                 .leftJoin(item.bidList, bid)
                 .where(eqCategory(category), containsKeyword(keyword))
                 .groupBy(item.id)
@@ -43,14 +44,48 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         Long total = queryFactory
                 .select(item.count())
                 .from(item)
-                .innerJoin(item.member, member)
                 .where(eqCategory(category), containsKeyword(keyword))
                 .fetchOne();
 
 
         return new PageImpl<>(content, pageable, total);
     }
+    @Override
+    public Page<ItemResponseBySubQuery> findItemResponseList(String category, String keyword, Pageable pageable, String sortcode) {
+        List<ItemResponseBySubQuery> list = queryFactory.select(
+                new QItemResponseBySubQuery(
+                        item.id,
+                        item.title,
+                        item.description,
+                        item.expiredAt,
+                        //queryFactory.select(item.bidList.any().price.max()).from(bid),
+                        queryFactory.select(bid.price.max()).from(bid).where(bid.item.eq(item)),
+                        item.hopePrice,
+                        queryFactory.select(item.bidList.any().price.min()).from(bid),
+                        item.itemStatus.stringValue(),
+                        item.bidList.size(),
+                        item.likeableItemList.size(),
+                        item.viewCount,
+                        item.thumbnailImageUrl,
+                        Expressions.FALSE
+                )
+        ).from(item)
+                .where(eqCategory(category), containsKeyword(keyword))
+                .groupBy(item.id)
+                .orderBy(getAllOrderSpecifiers(sortcode))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
+        Long total = queryFactory
+                .select(item.count())
+                .from(item)
+                .where(eqCategory(category), containsKeyword(keyword))
+                .fetchOne();
+
+
+        return new PageImpl<>(list, pageable, total);
+    }
     @Override
     public List<Item> findNotEndBidItemList() {
         return queryFactory.selectFrom(item)
@@ -64,6 +99,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .where(item.itemStatus.eq(ItemStatus.BIDDING), item.expiredAt.after(LocalDateTime.now()))
                 .fetch();
     }
+
+
 
     private BooleanExpression eqCategory(String category) {
         log.debug("카테고리: {}", category);

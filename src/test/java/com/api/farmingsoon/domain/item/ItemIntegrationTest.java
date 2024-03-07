@@ -100,7 +100,7 @@ class ItemIntegrationTest {
         UserDetails principal = new User("user1@naver.com", "", authorities);
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", authorities));
 
-        for(int i = 1; i <= 20; i++){
+        for(int i = 1; i <= 100; i++){
             Item item = Item.builder()
                     .title("title" + i)
                     .description("description" + i)
@@ -124,7 +124,19 @@ class ItemIntegrationTest {
                 .build();
     }
 
+    @DisplayName("상품 등록 후 상세 조회 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItems() throws Exception {
 
+        MvcResult mvcResult2 = mockMvc.perform(get("/api/items/test"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+
+    }
 
     @DisplayName("상품 등록 성공")
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)

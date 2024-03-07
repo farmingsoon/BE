@@ -60,6 +60,18 @@ public class ItemController {
         ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortcode);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
+    @GetMapping("/test")
+    public Response<ItemListResponseBySubQuery> getItemListBySubQuery(
+            @PageableDefault(size = 12) Pageable pageable,
+            @RequestParam(value = "sortcode", defaultValue = "recent") String sortcode,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "keyword", required = false) String keyword) {
+
+        ItemListResponseBySubQuery itemListBySubQuery = itemService.getItemListBySubQuery(category, keyword, pageable, sortcode);
+        return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", itemListBySubQuery);
+    }
+
+
     @GetMapping("/me")
     public Response<MyItemListResponse> getMyItemList(
             @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {

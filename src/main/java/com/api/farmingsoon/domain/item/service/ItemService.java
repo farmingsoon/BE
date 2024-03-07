@@ -1,5 +1,6 @@
 package com.api.farmingsoon.domain.item.service;
 
+import com.api.farmingsoon.common.pagenation.Pagination;
 import com.api.farmingsoon.common.redis.RedisService;
 import com.api.farmingsoon.common.util.Transaction;
 import com.api.farmingsoon.domain.item.dto.*;
@@ -24,13 +25,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +78,9 @@ public class ItemService {
     @Transactional(readOnly = true)
     public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortcode) {
         Optional<Member> viewer = authenticationUtils.getOptionalMember();
-        return ItemListResponse.of(itemRepository.findItemList(category, keyword, pageable, sortcode), viewer);
+        Page<Item> itemList = itemRepository.findItemList(category, keyword, pageable, sortcode);
+
+        return ItemListResponse.of(itemList, viewer);
     }
     @Transactional(readOnly = true)
     public ItemDetailResponse getItemDetail(Long itemId) {
@@ -174,5 +173,11 @@ public class ItemService {
     @Transactional(readOnly = true)
     public List<Item> findBiddingItemList(){
         return itemRepository.findBiddingItemList();
+    }
+
+    public ItemListResponseBySubQuery getItemListBySubQuery(String category, String keyword, Pageable pageable, String sortcode) {
+        Page<ItemResponseBySubQuery> itemResponseList = itemRepository.findItemResponseList(category, keyword, pageable, sortcode);
+        return new ItemListResponseBySubQuery(Pagination.of(itemResponseList), itemResponseList.getContent());
+
     }
 }
