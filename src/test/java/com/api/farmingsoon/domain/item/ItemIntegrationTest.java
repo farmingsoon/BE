@@ -129,7 +129,7 @@ class ItemIntegrationTest {
     @Test
     void getItems() throws Exception {
 
-        MvcResult mvcResult2 = mockMvc.perform(get("/api/items/test"))
+        MvcResult mvcResult2 = mockMvc.perform(get("/api/items"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
