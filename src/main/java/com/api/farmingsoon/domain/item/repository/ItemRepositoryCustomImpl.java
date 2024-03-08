@@ -2,8 +2,7 @@ package com.api.farmingsoon.domain.item.repository;
 
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
-import com.api.farmingsoon.domain.item.dto.ItemResponseBySubQuery;
-import com.api.farmingsoon.domain.item.dto.QItemResponseBySubQuery;
+import com.api.farmingsoon.domain.item.dto.ItemBySubQueryResponse;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -50,9 +49,9 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
-    @Override
-    public Page<ItemResponseBySubQuery> findItemResponseList(String category, String keyword, Pageable pageable, String sortcode) {
-        List<ItemResponseBySubQuery> list = queryFactory.select(
+/*    @Override
+    public Page<ItemBySubQueryResponse> findItemResponseList(String category, String keyword, Pageable pageable, String sortcode) {
+        List<ItemBySubQueryResponse> list = queryFactory.select(
                 new QItemResponseBySubQuery(
                         item.id,
                         item.title,
@@ -85,7 +84,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
 
         return new PageImpl<>(list, pageable, total);
-    }
+    }*/
     @Override
     public List<Item> findNotEndBidItemList() {
         return queryFactory.selectFrom(item)

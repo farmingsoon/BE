@@ -1,7 +1,7 @@
 package com.api.farmingsoon.domain.item.repository;
 
 import com.api.farmingsoon.domain.item.domain.Item;
-import com.api.farmingsoon.domain.item.dto.ItemResponseBySubQuery;
+import com.api.farmingsoon.domain.item.dto.ItemBySubQueryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,5 +15,5 @@ public interface ItemRepositoryCustom {
 
     List<Item> findBiddingItemList();
 
-    Page<ItemResponseBySubQuery> findItemResponseList(String category, String keyword, Pageable pageable, String sortcode);
+    //Page<ItemBySubQueryResponse> findItemListBySubQuery(String category, String keyword, Pageable pageable, String sortcode);
 }

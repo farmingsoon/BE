@@ -6,7 +6,6 @@ import com.api.farmingsoon.common.response.Response;
 import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.domain.item.dto.*;
 import com.api.farmingsoon.domain.item.service.ItemService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -17,8 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -60,17 +57,6 @@ public class ItemController {
         ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortcode);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
-    @GetMapping("/test")
-    public Response<ItemListResponseBySubQuery> getItemListBySubQuery(
-            @PageableDefault(size = 12) Pageable pageable,
-            @RequestParam(value = "sortcode", defaultValue = "recent") String sortcode,
-            @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "keyword", required = false) String keyword) {
-
-        ItemListResponseBySubQuery itemListBySubQuery = itemService.getItemListBySubQuery(category, keyword, pageable, sortcode);
-        return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", itemListBySubQuery);
-    }
-
 
     @GetMapping("/me")
     public Response<MyItemListResponse> getMyItemList(
@@ -99,5 +85,16 @@ public class ItemController {
         itemService.soldOut(itemId, buyerId);
         return Response.success(HttpStatus.OK, "상품 판매 완료!");
     }
+/*
+    @GetMapping("/test")
+    public Response<ItemListBySubQueryResponse> getItemListBySubQuery(
+            @PageableDefault(size = 12) Pageable pageable,
+            @RequestParam(value = "sortcode", defaultValue = "recent") String sortcode,
+            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "keyword", required = false) String keyword) {
 
+        ItemListBySubQueryResponse itemListBySubQuery = itemService.getItemListBySubQuery(category, keyword, pageable, sortcode);
+        return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", itemListBySubQuery);
+    }
+    */
 }
