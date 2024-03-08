@@ -100,7 +100,7 @@ class ItemIntegrationTest {
         UserDetails principal = new User("user1@naver.com", "", authorities);
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(principal, "", authorities));
 
-        for(int i = 1; i <= 100; i++){
+        for(int i = 1; i <= 20; i++){
             Item item = Item.builder()
                     .title("title" + i)
                     .description("description" + i)
