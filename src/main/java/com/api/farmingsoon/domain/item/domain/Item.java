@@ -7,6 +7,7 @@ import com.api.farmingsoon.domain.like.model.LikeableItem;
 import com.api.farmingsoon.domain.member.model.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -57,8 +58,10 @@ public class Item extends BaseTimeEntity {
 
     // *Todo 양방향 안쓰는 쪽으로 고려해보기
     @OneToMany(mappedBy = "item")
+    @BatchSize(size = 12)
     private List<Bid> bidList;
 
+    @BatchSize(size = 12)
     @OneToMany(mappedBy = "item")
     private List<LikeableItem> likeableItemList;
 
