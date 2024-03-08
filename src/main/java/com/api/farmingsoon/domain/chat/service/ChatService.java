@@ -10,9 +10,11 @@ import com.api.farmingsoon.domain.chat.event.ChatSaveEvent;
 import com.api.farmingsoon.domain.chat.model.Chat;
 import com.api.farmingsoon.domain.chat.repository.ChatRepository;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
+import com.api.farmingsoon.domain.chatroom.service.ChatRoomRedisService;
 import com.api.farmingsoon.domain.chatroom.service.ChatRoomService;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.service.MemberService;
+import com.api.farmingsoon.domain.notification.event.NotReadChatEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -31,23 +33,31 @@ public class ChatService {
     private final ChatRoomService chatRoomService;
     private final MemberService memberService;
     private final ApplicationEventPublisher eventPublisher;
+    private final ChatRoomRedisService chatRoomRedisService;
 
     @Transactional
     public void create(ChatMessageRequest chatMessageRequest) {
+        Long connectMemberSize = chatRoomRedisService.getConnectMemberSize("chatRoom_" + chatMessageRequest.getChatRoomId());
+
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
         Member sender = memberService.getMemberById(chatMessageRequest.getSenderId());
         Chat chat = chatRepository.save(
                 Chat.builder().
                     sender(sender)
                     .message(chatMessageRequest.getMessage())
-                    .isRead(false)
+                    .isRead(connectMemberSize == 2) // 채팅방에 둘 모두 존재한다면 읽음으로 처리
                     .chatRoom(chatRoom).build()
         );
+
+        Member receiver = ChatRoom.resolveToReceiver(chatRoom, sender.getEmail());
+
+        if(connectMemberSize == 1) // 채팅방에 상대방이 없다면 알림을 전송
+            eventPublisher.publishEvent(new NotReadChatEvent(receiver.getId()));
 
         eventPublisher.publishEvent(
                 ChatSaveEvent.builder()
                         .chatRoomId(chatMessageRequest.getChatRoomId())
-                        .receiverId(ChatRoom.resolveToReceiver(chatRoom, sender.getEmail()).getId())
+                        .receiverId(receiver.getId())
                         .chatResponse(ChatResponse.of(chat))
                 .build());
 
@@ -56,13 +66,6 @@ public class ChatService {
     public ChatListResponse getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
         return ChatListResponse.of(chatRepository.findByChatRoomOrderByIdAsc(chatRoom, pageable));
-    }
-
-    @Transactional
-    public void read(ReadMessageRequest readMessageRequest) {
-        Chat chat = chatRepository.findById(readMessageRequest.getChatId()).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_CHAT));
-        chat.read();
-        log.info(chat.getId() + " "+ chat.getIsRead());
     }
 
     @Transactional

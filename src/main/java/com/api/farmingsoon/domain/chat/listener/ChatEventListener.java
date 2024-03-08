@@ -25,8 +25,8 @@ public class ChatEventListener {
     public void sendChatAndDebounceNotification(ChatSaveEvent event) throws InterruptedException {
         messagingTemplate.convertAndSend("/sub/chat-room/" + event.getChatRoomId(), event.getChatResponse());
 
-        if(!redisService.isExistsKey("chatting_" + event.getReceiverId())) // 알림 디바운싱
-            redisService.setData("chatting_" + event.getReceiverId(),"", 2L,TimeUnit.SECONDS);
+        if(redisService.isNotExistsKey("debouncing_" + event.getReceiverId())) // 알림 디바운싱
+            redisService.setData("debouncing_" + event.getReceiverId(),"", 2L,TimeUnit.SECONDS);
 
     }
 }

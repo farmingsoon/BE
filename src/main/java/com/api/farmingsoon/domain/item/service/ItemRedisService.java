@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.item.service;
 
 import com.api.farmingsoon.common.redis.RedisService;
+import com.api.farmingsoon.common.util.TimeUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,13 +18,27 @@ public class ItemRedisService {
     }
 
 
-     // @Description 중복된 접근이 아니라면 조회수를 증가시키고 접근 처리
+    /**
+     *     @Description
+     *     1. 중복된 접근이 아니라면 조회수를 증가시키고 접근 처리
+     *     2. set이 없다면 만들고 만료기간 자정으로 설정
+     *     3. 있다면 추가
+     */
+
      @Async("testExecutor")
      public void handleViewCount(String cookieValueOfViewer, Long itemId) {
-         if (!redisService.isExistInSet(cookieValueOfViewer, itemId))
+         if (redisService.isNotExistInSet(cookieValueOfViewer, String.valueOf(itemId)))
          {
              redisService.increaseData("viewCount_item_" + itemId);
-             redisService.addToSet(cookieValueOfViewer, itemId);
+             if(redisService.isNotExistsKey(cookieValueOfViewer))
+             {
+                 redisService.createSet(cookieValueOfViewer, String.valueOf(itemId));
+                 redisService.setExpireTime(cookieValueOfViewer, TimeUtils.getRemainingTimeUntilMidnight());
+             }
+             else
+             {
+                 redisService.addToSet(cookieValueOfViewer, String.valueOf(itemId));
+             }
          }
      }
 }

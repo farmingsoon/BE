@@ -124,7 +124,19 @@ class ItemIntegrationTest {
                 .build();
     }
 
+    @DisplayName("상품 등록 후 상세 조회 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItems() throws Exception {
 
+        MvcResult mvcResult2 = mockMvc.perform(get("/api/items"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+
+    }
 
     @DisplayName("상품 등록 성공")
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
