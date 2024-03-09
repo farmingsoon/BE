@@ -6,6 +6,8 @@ import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.common.util.JwtUtils;
+import com.api.farmingsoon.common.util.Transaction;
+import com.api.farmingsoon.domain.image.event.UploadImagesRollbackEvent;
 import com.api.farmingsoon.domain.image.service.ImageService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.dto.LoginRequest;
@@ -30,6 +32,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,6 +48,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final ApplicationEventPublisher eventPublisher;
     private final ImageService imageService;
+    private final Transaction transaction;
 
     public Long join(JoinRequest joinRequest) {
         String profileImageUrl = imageService.uploadProfileImage(joinRequest.getProfileImg());
@@ -53,11 +57,18 @@ public class MemberService {
 
     @Transactional
     private Long saveMemberAndProfileImage(JoinRequest joinRequest, String profileImageUrl) {
-        Member member = joinRequest.toEntity();
-        member.setEncryptedPassword(passwordEncoder.encode(joinRequest.getPassword()));
-        member.setProfileImg(profileImageUrl);
+        return transaction.invoke(() ->
+            {
+                eventPublisher.publishEvent(new UploadImagesRollbackEvent(List.of(profileImageUrl)));
 
-        return memberRepository.save(member).getId(); // @todo 중복된 회원이 있으면 예외처리
+                Member member = joinRequest.toEntity();
+                member.setEncryptedPassword(passwordEncoder.encode(joinRequest.getPassword()));
+                member.setProfileImg(profileImageUrl);
+
+                return memberRepository.save(member).getId(); // @todo 중복된 회원이 있으면 예외처리
+            }
+        );
+
     }
     @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
