@@ -1,11 +1,8 @@
 package com.api.farmingsoon.domain.chat.service;
 
-import com.api.farmingsoon.common.exception.ErrorCode;
-import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.domain.chat.dto.ChatListResponse;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.dto.ChatResponse;
-import com.api.farmingsoon.domain.chat.dto.ReadMessageRequest;
 import com.api.farmingsoon.domain.chat.event.ChatSaveEvent;
 import com.api.farmingsoon.domain.chat.model.Chat;
 import com.api.farmingsoon.domain.chat.repository.ChatRepository;
@@ -65,7 +62,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public ChatListResponse getChats(Long chatRoomId, Pageable pageable) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
-        return ChatListResponse.of(chatRepository.findByChatRoomOrderByIdAsc(chatRoom, pageable));
+        return ChatListResponse.of(chatRepository.findByChatRoomOrderByIdDesc(chatRoom, pageable));
     }
 
     @Transactional
