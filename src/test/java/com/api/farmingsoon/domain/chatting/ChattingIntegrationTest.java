@@ -300,8 +300,8 @@ public class ChattingIntegrationTest {
         ChatListResponse chatListResponse = objectMapper.readValue(result, ChatListResponse.class);
 
         Assertions.assertThat(chatListResponse.getChats().get(0).getSenderId()).isEqualTo(1);
-        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat1");
-        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat8");
+        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat20");
+        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat13");
 
     }
     @DisplayName("채팅 목록 조회(구매자)")
@@ -326,8 +326,8 @@ public class ChattingIntegrationTest {
         ChatListResponse chatListResponse = objectMapper.readValue(result, ChatListResponse.class);
 
         Assertions.assertThat(chatListResponse.getChats().get(0).getSenderId()).isEqualTo(2);
-        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat1");
-        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat8");
+        Assertions.assertThat(chatListResponse.getChats().get(0).getMessage()).isEqualTo("chat20");
+        Assertions.assertThat(chatListResponse.getChats().get(7).getMessage()).isEqualTo("chat13");
 
     }
 }
