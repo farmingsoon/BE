@@ -5,6 +5,7 @@ import com.api.farmingsoon.domain.chat.model.QChat;
 import com.api.farmingsoon.domain.chatroom.model.ChatRoom;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,6 +22,7 @@ import static com.api.farmingsoon.domain.member.model.QMember.member;
 public class ChatRepositoryCustomImpl implements ChatRepositoryCustom{
 
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
 
     @Override
     public List<Chat> findMyNotReadChatList(ChatRoom chatRoom, Member member) {
@@ -36,7 +38,8 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom{
                 .where(chat.chatRoom.eq(chatroom), chat.isRead.isFalse(), chat.sender.ne(member))
                 .set(chat.isRead, true)
                 .execute();
-
+        em.flush();
+        em.clear();
 
     }
 }
