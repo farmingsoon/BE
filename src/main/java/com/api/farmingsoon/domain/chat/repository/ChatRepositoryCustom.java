@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ChatRepositoryCustom {
     List<Chat> findMyNotReadChatList(ChatRoom chatroom, Member member);
+    void readAllMyNotReadChatList(ChatRoom chatroom, Member member);
 }

@@ -29,4 +29,14 @@ public class ChatRepositoryCustomImpl implements ChatRepositoryCustom{
                         .fetch();
 
     }
+
+    @Override
+    public void readAllMyNotReadChatList(ChatRoom chatroom, Member member) {
+        queryFactory.update(chat)
+                .where(chat.chatRoom.eq(chatroom), chat.isRead.isFalse(), chat.sender.ne(member))
+                .set(chat.isRead, true)
+                .execute();
+
+
+    }
 }
