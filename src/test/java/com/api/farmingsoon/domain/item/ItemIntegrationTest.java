@@ -2,6 +2,7 @@ package com.api.farmingsoon.domain.item;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
+import com.api.farmingsoon.domain.IntegrationTest;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
 import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.item.domain.Item;
@@ -49,29 +50,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-class ItemIntegrationTest {
+
+class ItemIntegrationTest extends IntegrationTest {
 
     @Autowired
     private MemberService memberService;
-    @Autowired
-    private WebApplicationContext ctx;
     @Autowired
     private ItemService itemService;
 
     @Autowired
     private BidService bidService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
     private static MockMultipartFile thumbnailImage;
     private static List<MockMultipartFile> images;
 

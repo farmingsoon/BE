@@ -3,6 +3,7 @@ package com.api.farmingsoon.domain.chatting;
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.common.util.Transaction;
+import com.api.farmingsoon.domain.IntegrationTest;
 import com.api.farmingsoon.domain.chat.dto.ChatListResponse;
 import com.api.farmingsoon.domain.chat.dto.ChatMessageRequest;
 import com.api.farmingsoon.domain.chat.service.ChatService;
@@ -50,32 +51,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-public class ChattingIntegrationTest {
+
+public class ChattingIntegrationTest extends IntegrationTest {
 
     @Autowired
     private ItemService itemService;
     @Autowired
     private MemberService memberService;
     @Autowired
-    private WebApplicationContext ctx;
-    @Autowired
     private ChatService chatService;
     @Autowired
     private ChatRoomService chatRoomService;
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private Transaction transaction;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
 
     private static MockMultipartFile profileImage;
 

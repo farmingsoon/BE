@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.member;
 
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
+import com.api.farmingsoon.domain.IntegrationTest;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.dto.LoginRequest;
 import com.api.farmingsoon.domain.member.model.Member;
@@ -29,22 +30,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-class MemberIntegrationTest {
-    @Autowired
-    private ObjectMapper objectMapper;
+
+class MemberIntegrationTest extends IntegrationTest {
+
     @Autowired
     private MemberService memberService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
     private static MockMultipartFile profileImage;
     @BeforeAll
     static void beforeAll() throws IOException {

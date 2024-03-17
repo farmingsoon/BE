@@ -3,6 +3,7 @@ package com.api.farmingsoon.domain.like;
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.common.util.Transaction;
+import com.api.farmingsoon.domain.IntegrationTest;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.LikeableItemListResponse;
@@ -46,21 +47,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-class LikeableItemIntegrationTest {
 
-    @Autowired
-    private Transaction transaction;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private WebApplicationContext ctx;
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+class LikeableItemIntegrationTest extends IntegrationTest {
     @Autowired
     private MemberService memberService;
     @Autowired

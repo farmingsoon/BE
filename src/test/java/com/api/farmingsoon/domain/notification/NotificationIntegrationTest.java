@@ -3,6 +3,7 @@ package com.api.farmingsoon.domain.notification;
 import com.api.farmingsoon.common.clean.DatabaseCleanup;
 import com.api.farmingsoon.common.util.TimeUtils;
 import com.api.farmingsoon.common.util.Transaction;
+import com.api.farmingsoon.domain.IntegrationTest;
 import com.api.farmingsoon.domain.bid.dto.BidRequest;
 import com.api.farmingsoon.domain.bid.model.Bid;
 import com.api.farmingsoon.domain.bid.model.BidResult;
@@ -53,21 +54,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@AutoConfigureMockMvc
-public class NotificationIntegrationTest {
 
-    @Autowired
-    private Transaction transaction;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private WebApplicationContext ctx;
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+public class NotificationIntegrationTest extends IntegrationTest {
+
     @Autowired
     private MemberService memberService;
     @Autowired
