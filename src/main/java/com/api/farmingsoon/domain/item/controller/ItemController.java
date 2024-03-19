@@ -81,8 +81,8 @@ public class ItemController {
 
     @LoginChecking
     @PatchMapping("/{itemId}/sold-out")
-    public Response<Void> soldOut(@PathVariable(name = "itemId") Long itemId, @RequestParam(value = "buyerId") Long buyerId){
-        itemService.soldOut(itemId, buyerId);
+    public Response<Void> soldOut(@PathVariable(name = "itemId") Long itemId, @RequestBody SoldOutRequest soldOutRequest){
+        itemService.soldOut(itemId, soldOutRequest);
         return Response.success(HttpStatus.OK, "상품 판매 완료!");
     }
 /*
