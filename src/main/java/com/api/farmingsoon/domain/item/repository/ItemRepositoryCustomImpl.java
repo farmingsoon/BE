@@ -2,11 +2,9 @@ package com.api.farmingsoon.domain.item.repository;
 
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
-import com.api.farmingsoon.domain.item.dto.ItemBySubQueryResponse;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +27,11 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
 
     @Override
-    public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortCode) {
+    public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortCode, Boolean soldOut) {
         List<Item> content = queryFactory
                 .selectFrom(item)
                 .leftJoin(item.bidList, bid)
-                .where(eqCategory(category), containsKeyword(keyword))
+                .where(eqCategory(category), containsKeyword(keyword), checkSoldOut(soldOut))
                 .groupBy(item.id)
                 .orderBy(getAllOrderSpecifiers(sortCode))
                 .offset(pageable.getOffset())
@@ -99,7 +97,10 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .fetch();
     }
 
-
+    private BooleanExpression checkSoldOut(Boolean soldOut) {
+        log.debug("판매완료여부: {}", soldOut);
+        return soldOut.equals(Boolean.FALSE) ? item.itemStatus.eq(ItemStatus.BIDDING).or(item.itemStatus.eq(ItemStatus.BID_END)) : item.itemStatus.eq(ItemStatus.SOLDOUT);
+    }
 
     private BooleanExpression eqCategory(String category) {
         log.debug("카테고리: {}", category);

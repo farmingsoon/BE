@@ -231,6 +231,31 @@ class ItemIntegrationTest extends IntegrationTest {
                 .contains(20L,12);
     }
 
+    @DisplayName("판매완료된 상품 조회")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getSoldOutItems() throws Exception {
+        for(int i = 1; i <= 10; i++){
+            itemService.soldOut((long) i, SoldOutRequest.builder().awardPrice(10000 * (20 - i)).buyerId(2L).build());
+        }
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items")
+                        .param("soldOut", "false"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
+        Assertions.assertThat(itemListResponse.getItems().get(9).getTitle()).isEqualTo("title11");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,10);
+    }
+
     @DisplayName("상품 목록 조회 낙찰가 최고가 순")
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
@@ -242,7 +267,8 @@ class ItemIntegrationTest extends IntegrationTest {
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sortCode", "highest"))
+                        .param("sortCode", "highest")
+                        .param("soldOut", "true"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -267,7 +293,8 @@ class ItemIntegrationTest extends IntegrationTest {
         }
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sortCode", "lowest"))
+                        .param("sortCode", "lowest")
+                        .param("soldOut", "true"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
