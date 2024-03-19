@@ -25,6 +25,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,6 +55,11 @@ class MemberIntegrationTest extends IntegrationTest {
                 .profileImg(profileImage).build();
 
         memberService.join(joinRequest);
+
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+                .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
+                .alwaysDo(print())
+                .build();
     }
 
     @DisplayName("회원가입 성공")
@@ -77,6 +84,25 @@ class MemberIntegrationTest extends IntegrationTest {
         Assertions.assertThat(member.getEmail()).isEqualTo("test@naver.com");
         Assertions.assertThat(member.getNickname()).isEqualTo("testNickname");
         Assertions.assertThat(passwordEncoder.matches("TestPassword1234@@", member.getPassword())).isTrue();
+    }
+
+    @DisplayName("회원가입 실패")
+    @Test
+    void joinFail() throws Exception {
+
+        //when
+        MvcResult mvcResult = mockMvc.perform(multipart("/api/members/join")
+                        .file(profileImage)
+                        .param("email", "user1@naver.com")
+                        .param("password", "TestPassword1234@@")
+                        .param("nickname", "testNickname")
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andReturn();
+        //then
+        String message = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("message").textValue();
+        Assertions.assertThat(message).isEqualTo("이미 존재하는 회원입니다.");
     }
 
    @DisplayName("로그인 성공")
