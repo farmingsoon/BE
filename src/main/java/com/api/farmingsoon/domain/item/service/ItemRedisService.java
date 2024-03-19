@@ -20,9 +20,9 @@ public class ItemRedisService {
 
     /**
      *     @Description
-     *     1. 중복된 접근이 아니라면 조회수를 증가시키고 접근 처리
-     *     2. set이 없다면 만들고 만료기간 자정으로 설정
-     *     3. 있다면 추가
+     *     1. 중복된 접근이 아니라면 조회수를 증가시키고 접근 처리(Set 의 키 값이 없거나 set 내부에 value 가 없거나)
+     *     2. set 이 없다면 만들고 만료기간 자정으로 설정
+     *     3. 있다면 set 에 value 추가
      */
 
      @Async("testExecutor")
