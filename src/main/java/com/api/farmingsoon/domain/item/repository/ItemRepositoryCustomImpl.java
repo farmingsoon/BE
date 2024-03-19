@@ -117,8 +117,9 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         switch (sortcode) {
                 case "recent"-> orderSpecifierList.add(new OrderSpecifier<>(Order.DESC, item.createdAt));
                 case "hot" -> orderSpecifierList.add(new OrderSpecifier<>(Order.DESC, item.viewCount));
-                case "highest" -> orderSpecifierList.add(new OrderSpecifier<>(Order.DESC, item.bidList.any().price.max()));
-                case "lowest" -> orderSpecifierList.add(new OrderSpecifier<>(Order.ASC, item.bidList.any().price.max()));
+                case "imminent" -> orderSpecifierList.add(new OrderSpecifier<>(Order.ASC, item.expiredAt));
+                case "highest" -> orderSpecifierList.add(new OrderSpecifier<>(Order.DESC, item.awardPrice));
+                case "lowest" -> orderSpecifierList.add(new OrderSpecifier<>(Order.ASC, item.awardPrice));
                 //case "expiredAt" -> orderSpecifierList.add(new OrderSpecifier<>(direction, item.expiredAt));
         }
 

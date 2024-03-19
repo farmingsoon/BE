@@ -97,7 +97,7 @@ class ItemIntegrationTest extends IntegrationTest {
                     .title("title" + i)
                     .description("description" + i)
                     .hopePrice(10000 * i)
-                    .bidPeriod(1)
+                    .bidPeriod(i)
                     .itemStatus(ItemStatus.BIDDING)
                     .viewCount(i)
                     .expiredAt(TimeUtils.setExpireAt(i)).build();
@@ -106,7 +106,6 @@ class ItemIntegrationTest extends IntegrationTest {
             imageUrl.add(0, "/thumnailImage/" + i);
 
             itemService.saveItemAndImage(item, imageUrl);
-
             bidService.bid(BidRequest.builder().itemId(item.getId()).price(10000 * i).build());
         }
 
@@ -232,37 +231,18 @@ class ItemIntegrationTest extends IntegrationTest {
                 .contains(20L,12);
     }
 
-    @DisplayName("상품 목록 조회 최고가 순 정렬 성공")
+    @DisplayName("상품 목록 조회 낙찰가 최고가 순")
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void getItemsOrderByHighestPrice() throws Exception {
+        for(int i = 1; i <= 20; i++){
+            itemService.soldOut((long) i, SoldOutRequest.builder().awardPrice(10000 * (20 - i)).buyerId(2L).build());
+        }
+
 
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sort", "highest"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
-        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
-
-        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
-        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
-
-        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
-                .extracting("totalElementSize", "elementSize")
-                .contains(20L,12);
-    }
-
-    @DisplayName("상품 목록 조회 최저가 순 정렬 성공")
-    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
-    @Test
-    void getItemsOrderByLowestPrice() throws Exception {
-
-        // when
-        MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sortcode", "lowest"))
+                        .param("sortCode", "highest"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -278,14 +258,16 @@ class ItemIntegrationTest extends IntegrationTest {
                 .contains(20L,12);
     }
 
-    @DisplayName("상품 목록 조회 인기순 정렬 성공")
+    @DisplayName("상품 목록 조회 낙찰가 최저가 순")
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
-    void getItemsOrderByViewCount() throws Exception {
-
+    void getItemsOrderByLowestPrice() throws Exception {
+        for(int i = 1; i <= 20; i++){
+            itemService.soldOut((long) i, SoldOutRequest.builder().awardPrice(10000 * (20 - i)).buyerId(2L).build());
+        }
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("sortcode", "hot"))
+                        .param("sortCode", "lowest"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -295,6 +277,52 @@ class ItemIntegrationTest extends IntegrationTest {
 
         Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
         Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,12);
+    }
+
+    @DisplayName("상품 목록 조회 인기순")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemsOrderByViewCount() throws Exception {
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items")
+                        .param("sortCode", "hot"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title9");
+
+        Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
+                .extracting("totalElementSize", "elementSize")
+                .contains(20L,12);
+    }
+
+    @DisplayName("상품 목록 조회 마감임박순")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void getItemsOrderByDeadlineImminent() throws Exception {
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/api/items")
+                        .param("sortCode", "imminent"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
+        ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
+
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title1");
+        Assertions.assertThat(itemListResponse.getItems().get(11).getTitle()).isEqualTo("title12");
 
         Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
