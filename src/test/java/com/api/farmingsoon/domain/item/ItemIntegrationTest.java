@@ -9,6 +9,7 @@ import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
 import com.api.farmingsoon.domain.item.dto.ItemListResponse;
 import com.api.farmingsoon.domain.item.dto.MyItemListResponse;
+import com.api.farmingsoon.domain.item.dto.SoldOutRequest;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.service.MemberService;
@@ -76,13 +77,15 @@ class ItemIntegrationTest extends IntegrationTest {
     @BeforeEach
     void beforeEach(){
         databaseCleanup.execute();
-        JoinRequest joinRequest = JoinRequest.builder()
-                .email("user1@naver.com")
-                .nickname("user1")
-                .password("12345678")
-                .profileImg(thumbnailImage).build();
+        for(int i = 1; i <= 2; i++){
+            JoinRequest joinRequest = JoinRequest.builder()
+                    .email("user" + i +"@naver.com")
+                    .nickname("user" + i)
+                    .password("12345678")
+                    .profileImg(thumbnailImage).build();
+            memberService.join(joinRequest);
+        }
 
-        memberService.join(joinRequest);
 
         Collection<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_MEMBER"));
 
@@ -377,6 +380,37 @@ class ItemIntegrationTest extends IntegrationTest {
         Assertions.assertThat(myItemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
                 .contains(20L,12);
+    }
+    @DisplayName("판매완료 처리 성공")
+    @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void soldOutSuccess() throws Exception {
+        SoldOutRequest soldOutRequest = SoldOutRequest.builder().awardPrice(50000).buyerId(2L).build();
+        // when
+        MvcResult mvcResult = mockMvc.perform(patch("/api/items/1/sold-out")
+                        .content(objectMapper.writeValueAsString(soldOutRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        // then
+        Assertions.assertThat(itemService.getItemDetail(1L).getAwardPrice()).isEqualTo(50000);
+        Assertions.assertThat(itemService.getItemDetail(1L).getItemStatus()).isEqualTo(ItemStatus.SOLDOUT.getStatus());
+    }
+    @DisplayName("판매완료 처리 실패")
+    @WithUserDetails(value = "user2@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    void soldOutFail() throws Exception {
+
+        SoldOutRequest soldOutRequest = SoldOutRequest.builder().awardPrice(50000).buyerId(2L).build();
+        // when
+        MvcResult mvcResult = mockMvc.perform(patch("/api/items/1/sold-out")
+                        .content(objectMapper.writeValueAsString(soldOutRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andReturn();
+        Assertions.assertThat(itemService.getItemDetail(1L).getAwardPrice()).isNull();
     }
 
     // @Todo 내가 입찰에 참여한 상품 조회

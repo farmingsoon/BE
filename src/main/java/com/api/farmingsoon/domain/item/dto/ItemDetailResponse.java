@@ -23,8 +23,9 @@ public class ItemDetailResponse {
     private String sellerNickname;
     private String title;
     private String description;
-    private Integer highestPrice;
     private Integer hopePrice;
+    private Integer awardPrice;
+    private Integer highestPrice;
     private Integer lowestPrice;
     private LocalDateTime expiredAt;
     private String itemStatus;
@@ -43,6 +44,7 @@ public class ItemDetailResponse {
                 .title(item.getTitle())
                 .description(item.getDescription())
                 .hopePrice(item.getHopePrice())
+                .awardPrice(item.getAwardPrice())
                 .highestPrice(item.getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))
                 .lowestPrice(item.getBidList().stream().map(Bid::getPrice).min(Integer::compareTo).orElse(null))
                 .expiredAt(item.getExpiredAt())

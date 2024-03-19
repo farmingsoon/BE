@@ -11,6 +11,7 @@ import com.api.farmingsoon.domain.bid.repository.BidRepository;
 import com.api.farmingsoon.domain.bid.service.BidService;
 import com.api.farmingsoon.domain.item.domain.Item;
 import com.api.farmingsoon.domain.item.domain.ItemStatus;
+import com.api.farmingsoon.domain.item.dto.SoldOutRequest;
 import com.api.farmingsoon.domain.item.service.ItemService;
 import com.api.farmingsoon.domain.member.dto.JoinRequest;
 import com.api.farmingsoon.domain.member.model.Member;
@@ -150,8 +151,9 @@ public class NotificationIntegrationTest extends IntegrationTest {
     @WithUserDetails(value = "user1@naver.com", setupBefore = TestExecutionEvent.TEST_EXECUTION)
     @Test
     void soldOutNotification() throws Exception {
+        SoldOutRequest soldOutRequest = SoldOutRequest.builder().awardPrice(50000).buyerId(2L).build();
         //given
-        itemService.soldOut(1L, 2L);
+        itemService.soldOut(1L, soldOutRequest);
         Member seller = memberService.getMemberByEmail("user1@naver.com");
         Member buyer1 = memberService.getMemberByEmail("user2@naver.com");
         Member buyer2 = memberService.getMemberByEmail("user3@naver.com");
