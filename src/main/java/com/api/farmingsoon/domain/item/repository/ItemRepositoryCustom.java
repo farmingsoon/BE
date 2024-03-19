@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ItemRepositoryCustom {
 
-    Page<Item> findItemList(String category, String title, Pageable pageable, String sortcode);
+    Page<Item> findItemList(String category, String title, Pageable pageable, String sortCode);
 
     List<Item> findNotEndBidItemList();
 

@@ -50,11 +50,11 @@ public class ItemController {
     @GetMapping
     public Response<ItemListResponse> getItemList(
             @PageableDefault(size = 12) Pageable pageable,
-            @RequestParam(value = "sortcode", defaultValue = "recent") String sortcode,
+            @RequestParam(value = "sortCode", defaultValue = "recent") String sortCode,
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "keyword", required = false) String keyword) {
 
-        ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortcode);
+        ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortCode);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
 

@@ -75,9 +75,9 @@ public class ItemService {
         );
     }
     @Transactional(readOnly = true)
-    public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortcode) {
+    public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortCode) {
         Optional<Member> viewer = authenticationUtils.getOptionalMember();
-        Page<Item> itemList = itemRepository.findItemList(category, keyword, pageable, sortcode);
+        Page<Item> itemList = itemRepository.findItemList(category, keyword, pageable, sortCode);
 
         return ItemListResponse.of(itemList, viewer);
     }

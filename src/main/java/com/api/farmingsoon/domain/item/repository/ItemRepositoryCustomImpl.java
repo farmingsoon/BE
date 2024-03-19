@@ -29,13 +29,13 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
 
     @Override
-    public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortcode) {
+    public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortCode) {
         List<Item> content = queryFactory
                 .selectFrom(item)
                 .leftJoin(item.bidList, bid)
                 .where(eqCategory(category), containsKeyword(keyword))
                 .groupBy(item.id)
-                .orderBy(getAllOrderSpecifiers(sortcode))
+                .orderBy(getAllOrderSpecifiers(sortCode))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
