@@ -69,7 +69,11 @@ public class ChatService {
     public void readAllMyNotReadChatList(Long chatRoomId, Long memberId) {
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatRoomId);
         Member member = memberService.getMemberById(memberId);
+        chatRepository.readAllMyNotReadChatList(chatRoom, member);
+
+        /*
         List<Chat> myNotReadChatList = chatRepository.findMyNotReadChatList(chatRoom, member);
         myNotReadChatList.forEach(Chat::read);
+        */
     }
 }
