@@ -1,6 +1,5 @@
 package com.api.farmingsoon.domain.item.service;
 
-import com.api.farmingsoon.common.pagenation.Pagination;
 import com.api.farmingsoon.common.redis.RedisService;
 import com.api.farmingsoon.common.util.Transaction;
 import com.api.farmingsoon.domain.item.dto.*;
@@ -76,9 +75,9 @@ public class ItemService {
         );
     }
     @Transactional(readOnly = true)
-    public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortcode) {
+    public ItemListResponse getItemList(String category, String keyword, Pageable pageable, String sortCode, String itemStatus) {
         Optional<Member> viewer = authenticationUtils.getOptionalMember();
-        Page<Item> itemList = itemRepository.findItemList(category, keyword, pageable, sortcode);
+        Page<Item> itemList = itemRepository.findItemList(category, keyword, pageable, sortCode, itemStatus);
 
         return ItemListResponse.of(itemList, viewer);
     }
@@ -124,19 +123,21 @@ public class ItemService {
      * - 알림 저장 및 전송 로직은 별도의 트랜잭션에서 진행
      */
     @Transactional
-    public void soldOut(Long itemId, Long buyerId) {
+    public void soldOut(Long itemId, SoldOutRequest soldOutRequest) {
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
         Member member = item.getMember();
         AuthenticationUtils.checkUpdatePermission(member.getEmail(), member.getRole());
 
         item.updateItemStatus(ItemStatus.SOLDOUT);
+        item.setAwardPrice(soldOutRequest.getAwardPrice());
+
 
         List<Member> bidderList = new ArrayList<>();
 
         for(Bid bid : item.getBidList())
         {
-            if(bid.getMember().getId().equals(buyerId)) {
+            if(bid.getMember().getId().equals(soldOutRequest.getBuyerId())) {
                 bid.updateBidResult(BidResult.BID_SUCCESS);
                 bidderList.add(0,bid.getMember());
             }
