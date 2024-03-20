@@ -42,23 +42,19 @@ public class MyBidItemListResponse {
         private String title;
         private String description;
         private LocalDateTime expiredAt;
-        private Integer highestPrice;
         private Integer hopePrice;
-        private Integer lowestPrice;
         private String itemStatus;
         private Integer bidCount;
         private Integer likeCount;
         private Integer viewCount;
         private String thumbnailImgUrl;
         @Builder
-        private MyBidItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt, Integer highestPrice, Integer hopePrice, Integer lowestPrice, String itemStatus, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl, Boolean likeStatus) {
+        private MyBidItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt,Integer hopePrice, String itemStatus, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl, Boolean likeStatus) {
             this.itemId = itemId;
             this.title = title;
             this.description = description;
             this.expiredAt = expiredAt;
-            this.highestPrice = highestPrice;
             this.hopePrice = hopePrice;
-            this.lowestPrice = lowestPrice;
             this.itemStatus = itemStatus;
             this.bidCount = bidCount;
             this.likeCount = likeCount;
@@ -73,8 +69,6 @@ public class MyBidItemListResponse {
                     .title(item.getTitle())
                     .description(item.getDescription())
                     .hopePrice(item.getHopePrice())
-                    .highestPrice(item.getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))
-                    .lowestPrice(item.getBidList().stream().map(Bid::getPrice).min(Integer::compareTo).orElse(null))
                     .expiredAt(item.getExpiredAt())
                     .itemStatus(item.getItemStatus().getStatus())
                     .bidCount(item.getBidList().size())

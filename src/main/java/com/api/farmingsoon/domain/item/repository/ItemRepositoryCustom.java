@@ -13,6 +13,4 @@ public interface ItemRepositoryCustom {
     List<Item> findNotEndBidItemList();
 
     List<Item> findBiddingItemList();
-
-    //Page<ItemBySubQueryResponse> findItemListBySubQuery(String category, String keyword, Pageable pageable, String sortcode);
 }
