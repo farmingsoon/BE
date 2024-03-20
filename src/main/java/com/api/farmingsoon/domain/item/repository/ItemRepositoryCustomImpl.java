@@ -27,11 +27,11 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
 
     @Override
-    public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortCode, Boolean soldOut) {
+    public Page<Item> findItemList(String category, String keyword, Pageable pageable, String sortCode, String itemStatus) {
         List<Item> content = queryFactory
                 .selectFrom(item)
                 .leftJoin(item.bidList, bid)
-                .where(eqCategory(category), containsKeyword(keyword), checkSoldOut(soldOut))
+                .where(eqCategory(category), containsKeyword(keyword), eqItemStatus(itemStatus))
                 .groupBy(item.id)
                 .orderBy(getAllOrderSpecifiers(sortCode))
                 .offset(pageable.getOffset())
@@ -41,7 +41,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         Long total = queryFactory
                 .select(item.count())
                 .from(item)
-                .where(eqCategory(category), containsKeyword(keyword))
+                .where(eqCategory(category), containsKeyword(keyword), eqItemStatus(itemStatus))
                 .fetchOne();
 
 
@@ -97,9 +97,23 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .fetch();
     }
 
-    private BooleanExpression checkSoldOut(Boolean soldOut) {
-        log.debug("판매완료여부: {}", soldOut);
-        return soldOut.equals(Boolean.FALSE) ? item.itemStatus.eq(ItemStatus.BIDDING).or(item.itemStatus.eq(ItemStatus.BID_END)) : item.itemStatus.eq(ItemStatus.SOLDOUT);
+    private BooleanExpression eqItemStatus(String itemStatus) {
+        log.debug("상품 상태: {}", itemStatus);
+        if (itemStatus == null)
+            return null;
+        switch (itemStatus){
+            case "BIDDING" -> {
+                return item.itemStatus.eq(ItemStatus.BIDDING);
+            }
+            case "BID_END" -> {
+                return item.itemStatus.eq(ItemStatus.BID_END);
+            }
+            case "SOLDOUT" -> {
+                return item.itemStatus.eq(ItemStatus.SOLDOUT);
+            }
+
+        }
+        return null;
     }
 
     private BooleanExpression eqCategory(String category) {

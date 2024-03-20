@@ -53,9 +53,9 @@ public class ItemController {
             @RequestParam(value = "sortCode", defaultValue = "recent") String sortCode,
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "keyword", required = false) String keyword,
-            @RequestParam(value = "soldOut", defaultValue = "false" ,required = false) Boolean soldOut){
+            @RequestParam(value = "itemStatus",required = false) String itemStatus){
 
-        ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortCode, soldOut);
+        ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortCode, itemStatus);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
 

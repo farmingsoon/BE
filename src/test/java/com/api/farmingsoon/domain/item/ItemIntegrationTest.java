@@ -240,7 +240,7 @@ class ItemIntegrationTest extends IntegrationTest {
         }
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
-                        .param("soldOut", "false"))
+                        .param("itemStatus", "SOLDOUT"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -248,12 +248,12 @@ class ItemIntegrationTest extends IntegrationTest {
         String result = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).get("result").toString();
         ItemListResponse itemListResponse = objectMapper.readValue(result, ItemListResponse.class);
 
-        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title20");
-        Assertions.assertThat(itemListResponse.getItems().get(9).getTitle()).isEqualTo("title11");
+        Assertions.assertThat(itemListResponse.getItems().get(0).getTitle()).isEqualTo("title10");
+        Assertions.assertThat(itemListResponse.getItems().get(9).getTitle()).isEqualTo("title1");
 
         Assertions.assertThat(itemListResponse.getPagination()).isNotNull()
                 .extracting("totalElementSize", "elementSize")
-                .contains(20L,10);
+                .contains(10L,10);
     }
 
     @DisplayName("상품 목록 조회 낙찰가 최고가 순")
@@ -268,7 +268,7 @@ class ItemIntegrationTest extends IntegrationTest {
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
                         .param("sortCode", "highest")
-                        .param("soldOut", "true"))
+                        .param("itemStatus", "SOLDOUT"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -294,7 +294,7 @@ class ItemIntegrationTest extends IntegrationTest {
         // when
         MvcResult mvcResult = mockMvc.perform(get("/api/items")
                         .param("sortCode", "lowest")
-                        .param("soldOut", "true"))
+                        .param("itemStatus", "SOLDOUT"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
