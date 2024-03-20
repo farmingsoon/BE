@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class ChattingConnectResponse {
 
     private Long connectMemberId;
-    private final String type = "SEND";
+    private final String type = "CONNECT";
 
     public ChattingConnectResponse(Long connectMemberId) {
         this.connectMemberId = connectMemberId;
