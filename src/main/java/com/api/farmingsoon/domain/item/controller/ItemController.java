@@ -50,11 +50,12 @@ public class ItemController {
     @GetMapping
     public Response<ItemListResponse> getItemList(
             @PageableDefault(size = 12) Pageable pageable,
-            @RequestParam(value = "sortcode", defaultValue = "recent") String sortcode,
+            @RequestParam(value = "sortCode", defaultValue = "recent") String sortCode,
             @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "keyword", required = false) String keyword) {
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "itemStatus",required = false) String itemStatus){
 
-        ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortcode);
+        ItemListResponse items = itemService.getItemList(category, keyword, pageable, sortCode, itemStatus);
         return Response.success(HttpStatus.OK, "상품 목록 조회 성공!", items);
     }
 
@@ -81,8 +82,8 @@ public class ItemController {
 
     @LoginChecking
     @PatchMapping("/{itemId}/sold-out")
-    public Response<Void> soldOut(@PathVariable(name = "itemId") Long itemId, @RequestParam(value = "buyerId") Long buyerId){
-        itemService.soldOut(itemId, buyerId);
+    public Response<Void> soldOut(@PathVariable(name = "itemId") Long itemId, @RequestBody SoldOutRequest soldOutRequest){
+        itemService.soldOut(itemId, soldOutRequest);
         return Response.success(HttpStatus.OK, "상품 판매 완료!");
     }
 /*

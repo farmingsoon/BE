@@ -1,6 +1,7 @@
 package com.api.farmingsoon.domain.member.service;
 
 import com.api.farmingsoon.common.exception.ErrorCode;
+import com.api.farmingsoon.common.exception.custom_exception.DuplicateException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
@@ -61,11 +62,15 @@ public class MemberService {
             {
                 eventPublisher.publishEvent(new UploadImagesRollbackEvent(List.of(profileImageUrl)));
 
+                if(memberRepository.findByEmail(joinRequest.getEmail()).isPresent())
+                    throw new DuplicateException(ErrorCode.ALREADY_JOINED);
+
                 Member member = joinRequest.toEntity();
                 member.setEncryptedPassword(passwordEncoder.encode(joinRequest.getPassword()));
                 member.setProfileImg(profileImageUrl);
 
-                return memberRepository.save(member).getId(); // @todo 중복된 회원이 있으면 예외처리
+
+                return memberRepository.save(member).getId();
             }
         );
 

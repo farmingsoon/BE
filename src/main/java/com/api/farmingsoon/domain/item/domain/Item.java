@@ -41,6 +41,10 @@ public class Item extends BaseTimeEntity {
     @Column
     private Integer hopePrice;
 
+    @Setter
+    @Column
+    private Integer awardPrice;
+
     @Column
     private Integer bidPeriod;
 
@@ -68,16 +72,15 @@ public class Item extends BaseTimeEntity {
     @OneToMany(mappedBy = "item")
     private List<Image> imageList;
 
-    public void updateItemStatus(ItemStatus itemStatus) {
-        this.itemStatus = itemStatus;
-    }
+
 
     @Builder
-    private Item(Member member, String title, String description, Integer hopePrice, Integer bidPeriod, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
+    private Item(Member member, String title, String description, Integer hopePrice, Integer awardPrice, Integer bidPeriod, LocalDateTime expiredAt, String thumbnailImageUrl, String category, ItemStatus itemStatus, Integer viewCount) {
         this.member = member;
         this.title = title;
         this.description = description;
         this.hopePrice = hopePrice;
+        this.awardPrice = awardPrice;
         this.bidPeriod = bidPeriod;
         this.category = category;
         this.expiredAt = expiredAt;
@@ -89,5 +92,8 @@ public class Item extends BaseTimeEntity {
 
     public void increaseViewCount(Integer viewCount) {
         this.viewCount += viewCount;
+    }
+    public void updateItemStatus(ItemStatus itemStatus) {
+        this.itemStatus = itemStatus;
     }
 }
