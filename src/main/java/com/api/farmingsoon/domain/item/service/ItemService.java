@@ -154,9 +154,11 @@ public class ItemService {
     public void bidEnd(Long itemId)
     {
         Item item = getItemById(itemId);
-        item.updateItemStatus(ItemStatus.BID_END);
-        log.info("입찰 마감 - item_" + item.getId());
-        notificationService.createAndSendBidEndNotification(item);
+        if (item.getItemStatus().equals(ItemStatus.BIDDING)) { // 상품의 상태값이 입찰중인 경우에만 업데이트
+            item.updateItemStatus(ItemStatus.BID_END);
+            log.info("입찰 마감 - item_" + item.getId());
+            notificationService.createAndSendBidEndNotification(item);
+        }
     }
 
     @Transactional
@@ -175,12 +177,4 @@ public class ItemService {
     public List<Item> findBiddingItemList(){
         return itemRepository.findBiddingItemList();
     }
-/*
-    @Description 서브쿼리 테스트 전용
-    public ItemListBySubQueryResponse getItemListBySubQuery(String category, String keyword, Pageable pageable, String sortcode) {
-        Page<ItemBySubQueryResponse> itemResponseList = itemRepository.findItemListBySubQuery(category, keyword, pageable, sortcode);
-        return new ItemListBySubQueryResponse(Pagination.of(itemResponseList), itemResponseList.getContent());
-
-    }
-*/
 }

@@ -47,42 +47,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
-/*    @Override
-    public Page<ItemBySubQueryResponse> findItemResponseList(String category, String keyword, Pageable pageable, String sortcode) {
-        List<ItemBySubQueryResponse> list = queryFactory.select(
-                new QItemResponseBySubQuery(
-                        item.id,
-                        item.title,
-                        item.description,
-                        item.expiredAt,
-                        //queryFactory.select(item.bidList.any().price.max()).from(bid),
-                        queryFactory.select(bid.price.max()).from(bid).where(bid.item.eq(item)),
-                        item.hopePrice,
-                        queryFactory.select(item.bidList.any().price.min()).from(bid),
-                        item.itemStatus.stringValue(),
-                        item.bidList.size(),
-                        item.likeableItemList.size(),
-                        item.viewCount,
-                        item.thumbnailImageUrl,
-                        Expressions.FALSE
-                )
-        ).from(item)
-                .where(eqCategory(category), containsKeyword(keyword))
-                .groupBy(item.id)
-                .orderBy(getAllOrderSpecifiers(sortcode))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long total = queryFactory
-                .select(item.count())
-                .from(item)
-                .where(eqCategory(category), containsKeyword(keyword))
-                .fetchOne();
-
-
-        return new PageImpl<>(list, pageable, total);
-    }*/
     @Override
     public List<Item> findNotEndBidItemList() {
         return queryFactory.selectFrom(item)
