@@ -57,7 +57,7 @@ public class ItemDetailResponse {
                 .likeStatus // 조회자 세션이 존재할 경우에만 비교를 한다.
                     (
                         viewer.isPresent() ?
-                        item.getLikeableItemList().stream().map(LikeableItem::getMember).toList().contains(viewer) : false
+                        item.getLikeableItemList().stream().map(LikeableItem::getMember).toList().contains(viewer.get()) : false
                     )
                 .build();
     }

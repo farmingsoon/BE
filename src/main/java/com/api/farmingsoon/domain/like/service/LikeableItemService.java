@@ -2,6 +2,7 @@ package com.api.farmingsoon.domain.like.service;
 
 import com.api.farmingsoon.common.exception.ErrorCode;
 import com.api.farmingsoon.common.exception.custom_exception.DuplicateException;
+import com.api.farmingsoon.common.exception.custom_exception.ForbiddenException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.domain.item.domain.Item;
@@ -32,6 +33,9 @@ public class LikeableItemService {
     public void like(Long itemId) {
         Member member = authenticationUtils.getAuthenticationMember();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_ITEM));
+
+        if(item.getMember() == member)
+            throw new ForbiddenException(ErrorCode.OWN_ITEM);
 
         // 해당 상품에 이미 좋아요를 누른 경우 예외 처리
         likeableItemRepository.findByMemberAndItem(member, item).ifPresent(it -> {
