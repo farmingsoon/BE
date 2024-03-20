@@ -177,12 +177,4 @@ public class ItemService {
     public List<Item> findBiddingItemList(){
         return itemRepository.findBiddingItemList();
     }
-/*
-    @Description 서브쿼리 테스트 전용
-    public ItemListBySubQueryResponse getItemListBySubQuery(String category, String keyword, Pageable pageable, String sortcode) {
-        Page<ItemBySubQueryResponse> itemResponseList = itemRepository.findItemListBySubQuery(category, keyword, pageable, sortcode);
-        return new ItemListBySubQueryResponse(Pagination.of(itemResponseList), itemResponseList.getContent());
-
-    }
-*/
 }
