@@ -32,6 +32,7 @@ public enum ErrorCode {
     FORBIDDEN_DELETE("삭제 권한이 없습니다.", HttpStatus.FORBIDDEN),
     FORBIDDEN_UPDATE("수정 권한이 없습니다.", HttpStatus.FORBIDDEN),
     EMPTY_AUTHORITY("권한 정보가 비어있습니다.", HttpStatus.FORBIDDEN),
+    OWN_ITEM("자신의 게시글에는 좋아요를 누를 수 없습니다.", HttpStatus.FORBIDDEN),
 
     // 404
     NOT_FOUND_MEMBER("회원이 존재하지 않습니다.", HttpStatus.NOT_FOUND),

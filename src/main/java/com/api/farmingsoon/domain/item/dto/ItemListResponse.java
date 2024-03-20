@@ -68,7 +68,6 @@ public class ItemListResponse {
         }
 
         private static ItemResponse of(Item item, Optional<Member> viewer) {
-
             return ItemResponse.builder()
                     .itemId(item.getId())
                     .title(item.getTitle())
@@ -84,8 +83,7 @@ public class ItemListResponse {
                     .thumbnailImgUrl(item.getThumbnailImageUrl())
                     .likeStatus // 조회자 세션이 존재할 경우에만 비교를 한다.
                             (
-                                    viewer.isPresent() ?
-                                            item.getLikeableItemList().stream().map(LikeableItem::getMember).toList().contains(viewer) : false
+                                viewer.isPresent() ? item.getLikeableItemList().stream().map(LikeableItem::getMember).toList().contains(viewer.get()) : false
                             )
                     .build();
         }
