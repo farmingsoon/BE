@@ -63,8 +63,8 @@ public class JwtProvider {
                 .accessToken(createToken(claims, new Date(now.getTime() + accessExpirationTime)))
                 .refreshToken(createToken(claims, new Date(now.getTime() + refreshExpirationTime)))
                 .tokenType("Bearer ")
-                .accessExpirationTime(accessExpirationTime)
-                .refreshExpirationTime(refreshExpirationTime).build();
+                .accessExpirationTime(accessExpirationTime / 1000)
+                .refreshExpirationTime(refreshExpirationTime / 1000).build();
     }
 
     public String createToken(Claims claims, Date expiredDate){
