@@ -6,6 +6,7 @@ import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
 import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.common.util.JwtUtils;
+import com.api.farmingsoon.domain.member.dto.LoginResponse;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.model.MemberRole;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
@@ -37,16 +38,17 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
 
         String email = oAuth2User.getAttribute("email");
-        Optional<Member> findMember = memberRepository.findByEmail(email);
-
         String name = oAuth2User.getAttribute("name");
         String picture = oAuth2User.getAttribute("picture");
+        String provider = oAuth2User.getAttribute("provider");
+
+        Optional<Member> findMember = memberRepository.findByEmail(email + "_" + provider);
 
         // 회원이 아닌 경우에 회원 가입 진행
         Member member = null;
         if (findMember.isEmpty()) {
             member = Member.builder()
-                    .email(email)
+                    .email(email + "_" + provider)
                     .nickname(name)
                     .role(MemberRole.MEMBER)
                     .profileImg(picture)
@@ -54,10 +56,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
             memberRepository.save(member);
         } else {
-            member = findMember.orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
-            member.updateSocialMember(email, name, picture);
-
-            memberRepository.save(member);
+            member = findMember.get();
         }
 
         // OAuth2User 객체에서 권한 가져옴
@@ -70,7 +69,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         response.setStatus(200);
 
         response.getWriter().write(
-                objectMapper.writeValueAsString(jwtToken)
+                objectMapper.writeValueAsString(LoginResponse.of(member))
         );
     }
 }
