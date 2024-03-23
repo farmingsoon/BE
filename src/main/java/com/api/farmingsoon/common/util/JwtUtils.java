@@ -49,7 +49,7 @@ public class JwtUtils {
 
     public static String getRefreshToken(HttpServletRequest request) {
         String refreshToken = CookieUtils.getRefreshTokenCookieValue(request);
-        if(refreshToken.isBlank()) {
+        if(refreshToken == null) {
             throw new BadRequestException(ErrorCode.EMPTY_REFRESH_TOKEN);
         }
         return refreshToken;
