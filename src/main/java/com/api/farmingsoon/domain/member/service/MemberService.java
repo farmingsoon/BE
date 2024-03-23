@@ -5,6 +5,7 @@ import com.api.farmingsoon.common.exception.custom_exception.DuplicateException;
 import com.api.farmingsoon.common.exception.custom_exception.NotFoundException;
 import com.api.farmingsoon.common.security.jwt.JwtProvider;
 import com.api.farmingsoon.common.security.jwt.JwtToken;
+import com.api.farmingsoon.common.util.AuthenticationUtils;
 import com.api.farmingsoon.common.util.CookieUtils;
 import com.api.farmingsoon.common.util.JwtUtils;
 import com.api.farmingsoon.common.util.Transaction;
@@ -18,6 +19,7 @@ import com.api.farmingsoon.domain.member.event.LogoutEvent;
 import com.api.farmingsoon.domain.member.event.TokenRotateEvent;
 import com.api.farmingsoon.domain.member.model.Member;
 import com.api.farmingsoon.domain.member.repository.MemberRepository;
+import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import io.lettuce.core.RedisCommandTimeoutException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,4 +153,9 @@ public class MemberService {
         return memberRepository.findById(memberId).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
     }
 
+    public LoginResponse getUserInfo() {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Member member = memberRepository.findByEmail(userEmail).orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND_MEMBER));
+        return LoginResponse.of(member);
+    }
 }
