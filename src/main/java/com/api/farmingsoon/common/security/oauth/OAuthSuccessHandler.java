@@ -71,5 +71,6 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         response.getWriter().write(
                 objectMapper.writeValueAsString(LoginResponse.of(member))
         );
+        response.sendRedirect("https://farmingsoon.site/");
     }
 }
