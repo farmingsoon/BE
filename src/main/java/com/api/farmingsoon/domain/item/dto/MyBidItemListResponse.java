@@ -43,13 +43,15 @@ public class MyBidItemListResponse {
         private String description;
         private LocalDateTime expiredAt;
         private Integer hopePrice;
+        private Integer highestPrice;
+        private Integer awardPrice;
         private String itemStatus;
         private Integer bidCount;
         private Integer likeCount;
         private Integer viewCount;
         private String thumbnailImgUrl;
         @Builder
-        private MyBidItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt,Integer hopePrice, String itemStatus, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl, Boolean likeStatus) {
+        private MyBidItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt,Integer hopePrice,Integer awardPrice, Integer highestPrice, String itemStatus, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl, Boolean likeStatus) {
             this.itemId = itemId;
             this.title = title;
             this.description = description;
@@ -59,6 +61,8 @@ public class MyBidItemListResponse {
             this.bidCount = bidCount;
             this.likeCount = likeCount;
             this.viewCount = viewCount;
+            this.highestPrice = highestPrice;
+            this.awardPrice = awardPrice;
             this.thumbnailImgUrl = thumbnailImgUrl;
         }
 
@@ -69,6 +73,8 @@ public class MyBidItemListResponse {
                     .title(item.getTitle())
                     .description(item.getDescription())
                     .hopePrice(item.getHopePrice())
+                    .awardPrice(item.getAwardPrice())
+                    .highestPrice(item.getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))
                     .expiredAt(item.getExpiredAt())
                     .itemStatus(item.getItemStatus().getStatus())
                     .bidCount(item.getBidList().size())

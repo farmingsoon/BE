@@ -45,11 +45,13 @@ public class ItemListResponse {
         private String itemStatus;
         private Integer bidCount;
         private Integer likeCount;
+        private Integer highestPrice;
+        private Integer awardPrice;
         private Integer viewCount;
         private String thumbnailImgUrl;
         private Boolean likeStatus;
         @Builder
-        private ItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt, Integer hopePrice, String itemStatus, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl, Boolean likeStatus) {
+        private ItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt, Integer hopePrice,Integer awardPrice, String itemStatus,Integer highestPrice, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl, Boolean likeStatus) {
             this.itemId = itemId;
             this.title = title;
             this.description = description;
@@ -59,6 +61,8 @@ public class ItemListResponse {
             this.bidCount = bidCount;
             this.likeCount = likeCount;
             this.viewCount = viewCount;
+            this.awardPrice = awardPrice;
+            this.highestPrice = highestPrice;
             this.thumbnailImgUrl = thumbnailImgUrl;
             this.likeStatus = likeStatus;
         }
@@ -72,6 +76,8 @@ public class ItemListResponse {
                     .expiredAt(item.getExpiredAt())
                     .itemStatus(item.getItemStatus().getStatus())
                     .bidCount(item.getBidList().size())
+                    .awardPrice(item.getAwardPrice())
+                    .highestPrice(item.getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))
                     .viewCount(item.getViewCount())
                     .likeCount(item.getLikeableItemList().size())
                     .thumbnailImgUrl(item.getThumbnailImageUrl())

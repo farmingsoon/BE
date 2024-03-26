@@ -41,18 +41,22 @@ public class MyItemListResponse {
         private String description;
         private LocalDateTime expiredAt;
         private Integer hopePrice;
+        private Integer highestPrice;
+        private Integer awardPrice;
         private String itemStatus;
         private Integer bidCount;
         private Integer likeCount;
         private Integer viewCount;
         private String thumbnailImgUrl;
         @Builder
-        private MyItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt, Integer hopePrice, String itemStatus, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl, Boolean likeStatus) {
+        private MyItemResponse(Long itemId, String title, String description, LocalDateTime expiredAt, Integer hopePrice,Integer awardPrice, Integer highestPrice, String itemStatus, Integer bidCount, Integer likeCount, Integer viewCount, String thumbnailImgUrl) {
             this.itemId = itemId;
             this.title = title;
             this.description = description;
             this.expiredAt = expiredAt;
             this.hopePrice = hopePrice;
+            this.highestPrice = highestPrice;
+            this.awardPrice = awardPrice;
             this.itemStatus = itemStatus;
             this.bidCount = bidCount;
             this.likeCount = likeCount;
@@ -67,6 +71,8 @@ public class MyItemListResponse {
                     .title(item.getTitle())
                     .description(item.getDescription())
                     .hopePrice(item.getHopePrice())
+                    .awardPrice(item.getAwardPrice())
+                    .highestPrice(item.getBidList().stream().map(Bid::getPrice).max(Integer::compareTo).orElse(null))
                     .expiredAt(item.getExpiredAt())
                     .itemStatus(item.getItemStatus().getStatus())
                     .bidCount(item.getBidList().size())
