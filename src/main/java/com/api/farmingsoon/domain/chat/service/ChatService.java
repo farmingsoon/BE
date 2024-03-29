@@ -35,7 +35,7 @@ public class ChatService {
     @Transactional
     public void create(ChatMessageRequest chatMessageRequest) {
         Long connectMemberSize = chatRoomRedisService.getConnectMemberSize("chatRoom_" + chatMessageRequest.getChatRoomId());
-
+        log.info("connectMemberSize : " + connectMemberSize);
         ChatRoom chatRoom = chatRoomService.getChatRoom(chatMessageRequest.getChatRoomId());
         Member sender = memberService.getMemberById(chatMessageRequest.getSenderId());
         Chat chat = chatRepository.save(

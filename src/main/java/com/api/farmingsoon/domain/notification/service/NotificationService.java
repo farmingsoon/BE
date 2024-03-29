@@ -79,22 +79,25 @@ public class NotificationService {
     @Transactional
     public void createAndSendBidEndNotification(Item item) {
         List<Member> receiverList = new ArrayList<>(item.getBidList().stream().map(Bid::getMember).toList()); // 입찰자들
-        receiverList.forEach(bidder -> notificationRepository.save(Notification.of(bidder,"입찰이 종료되었습니다. 거래를 기다려주세요", item.getId())));
+        receiverList.forEach(bidder -> notificationRepository.save(Notification.of(bidder, "입찰이 종료되었습니다. 거래를 기다려주세요", item.getId())));
 
         Member seller = item.getMember();
-        notificationRepository.save(Notification.of(seller,"입찰이 종료되었습니다. 거래를 진행해주세요", item.getId()));
+        notificationRepository.save(Notification.of(seller, "입찰이 종료되었습니다. 거래를 진행해주세요", item.getId()));
         receiverList.add(seller); // 판매자 추가
 
         eventPublisher.publishEvent(NotificationSaveEvent.of(receiverList.stream().map(Member::getId).toList(), "입찰이 종료되었습니다."));
+
         //receiverList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰이 종료되었습니다"));
 
     }
     @Transactional
     public void createAndSendSoldOutNotification(List<Member> bidderList, Item item) {
-        notificationRepository.save(Notification.of(bidderList.get(0),"입찰하신 상품에 낙찰되셨습니다.", item.getId()));
-        bidderList.stream().skip(1).forEach(receiver -> notificationRepository.save(Notification.of(receiver,"입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));
+        if(!bidderList.isEmpty()) {
+            notificationRepository.save(Notification.of(bidderList.get(0), "입찰하신 상품에 낙찰되셨습니다.", item.getId()));
+            bidderList.stream().skip(1).forEach(receiver -> notificationRepository.save(Notification.of(receiver, "입찰하신 상품에 낙찰받지 못하셨습니다.", item.getId())));
 
-        eventPublisher.publishEvent(NotificationSaveEvent.of(bidderList.stream().map(Member::getId).toList(), "입찰 등록한 상품이 판매 완료되었습니다."));
+            eventPublisher.publishEvent(NotificationSaveEvent.of(bidderList.stream().map(Member::getId).toList(), "입찰 등록한 상품이 판매 완료되었습니다."));
+        }
         //bidderList.forEach(receiver -> sseService.sendToClient(receiver.getId(), "입찰 등록한 상품이 판매 완료되었습니다."));
     }
 

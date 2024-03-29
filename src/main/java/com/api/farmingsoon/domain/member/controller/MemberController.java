@@ -56,8 +56,8 @@ public class MemberController {
     }
     @LoginChecking
     @GetMapping("/info")
-    public Response<Void> getUserInfo(){
-        memberService.getUserInfo();
-        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.");
+    public Response<LoginResponse> getUserInfo(){
+        LoginResponse userInfo = memberService.getUserInfo();
+        return Response.success(HttpStatus.OK, "토큰이 재발급 되었습니다.",userInfo);
     }
 }
