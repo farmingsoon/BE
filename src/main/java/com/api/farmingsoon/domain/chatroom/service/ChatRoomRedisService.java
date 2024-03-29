@@ -21,7 +21,7 @@ public class ChatRoomRedisService {
      * 채팅방에 남은 사람이 한명이라면 나갈 때 키 삭제
      */
     public void disConnectChatRoom(String sessionId) {
-        Long chatRoomId = (Long) redisService.getData(sessionId);
+        Long chatRoomId = Long.valueOf((String) redisService.getData(sessionId));
         if(redisService.getSetSize("chatRoom_" + chatRoomId) == 1){
             redisService.deleteData("chatRoom_" + chatRoomId);
         }
