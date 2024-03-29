@@ -4,6 +4,7 @@ import com.api.farmingsoon.common.sse.SseService;
 import com.api.farmingsoon.domain.chat.dto.ChattingConnectResponse;
 import com.api.farmingsoon.domain.chat.service.ChatService;
 import com.api.farmingsoon.domain.chatroom.event.ChatRoomConnectEvent;
+import com.api.farmingsoon.domain.chatroom.event.ChatRoomDisConnectEvent;
 import com.api.farmingsoon.domain.chatroom.service.ChatRoomRedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -33,7 +34,7 @@ public class ChatRoomEventListener {
     }
 
     @EventListener
-    public void deleteConnectMember(ChatRoomConnectEvent event){
+    public void deleteConnectMember(ChatRoomDisConnectEvent event){
         chatRoomRedisService.disConnectChatRoom(event.getChatRoomId(), event.getSessionId());
     }
 
