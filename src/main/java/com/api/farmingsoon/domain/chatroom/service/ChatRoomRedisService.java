@@ -2,14 +2,17 @@ package com.api.farmingsoon.domain.chatroom.service;
 
 import com.api.farmingsoon.common.redis.RedisService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatRoomRedisService {
     private final RedisService redisService;
 
     public void connectChatRoom(Long chatRoomId, String sessionId) {
+        log.info("Chatroom Connect : chatRoomId = " + chatRoomId + " sessionId = " + sessionId);
         redisService.addToSet("chatRoom_" + chatRoomId, sessionId);
     }
 
@@ -21,6 +24,7 @@ public class ChatRoomRedisService {
             redisService.deleteData("chatRoom_" + chatRoomId);
         }
         redisService.deleteToSet("chatRoom_" + chatRoomId, sessionId);
+        log.info("Chatroom DisConnect : chatRoomId = " + chatRoomId + " sessionId = " + sessionId);
     }
     public Long getConnectMemberSize(String key){
         return redisService.getSetSize(key);
