@@ -35,7 +35,7 @@ public class ChatRoomEventListener {
 
     @EventListener
     public void deleteConnectMember(ChatRoomDisConnectEvent event){
-        chatRoomRedisService.disConnectChatRoom(event.getChatRoomId(), event.getSessionId());
+        chatRoomRedisService.disConnectChatRoom(event.getSessionId());
     }
 
 }

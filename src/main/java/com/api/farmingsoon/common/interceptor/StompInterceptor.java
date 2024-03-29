@@ -45,7 +45,6 @@ public class StompInterceptor implements ChannelInterceptor {
             );
         else if (StompCommand.DISCONNECT.equals(command)) {
             eventPublisher.publishEvent(ChatRoomDisConnectEvent.builder()
-                        .chatRoomId(Long.valueOf(accessor.getFirstNativeHeader("chatRoomId")))
                         .sessionId(accessor.getSessionId())
                         .build());
         }

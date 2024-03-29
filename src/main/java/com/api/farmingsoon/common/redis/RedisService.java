@@ -25,6 +25,9 @@ public class RedisService {
     public void setData(String key, Object value, Long time,TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, value.toString(), time, timeUnit);
     }
+    public void setData(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value.toString());
+    }
 
     public Object getData(String key) {
         return redisTemplate.opsForValue().get(key);
