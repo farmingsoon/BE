@@ -16,7 +16,7 @@ public class ChatRoomEventListener {
     private final ChatService chatService;
     private final ChatRoomRedisService chatRoomRedisService;
     private final SimpMessagingTemplate messagingTemplate;
-
+    private  final SseService sseService;
 
     /**
      * @Description
@@ -29,7 +29,7 @@ public class ChatRoomEventListener {
         chatRoomRedisService.connectChatRoom(event.getChatRoomId(), event.getSessionId());
         chatService.readAllMyNotReadChatList(event.getChatRoomId(), event.getConnectMemberId());
         messagingTemplate.convertAndSend("/sub/chat-room/" + event.getChatRoomId(), new ChattingConnectResponse(event.getConnectMemberId()));
-
+        sseService.sendToClient("CHATROOM_UPDATE", event.getConnectMemberId(), "채팅방 목록을 업데이트 해주세요.");
     }
 
     @EventListener
