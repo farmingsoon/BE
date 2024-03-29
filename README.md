@@ -26,6 +26,7 @@
 | ![상품조회(경매중)](https://github.com/farmingsoon/BE/assets/77851079/19f405e5-991c-4c4c-a4e2-f370deffe94c) |
 
 | **메인 페이지(판매 완료)** |
+| :---: |
 | ![상품조회(판매완료)](https://github.com/farmingsoon/BE/assets/77851079/045d2e74-fb10-4915-b4d0-46b50c8f8e90) |
 
 | **입찰 등록** |
