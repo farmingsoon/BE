@@ -13,6 +13,9 @@
     - 좋아요
     - 1 대 1 채팅
     - 알림(입찰 등록, 입찰 종료, 판매 완료, 채팅 수신)
+## ERD
+![image](https://github.com/farmingsoon/BE/assets/77851079/28136e33-b5e2-41a8-b026-deae2a293141)
+
  
 ## Preview
 
